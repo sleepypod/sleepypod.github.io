@@ -1,0 +1,38 @@
+---
+title: 'Schedules and alarms'
+---
+
+# Schedules and alarms
+
+Core runs scheduled jobs on the Pod. Closing the web app or iOS app does not stop them.
+
+## Build a nightly routine
+
+1. Open **Schedule** and choose the side to configure.
+2. Select the days when the routine should run.
+3. Add a power-on event and optional warm-up temperature.
+4. Add temperature changes at the times you want them.
+5. Add a vibration alarm and a power-off event if desired.
+6. Save and review the selected days and side.
+
+Start with a simple routine and confirm it runs as expected before adding more events. For a routine crossing midnight, check the calendar day attached to each event.
+
+## Check the timezone
+
+The scheduler uses the device timezone. Verify that setting when events fire at the wrong local time. The Pod's clock can reset after a power cycle; Core waits for a valid system clock before starting scheduled jobs.
+
+## Vibration alarms
+
+Alarm configuration includes duration, intensity, and pattern. Hardware capability differs: the Core README notes that the Pod 5 J55 cover MCU clamps intensity and pattern even though the API accepts them. A saved value does not guarantee that hardware can reproduce it.
+
+## Temporary changes
+
+Manual temperature changes and recurring schedules can interact. Review the next event and any active one-shot run when troubleshooting a setpoint that changes again later.
+
+## iOS curve editor
+
+The iOS companion provides per-phase temperature controls, day and side selection, and Cool, Balanced, and Warm presets. See [using the iOS app](/ios/using-the-app/).
+
+---
+
+**Source reference:** [Scheduler and alarms](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/hardware/alarms.md) · [iOS scheduling](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)

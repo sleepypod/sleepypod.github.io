@@ -1,0 +1,38 @@
+---
+title: 'Sleepypod for iOS'
+---
+
+# Sleepypod for iOS
+
+A native companion for your Pod: temperature control, schedules, sleep trends, and device diagnostics in one place.
+
+<div className="media-grid">
+  <PhoneFrame
+    src="/media/ios-temperature.png"
+    alt="Native iOS temperature dial"
+    caption="Adjust your side of the bed."
+  />
+  <PhoneFrame
+    src="/media/ios-schedule.png"
+    alt="Native iOS sleep schedule"
+    caption="Build a nightly temperature curve."
+  />
+</div>
+
+## Made for everyday control
+
+Use the radial dial, select a side or link both, and review your night through interactive charts. The app can discover Core automatically with Bonjour or connect using a manual IP address.
+
+## Requirements and availability
+
+The repository specifies **iOS 26.0+, Xcode 26+, and Swift 6.0**. The documented installation route is a source build with Xcode. This site does not assume an App Store or TestFlight release.
+
+[Build and connect →](/ios/setup/)
+
+## What runs where
+
+Core controls the hardware and stores server-side schedules and sensor data. iOS is the client and performs on-device sleep-stage analysis. Keep Core running on the Pod even when the app is closed.
+
+---
+
+**Source reference:** [iOS features and requirements](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)

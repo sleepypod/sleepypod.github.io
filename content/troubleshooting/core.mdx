@@ -1,0 +1,62 @@
+---
+title: 'Core and biometrics troubleshooting'
+---
+
+# Core and biometrics troubleshooting
+
+## Core will not start
+
+On the Pod, read the status and recent logs:
+
+```bash
+sp-status
+journalctl -u sleepypod.service -n 200 --no-pager
+```
+
+For installed key-only SSH access, the documented port is 8822:
+
+```bash
+ssh -p 8822 root@POD_IP
+```
+
+Database or native-module errors can come from running the wrong Node.js binary. The service uses `/usr/local/bin/node`; use that binary for manual scripts when comparing behavior. Preserve databases before attempting a repair or reinstall.
+
+## Biometrics are empty
+
+1. Check the selected side and date. For live measurements, confirm the bed is occupied.
+2. Inspect module health and the web diagnostics console (`/en/debug` for English).
+3. Check that firmware is producing fresh RAW frames:
+
+```bash
+ls -la /persistent/biometrics/*.RAW
+journalctl -u frank -n 100 --no-pager
+```
+
+4. Confirm the readers' `RAW_DATA_DIR` points to the hot directory used by the firmware. A mismatch can leave readers looking at an empty location.
+5. Check the Python module services and their logs. Configuration and biometrics use separate SQLite files; a healthy web UI does not prove sensor processing is running.
+
+## RAW archives are empty
+
+The firmware deletes rotated frames quickly. A linker timer pins frames until the archiver can compress them. Check both stages:
+
+```bash
+journalctl -u sleepypod-biometrics-linker -n 50 --no-pager
+journalctl -u sleepypod-biometrics-archiver -n 50 --no-pager
+df -P /persistent
+```
+
+The linker may be quiet when there is no new frame. Repeated failures, dropped frames, or a growing pending queue warrant checking storage and service health.
+
+## Powered, but not heating or cooling
+
+Compare target, bed, and water-temperature trends. A stalled pump can leave power reported as on while temperature stays flat. Check thermal diagnostics, water level, and firmware logs. Repeatedly raising the target will not resolve a transport or pump fault.
+
+## Schedules do not run
+
+Check the device clock, timezone, selected days, and side. Core waits for a valid clock after startup. Look for scheduler errors in the Core journal.
+
+The upstream runbook below is the authoritative reference for device-specific paths and deeper diagnostics.
+
+---
+
+**Source reference:** [Debugging runbook](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [Deployment and service details](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEPLOYMENT.md)

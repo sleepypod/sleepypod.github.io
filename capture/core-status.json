@@ -1,0 +1,27 @@
+{
+  "leftSide": {
+    "currentTemperature": 74,
+    "targetTemperature": 78,
+    "currentLevel": -3,
+    "targetLevel": 6,
+    "heatingDuration": 28800,
+    "isAlarmVibrating": false
+  },
+  "rightSide": {
+    "currentTemperature": 77,
+    "targetTemperature": 72,
+    "currentLevel": 3,
+    "targetLevel": -8,
+    "heatingDuration": 28800,
+    "isAlarmVibrating": false
+  },
+  "waterLevel": "ok",
+  "isPriming": false,
+  "podVersion": "J00",
+  "sensorLabel": "J55",
+  "snooze": { "left": null, "right": null },
+  "wifiStrength": -48,
+  "wifiSSID": "Capture network",
+  "roomClimate": { "temperature": 22, "humidity": 45 },
+  "waterLevelRaw": null
+}

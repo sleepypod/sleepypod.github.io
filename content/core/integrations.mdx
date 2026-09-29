@@ -1,0 +1,44 @@
+---
+title: 'HomeKit and MQTT'
+---
+
+# HomeKit and MQTT
+
+Both bridges are **off by default**. Enable only the integration you use.
+
+## Apple Home / HomeKit
+
+1. In the Core web app, open **Settings → HomeKit**.
+2. Enable **HomeKit bridge**.
+3. In Apple Home, choose **Add Accessory**, scan the QR code, or enter the eight-digit setup code.
+4. Assign the new accessories to a room.
+
+Core publishes per-side thermostats, power switches, occupancy sensors, and snooze switches, plus Pod-level priming and ambient temperature accessories. Pairing and control use the local network.
+
+The thermostat uses one setpoint. Mode `off` cuts power; `auto` turns the side on using the last requested temperature. Celsius is converted at the HomeKit boundary.
+
+To reset controllers, use **Unpair all controllers** in Core. It retains the bridge identity. Keep pairing codes private.
+
+## Home Assistant / MQTT
+
+Core is an MQTT **client**. You need an existing broker; Core does not provide one.
+
+1. Open **Settings → MQTT**.
+2. Enter a broker URL such as `mqtt://broker.lan:1883` or a TLS `mqtts://` URL.
+3. Enter broker credentials if required.
+4. Use **Test Connection**, then enable the bridge and save.
+5. Enable **Home Assistant Discovery** to create entities automatically.
+
+Device state is retained under `<prefix>/<device-id>/state/...`; the default prefix is `sleepypod`. Availability is published as `online` or `offline`. Commands arrive under `<prefix>/<device-id>/cmd/...`.
+
+Example: turn off the left side, replacing the broker and device ID with yours:
+
+```bash
+mosquitto_pub -h broker.lan   -t 'sleepypod/YOUR_DEVICE_ID/cmd/set-power'   -m '{"side":"left","powered":false}'
+```
+
+Broker configuration in the device settings takes precedence over environment variables. The complete topic and environment-variable tables are in the Core README linked below.
+
+---
+
+**Source reference:** [HomeKit accessories and MQTT topics](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [MQTT design](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/adr/0019-mqtt-bridge.md) · [HomeKit identity](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/adr/0020-homekit-identity-derivation.md)

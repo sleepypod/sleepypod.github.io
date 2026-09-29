@@ -1,0 +1,10 @@
+{
+  "url": "http://127.0.0.1:3210",
+  "path": "/en",
+  "viewport": {
+    "width": 1440,
+    "height": 820
+  },
+  "capturedAt": "2026-09-29T02:20:51.714Z",
+  "method": "Playwright screenshot of isolated Core with disposable databases and synthetic device-status transport fixture"
+}

@@ -1,0 +1,37 @@
+---
+title: 'Sleepypod Core'
+---
+
+# Sleepypod Core
+
+The foundation of the system. Core runs on the Pod's embedded Linux and provides a local web app, hardware control, scheduling, biometrics processing, and an API for your other controls.
+
+## What you can do
+
+- Set temperature and power independently for the left and right sides.
+- Schedule temperature changes, power, vibration alarms, and maintenance.
+- Explore sleep sessions, heart rate, heart rate variability, and breathing trends.
+- Connect Apple Home or Home Assistant through opt-in local bridges.
+- Inspect device health and sensor activity from the web interface.
+
+[Install Core →](/core/installation/)
+
+## The web interface
+
+Open `http://POD_IP:3000` in a browser on the same network. Choose a side before changing temperature or power. Desktop routes provide additional diagnostics; mobile layouts focus on everyday controls.
+
+<BrowserFrame
+  src="/media/core-temperature.png"
+  alt="Core temperature controls with separate left and right sides"
+  caption="Core web interface. Captured from the running application; layout depends on viewport and version."
+/>
+
+## How the pieces connect
+
+Core sends hardware commands through the Pod's DAC socket. Its scheduler operates on the device. Independent Python modules process sensor data into a separate biometrics database. The web app, iOS app, and Dial consume Core's state and API.
+
+For implementation details, read the [architecture reference](/developers/architecture/).
+
+---
+
+**Source reference:** [Core overview](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md)

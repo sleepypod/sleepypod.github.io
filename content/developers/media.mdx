@@ -1,0 +1,54 @@
+---
+title: 'Repeatable media capture'
+---
+
+# Repeatable media capture
+
+Product media should show the actual product. This site follows the `noctune-docs` approach: capture real interfaces, keep deterministic test data where possible, put browser/device framing in components, and verify assets before deployment.
+
+## Published assets and provenance
+
+`capture/manifest.json` records the source repository, commit, source file, output file, and checksum for every imported asset. The iOS images come from the iOS repository; Dial stills and clips come from its device framebuffer workflow. Core capture provenance is recorded alongside the published asset.
+
+```bash
+pnpm media:import
+pnpm media:verify
+```
+
+Import requires sibling product checkouts (or `PRODUCT_ROOT` pointing to their parent). The importer reads committed blobs at pinned revisions so unrelated working-tree changes cannot enter a release. Verification rejects missing files, Git LFS pointers, checksum mismatches, and invalid image dimensions.
+
+## Fresh Core browser capture
+
+Use an isolated Core instance containing only disposable fixture data. Start it on loopback and run:
+
+```bash
+CORE_CAPTURE_URL=http://127.0.0.1:3000   pnpm exec node scripts/capture-core.mjs
+```
+
+The script only accepts a loopback origin, navigates the real UI, and captures the viewport with Playwright. It replaces hardware status with a committed synthetic transport fixture, blocks sensor WebSocket connections and tRPC writes, and reads all remaining data from disposable local databases. The development badge is hidden; the application UI is unchanged. Follow `capture/README.md` to start the isolated instance. Review `.capture/core-temperature.png` before promoting it and updating the manifest. Do not use real sleep histories or a live customer's system for documentation capture.
+
+## Fresh iOS capture
+
+Build the app on an iOS Simulator using a disposable mock backend. Navigate to the intended screen and capture:
+
+```bash
+xcrun simctl status_bar booted override --time '9:41' --batteryState charged --batteryLevel 100
+xcrun simctl io booted screenshot .capture/ios-temperature.png
+xcrun simctl status_bar booted clear
+```
+
+For a short demonstration, use `xcrun simctl io booted recordVideo .capture/ios-demo.mp4`, perform one task, and stop recording. Show only synthetic data. Keep the simulator's status bar in the image; the `PhoneFrame` component supplies the outer frame without inventing UI.
+
+## Fresh Dial capture
+
+Use the upstream `tools/walkthrough.py` on a test Dial with serial access. Its output includes PNG stills and MP4 clips. See [Dial development](/developers/dial/#capture-real-device-output). Preserve the device pixels and use the site's `DialFrame` for the bezel.
+
+## Review and promote
+
+1. Inspect every image and play every clip. Check labels, selected side, test data, and private information.
+2. Keep controls visible and frame the product consistently. Browser framing belongs in `BrowserFrame`, not in painted screenshot pixels.
+3. Record the product revision, capture method, dimensions, and SHA-256 checksum in the manifest.
+4. Run `pnpm check`, including static build and browser tests.
+5. Review desktop and mobile rendering before merging. PRs run the same validation; pushes to `main` deploy the static output to Pages.
+
+Clips are short, silent, user-controlled, and accompanied by a text description. Nothing autoplays.

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sleepypod.github.io/sitemap.xml

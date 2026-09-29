@@ -1,0 +1,45 @@
+---
+title: 'iOS development'
+---
+
+# iOS development
+
+## App structure
+
+`SleepypodProtocol` is the shared backend interface. `SleepypodCoreClient` implements the Core tRPC API; `FreeSleepClient` implements the legacy REST backend. Managers handle device state, schedules, settings, metrics, and status. `PodDiscovery` handles Bonjour; `SleepAnalyzer` performs on-device analysis.
+
+Start with the [build guide](/ios/setup/). Generate the Xcode project with XcodeGen after changing `project.yml`.
+
+## Lint and test
+
+```bash
+brew install swiftlint
+npm run lint
+cd contract-tests
+swift test
+```
+
+Contract tests validate Swift decoding against Core response fixtures. The repository CI starts Core, snapshots tRPC responses, and decodes them to detect drift. A standalone `swift test` run uses the fixtures available to that checkout; it is not a substitute for refreshing them when the API changes.
+
+## Refresh the API snapshot
+
+From the iOS repository root, with a reachable Core installation:
+
+```bash
+./scripts/sync-api-spec.sh POD_IP
+```
+
+Review the resulting contract diff and update models and tests together.
+
+## Where to look
+
+- `Models/`: Codable types and backend-format compatibility.
+- `Networking/`: API clients and protocol.
+- `Services/`: managers, discovery, analysis, and logging.
+- `Views/`: temperature, schedules, data, status, and settings.
+
+Preserve backend compatibility at the protocol/model boundary so view code can remain independent of the server implementation.
+
+---
+
+**Source reference:** [Architecture and test commands](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md) · [Contract test design](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/docs/adr/003-contract-testing.md) · [Backend protocol](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/docs/adr/001-protocol-abstraction.md)

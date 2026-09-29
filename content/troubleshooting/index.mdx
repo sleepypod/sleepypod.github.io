@@ -1,0 +1,28 @@
+---
+title: 'Troubleshooting'
+---
+
+# Troubleshooting
+
+Start with the smallest check that separates a client problem from a Pod problem.
+
+| Symptom                             | First check                                             | Guide                                               |
+| ----------------------------------- | ------------------------------------------------------- | --------------------------------------------------- |
+| Nothing can connect                 | Open `http://POD_IP:3000` on the same LAN               | [Connection](/troubleshooting/connection/)          |
+| Browser works, iOS or Dial does not | Use manual IP; check discovery and permissions          | [Connection](/troubleshooting/connection/)          |
+| Core does not start                 | Read `sp-status` and `sp-logs`                          | [Core](/troubleshooting/core/)                      |
+| Temperature does not move           | Check the side, target, water level, and thermal status | [Core](/troubleshooting/core/)                      |
+| No biometrics                       | Check side/date, sensor activity, and module services   | [Core](/troubleshooting/core/#biometrics-are-empty) |
+| Schedule fires at the wrong time    | Verify device clock and timezone                        | [Schedules](/core/schedules/)                       |
+| Dial is red or very dim             | Check night mode and wake it                            | [Dial controls](/dial/controls/)                    |
+
+## Report a useful issue
+
+Include the Pod generation, product versions, expected behavior, actual behavior, steps to reproduce, and a short relevant log excerpt. Remove passwords, pairing codes, device identifiers, and private sleep data.
+
+- [Core issues](https://github.com/sleepypod/core/issues)
+- [iOS issues](https://github.com/sleepypod/ios/issues)
+- [Dial issues](https://github.com/sleepypod/m5-rotary-dial/issues)
+- [Documentation issues](https://github.com/sleepypod/sleepypod.github.io/issues)
+
+The [community Discord](https://discord.gg/UMmv5R6MXa) is another place to ask for help.

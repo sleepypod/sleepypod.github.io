@@ -1,0 +1,25 @@
+---
+title: 'Build on Sleepypod'
+---
+
+# Build on Sleepypod
+
+Sleepypod is three cooperating projects. The public site is a separate static Nextra application.
+
+| Repository                                                                        | Role                                              | Main tools                                |
+| --------------------------------------------------------------------------------- | ------------------------------------------------- | ----------------------------------------- |
+| [sleepypod/core](https://github.com/sleepypod/core)                               | Pod server, hardware, web UI, scheduling, sensors | TypeScript, Next.js, tRPC, SQLite, Python |
+| [sleepypod/ios](https://github.com/sleepypod/ios)                                 | Native companion                                  | Swift, SwiftUI, XcodeGen                  |
+| [sleepypod/m5-rotary-dial](https://github.com/sleepypod/m5-rotary-dial)           | Bedside control firmware                          | C++, ESP32-S3, PlatformIO                 |
+| [sleepypod/sleepypod.github.io](https://github.com/sleepypod/sleepypod.github.io) | This product and documentation site               | Nextra, Next.js static export, Pagefind   |
+
+Read each repository's instructions before changing it. Core's architecture and invariants are summarized in its `AGENTS.md`; the wiki index points to deeper topic documentation.
+
+## Pick a starting point
+
+- [Architecture](/developers/architecture/) — hardware, processes, data flow, and storage.
+- [API reference](/developers/api/) — discover the installed API and its network model.
+- [Core development](/developers/core/) — local build and deployment.
+- [iOS development](/developers/ios/) — app structure and contract testing.
+- [Dial development](/developers/dial/) — firmware, host tests, and captures.
+- [Media capture](/developers/media/) — reproduce the site's product imagery.

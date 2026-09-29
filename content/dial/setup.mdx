@@ -1,0 +1,52 @@
+---
+title: 'Build and connect the Dial'
+---
+
+# Build and connect the Dial
+
+## What you need
+
+- An **M5Stack Dial** (ESP32-S3 with a 240 × 240 round touchscreen).
+- A USB connection to your computer and PlatformIO.
+- Core running on your Pod and reachable on your Wi-Fi network.
+
+## Configure and flash
+
+Install PlatformIO through its VS Code extension or CLI, then clone the firmware:
+
+```bash
+git clone https://github.com/sleepypod/m5-rotary-dial.git
+cd m5-rotary-dial
+cp include/credentials.h.example include/credentials.h
+```
+
+Edit `include/credentials.h` with your Wi-Fi SSID and password. Keep this file private and out of commits.
+
+Set `GMT_OFFSET_SEC` and `DAYLIGHT_OFFSET_SEC` in `include/config.h` for your location. These are numeric offsets, so check them when daylight saving time changes. For example, UTC uses zero for both.
+
+```bash
+pio run --target upload
+```
+
+Connect the device over USB and select the appropriate upload port if PlatformIO does not detect it automatically.
+
+## Find the Pod
+
+On startup, the Dial joins Wi-Fi, tries mDNS discovery, then falls back to its saved/default IP. The documented default is `192.168.1.88`; your Pod may have a different address.
+
+Open settings by holding the center or tapping the gear:
+
+1. Select **Discover Pod** to retry discovery.
+2. Or select **Pod IP Address**, turn to set each octet, and tap to save.
+3. Choose **Side** and confirm left or right.
+4. Choose your temperature unit and night mode.
+
+The Pod service advertises `_sleepypod._tcp` on port 3000. Devices must be able to reach each other on the LAN.
+
+## Verify
+
+Check that the Dial's reported temperature matches the selected side in Core. Turn one detent, wait for the update, and confirm the target in the web app. If synchronization fails, follow [connection troubleshooting](/troubleshooting/connection/).
+
+---
+
+**Source reference:** [Build, flash, and connection setup](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md) · [Firmware configuration](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/include/config.h)
