@@ -20,9 +20,20 @@ pnpm check
 
 `pnpm check` verifies media, builds `out/`, creates its Pagefind index, checks TypeScript, and runs desktop/mobile browser tests against a static file server. There is no Next.js server in production.
 
+## Guide map
+
+- Everyday controls: [temperature and holds](content/core/temperature.mdx), [schedules](content/core/schedules.mdx), and [Autopilot](content/core/autopilot.mdx).
+- Operations: [system diagnostics](content/core/system.mdx), [settings and backups](content/core/settings.mdx), installation, integrations, sleep, and troubleshooting.
+- Technical reference: [temperature controller](content/developers/temperature-control.mdx), [sensor pipeline](content/developers/sensor-pipeline.mdx), [hardware](content/developers/hardware.mdx), and [CI/deployment workflows](content/developers/workflows.mdx).
+- [Source library](content/developers/source-library.mdx) inventories core documents; `capture/docs-coverage.json` records their treatment and source revision.
+
+The refreshed core guides and screenshots target `17d5369ef921231e225d5f1ff0774fe965625f41`. Older client-specific pages retain their own pinned sources. Do not document an unmerged PR as released behavior.
+
 ## Content and media
 
 Product guides live in `content/`; the landing page is `app/page.tsx`. Each guide links to its source material. `capture/manifest.json` records media provenance. Run `PRODUCT_ROOT=/path/to/sibling/repos pnpm media:import` to import pinned Git blobs, then `pnpm media:verify`.
+
+The current core image set includes Temperature (Stepper), Schedule, Appearance, and Autopilot. Captures show disposable test data, including missing hardware readings where no fixture is supplied.
 
 Fresh capture instructions are in `content/developers/media.mdx`. Core capture uses `scripts/capture-core.mjs`; see `capture/README.md` for an isolated test instance.
 

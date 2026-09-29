@@ -26,6 +26,14 @@ Open `http://POD_IP:3000` in a browser on the same network. Choose a side before
   caption="Core web interface. Captured from the running application with example temperatures, schedules, and sleep data."
 />
 
+## Everyday workflows
+
+- [Immediate temperature, manual holds, and Night/Dawn edits](/core/temperature/)
+- [Recurring schedules and alarms](/core/schedules/)
+- [Signal-driven Autopilot rules](/core/autopilot/)
+- [Settings, gestures, backups, and maintenance](/core/settings/)
+- [System pages and troubleshooting workflow](/core/system/)
+
 ## How the pieces connect
 
 Core sends hardware commands through the Pod's DAC socket. Its scheduler operates on the device. Independent Python modules process sensor data into a separate biometrics database. The web app, iOS app, and Dial consume Core's state and API.

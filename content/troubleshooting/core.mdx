@@ -24,18 +24,22 @@ Database or native-module errors can come from running the wrong Node.js binary.
 ## Biometrics are empty
 
 1. Check the selected side and date. For live measurements, confirm the bed is occupied.
-2. Inspect module health and the web diagnostics console (`/en/debug` for English).
-3. Check that firmware is producing fresh RAW frames:
+2. Open **System → Pipeline** and identify the selected source. Use **Health** for module state and **Sensors** for live input.
+3. On NATS firmware, confirm fresh frames and output rows; an absent RAW archive is not an ingestion failure. Calibrator may need time to collect its initial live sample window.
+4. On RAW firmware, check the hot directory and firmware journal:
 
 ```bash
 ls -la /persistent/biometrics/*.RAW
 journalctl -u frank -n 100 --no-pager
 ```
 
-4. Confirm the readers' `RAW_DATA_DIR` points to the hot directory used by the firmware. A mismatch can leave readers looking at an empty location.
-5. Check the Python module services and their logs. Configuration and biometrics use separate SQLite files; a healthy web UI does not prove sensor processing is running.
+5. For RAW readers, confirm `RAW_DATA_DIR` points to the firmware's hot directory. For either transport, check module logs and increasing biometrics rows. A healthy web UI does not prove processing is running.
+
+See [sensor pipeline and calibration](/developers/sensor-pipeline/) for record types, source selection, and transport-specific limitations.
 
 ## RAW archives are empty
+
+This section applies to RAW firmware. NATS-only firmware need not create these files.
 
 The firmware deletes rotated frames quickly. A linker timer pins frames until the archiver can compress them. Check both stages:
 
@@ -59,4 +63,4 @@ The upstream runbook below is the authoritative reference for device-specific pa
 
 ---
 
-**Source reference:** [Debugging runbook](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [Deployment and service details](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEPLOYMENT.md)
+**Source reference:** [NATS diagnostics](https://github.com/sleepypod/core/blob/17d5369e/docs/nats-frame-readers.md) · [System navigation](https://github.com/sleepypod/core/blob/17d5369e/src/components/System/systemTabs.ts) · [Debugging runbook](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [Deployment and service details](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEPLOYMENT.md)

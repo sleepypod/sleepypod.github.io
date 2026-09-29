@@ -1,0 +1,59 @@
+---
+title: 'Build, test, and release workflows'
+---
+
+# Build, test, and release workflows
+
+## Local development and checks
+
+Use the Node major in `.node-version` and the pnpm version in `package.json`. Install locked dependencies, then run the checks relevant to the change:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm tsc
+pnpm exec vitest run
+pnpm build
+```
+
+Python modules use their own `uv.lock`. Within the module, run `uv sync --locked --no-install-project`, install test tooling into its virtual environment, and run its pytest suite. Do not replace locked numerical dependencies with an unpinned environment.
+
+For database changes, edit the appropriate Drizzle schema and use `pnpm db:generate` or `pnpm db:biometrics:generate`. Inspect the generated migration and validate against disposable data. Migration journals are generated artifacts; do not hand-edit their timestamps.
+
+## GitHub Actions inventory
+
+This table covers every core workflow at the pinned revision. Follow the linked YAML for event filters, permissions, and artifacts.
+
+| Workflow                                                                                                               | Trigger and purpose                                                                    |
+| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [CI](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/test.yml)                                       | PRs, dev pushes, merge queue, or manual dispatch; lint, types, unit tests and coverage |
+| [Python Modules](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/python-modules.yml)                 | Relevant module changes or manual dispatch; module pytest matrix                       |
+| [Build & Package](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/build.yml)                         | Branch pushes and PRs to main/dev; build and deployment archive                        |
+| [Analyze & Release](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/release.yml)                     | Main pushes; semantic version analysis and release publication                         |
+| [Dev Release](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/dev-release.yml)                       | Dev pushes; rolling development release                                                |
+| [Branch Release](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/branch-release.yml)                 | Other branch pushes; rolling branch prerelease                                         |
+| [Branch Release Cleanup](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/branch-release-cleanup.yml) | Branch deletion; remove its rolling release and tag                                    |
+| [PR Title Gate](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/pr-title-gate.yml)                   | PRs to main; require a release-triggering conventional title                           |
+| [Ref Collision Check](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/ref-collision-check.yml)       | Main/dev pushes or manual dispatch; reject branch/tag name collisions                  |
+| [Publish OpenAPI Spec](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/openapi.yml)                  | Main/dev pushes; export the built server's API schema                                  |
+| [Mutation Testing](https://github.com/sleepypod/core/blob/17d5369e/.github/workflows/mutation.yml)                     | Weekly, manual, or a PR's `mutation-test` label; sharded Stryker runs                  |
+
+## Review a CI failure
+
+Open the failed step before inferring that compilation failed. Build & Package also uploads artifacts and updates PR descriptions; a fork token can lack permission for that final metadata update even after the application builds successfully. Preserve the failure evidence and resolve workflow permissions separately from source defects.
+
+Approving a PR and authorizing a fork's Actions run are distinct operations. Only authorize code and workflow revisions you have inspected. A draft can have code approval while hardware validation is still outstanding.
+
+## Release and deploy
+
+PRs to `main` are release promotions and need a title starting with `feat:`, `fix:`, `perf:`, or `revert:` (optional scope and breaking marker). Branch and dev rolling releases are useful for testing; they are not production versioned releases.
+
+Prefer CI or local prebuilt packages over an on-Pod build. For an installed test Pod, use `scripts/deploy POD_IP` from a reviewed checkout, or `scripts/push POD_IP` after a local build. The installed `sp-update` helper selects an update and preserves configuration while handling migrations and service restart. Verify the reported build commit and hardware reconnect after deployment.
+
+## Documentation site workflow
+
+The Nextra site installs with its own lockfile. Run `pnpm check`: formatting, media hashes, static export, Pagefind search, types, and browser checks all participate. PRs require **Build and browser checks**; a push to site `main` deploys the static export through Pages. Source pinning and media provenance are part of review, not just visual polish.
+
+---
+
+**Source reference:** [Deployment paths](https://github.com/sleepypod/core/blob/17d5369e/docs/DEPLOYMENT.md) · [Project invariants](https://github.com/sleepypod/core/blob/17d5369e/AGENTS.md) · [Command inventory](https://github.com/sleepypod/core/blob/17d5369e/package.json)

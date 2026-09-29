@@ -1,0 +1,47 @@
+---
+title: 'Sensor pipeline and calibration'
+---
+
+# Sensor pipeline and calibration
+
+## Two transports, one processing contract
+
+Firmware can emit CBOR RAW files or publish sensor records through local NATS. Do not infer transport or channel format solely from the Pod generation: new Pod 5 firmware has been observed publishing the integer `capSense` dialect.
+
+The source selector probes for NATS with a bounded startup grace period. A successful protocol greeting selects NATS; missing traffic is a health signal, not a reason to run both sources. If NATS is unavailable, RAW processing remains available. After bounded reconnect failures the process exits so systemd can restart and repeat source selection.
+
+NATS sensor consumers subscribe to `raw.sens.>` and `raw.frz.>` and decode each message as CBOR. They use live subscriptions, not durable JetStream replay. Restart therefore does not backfill historical frames. Calibrator builds a bounded live buffer and waits for enough samples. Cover-button NATS events and durable backfill remain separate follow-up work in the pinned source.
+
+## Processing stages
+
+| Stage               | Input                           | Result                                                                             |
+| ------------------- | ------------------------------- | ---------------------------------------------------------------------------------- |
+| Node streamer       | Selected RAW or NATS source     | Normalized live frames, WebSocket clients, automation signals, capacitor snapshots |
+| Piezo processor     | Piezo channel samples           | Heart rate, HRV, breathing estimates and quality                                   |
+| Sleep detector      | Capacitive sensor records       | Presence, sleep sessions, movement epochs                                          |
+| Environment monitor | Bed/freezer/environment records | Temperature and environmental time series                                          |
+| Calibrator          | Quiet sensor windows            | Profiles, run history, quality context                                             |
+
+Module processes and core share the database schema rather than a function-call API. Configuration and schedules live in `sleepypod.db`; sensor time series and calibration live in `biometrics.db`. Preserve the separate migration directories. SQLite WAL and busy timeouts allow independent readers and writers.
+
+## Sensor dialects and missing data
+
+`capSense` has three integer channels per side (`out`, `cen`, `in`). `capSense2` has paired floating-point channels plus a reference pair. Extraction, calibration, invalid-value handling, and movement scaling depend on the actual record type.
+
+The NATS implementation records non-good `capSense.status` values rather than discarding every unrecognized status. That choice preserves evidence while the failure vocabulary is incompletely characterized. Do not turn absent vitals or unsupported sensor types into zero measurements.
+
+## Calibration workflow
+
+Use **System → Calibration** to inspect profiles and recent runs. The calibrator writes profiles; consumers load them and refresh periodically. Quiet-window/sample requirements can delay readiness, especially just after NATS startup. Inspect source freshness and run errors before repeatedly requesting calibration.
+
+Calibration improves baseline and threshold selection; it does not replace signal-quality checks. Piezo processing and movement filtering have their own rejection and smoothing stages. The technical source documents describe the algorithms and their limitations.
+
+## Diagnose a silent pipeline
+
+Start with `sp-status`, then **System → Pipeline**, **Sensors**, and **Health**. Confirm the selected source, incoming timestamps, module health, and increasing output rows in that order. On NATS firmware, an empty RAW archive is expected; on RAW firmware, inspect the hot directory and archiver. Consult the debugging runbook before changing data paths or restarting firmware.
+
+The pinned NATS document reports automated validation complete with field validation pending. It is an implementation reference, not a claim of validation on every firmware revision.
+
+---
+
+**Source reference:** [NATS readers](https://github.com/sleepypod/core/blob/17d5369e/docs/nats-frame-readers.md) · [Module contract](https://github.com/sleepypod/core/blob/17d5369e/docs/adr/0012-biometrics-module-system.md) · [Calibration](https://github.com/sleepypod/core/blob/17d5369e/docs/hardware/calibration-architecture.md) · [Piezo processing](https://github.com/sleepypod/core/blob/17d5369e/docs/piezo-processor.md) · [Sleep detection](https://github.com/sleepypod/core/blob/17d5369e/docs/sleep-detector.md) · [Sensor dialects](https://github.com/sleepypod/core/blob/17d5369e/docs/hardware/sensor-profiles.md)

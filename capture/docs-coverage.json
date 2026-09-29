@@ -1,0 +1,384 @@
+{
+  "sourceRepository": "sleepypod/core",
+  "sourceCommit": "17d5369ef921231e225d5f1ff0774fe965625f41",
+  "documents": [
+    {
+      "source": "docs/DEBUGGING.md",
+      "title": "Debugging Runbook",
+      "group": "Operations",
+      "destination": "/core/system/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/DEPLOYMENT.md",
+      "title": "Deployment Guide",
+      "group": "Operations",
+      "destination": "/developers/workflows/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/PRIVACY.md",
+      "title": "sleepypod Privacy Policy",
+      "group": "Privacy",
+      "destination": "/about/",
+      "treatment": "Existing guide and primary reference"
+    },
+    {
+      "source": "docs/adr/0001-new-repository.md",
+      "title": "ADR: Why this project lives in a new repository",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0003-core-stack.md",
+      "title": "ADR: Core Application Stack",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0003-typescript-react.md",
+      "title": "ADR: TypeScript and React for Full-Stack Development",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0004-nextjs-unified.md",
+      "title": "ADR: Next.js for Unified Frontend and Backend",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0005-trpc.md",
+      "title": "ADR: tRPC for Type-Safe API Communication",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0006-developer-tooling.md",
+      "title": "ADR: Developer Tooling",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0006-eslint.md",
+      "title": "ADR: ESLint with Recommended Rules",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0010-drizzle-orm-sqlite.md",
+      "title": "ADR: Drizzle ORM with SQLite",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0012-biometrics-module-system.md",
+      "title": "ADR: Biometrics Module System",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0013-yocto-deployment-toolchain.md",
+      "title": "ADR: Yocto-compatible deployment toolchain",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0014-sensor-calibration.md",
+      "title": "ADR: Sensor Calibration System",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0015-event-bus-mutation-broadcast.md",
+      "title": "ADR: Event Bus for Device Mutations",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0016-raw-command-execution.md",
+      "title": "ADR: Raw Hardware Command Execution Endpoint",
+      "group": "Architecture decisions",
+      "destination": "/developers/hardware/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0017-uv-python-package-management.md",
+      "title": "ADR: Use uv for Python package management",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0018-tmpfs-raw-frames.md",
+      "title": "ADR: tmpfs for live RAW frames + gzip cold archive on eMMC",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0019-mqtt-bridge.md",
+      "title": "ADR 0019: MQTT bridge for Home Assistant integration",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0020-homekit-identity-derivation.md",
+      "title": "ADR 0020: Deterministic HomeKit identity derivation",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0021-alarm-solo-trigger.md",
+      "title": "ADR 0021: Use `ALARM_SOLO` (cmd 2) for cover-only Pod 5 vibration alarms",
+      "group": "Architecture decisions",
+      "destination": "/developers/hardware/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0022-pump-stall-safety.md",
+      "title": "ADR 0022: Pump stall safety guard and conditional thermal cross-check",
+      "group": "Architecture decisions",
+      "destination": "/developers/hardware/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/adr/0023-autopilot-reactive-automations.md",
+      "title": "ADR 0023: Reactive automations engine (Autopilot)",
+      "group": "Architecture decisions",
+      "destination": "/developers/architecture/",
+      "treatment": "Pinned design reference"
+    },
+    {
+      "source": "docs/code-review-2026-07-03-fixes.md",
+      "title": "Code Review Fix Plan \u2014 2026-07-03",
+      "group": "Historical investigations",
+      "destination": "/developers/source-library/",
+      "treatment": "Historical evidence; not current instructions"
+    },
+    {
+      "source": "docs/hardware/DAC-PROTOCOL.md",
+      "title": "DAC Hardware Protocol",
+      "group": "Hardware",
+      "destination": "/developers/hardware/",
+      "treatment": "Integrated guide and investigation reference"
+    },
+    {
+      "source": "docs/hardware/alarms.md",
+      "title": "Alarm system",
+      "group": "Hardware",
+      "destination": "/developers/hardware/",
+      "treatment": "Integrated guide and investigation reference"
+    },
+    {
+      "source": "docs/hardware/calibration-architecture.md",
+      "title": "Calibration System Architecture",
+      "group": "Sensors and calibration",
+      "destination": "/developers/sensor-pipeline/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/hardware/dac-socket-takeover.md",
+      "title": "DAC socket takeover \u2014 investigation technique and findings",
+      "group": "Hardware",
+      "destination": "/developers/hardware/",
+      "treatment": "Integrated guide and investigation reference"
+    },
+    {
+      "source": "docs/hardware/lps-diagnostics.md",
+      "title": "LPS diagnostic stream",
+      "group": "Hardware",
+      "destination": "/developers/hardware/",
+      "treatment": "Integrated guide and investigation reference"
+    },
+    {
+      "source": "docs/hardware/sensor-profiles.md",
+      "title": "Pod Hardware Sensor Profiles",
+      "group": "Sensors and calibration",
+      "destination": "/developers/sensor-pipeline/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/images/README.md",
+      "title": "README media",
+      "group": "Media",
+      "destination": "/developers/media/",
+      "treatment": "Media provenance"
+    },
+    {
+      "source": "docs/nats-frame-readers.md",
+      "title": "NATS Frame Readers",
+      "group": "Sensors and calibration",
+      "destination": "/developers/sensor-pipeline/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/performance/startup-api-2026-09-06.md",
+      "title": "Startup and API performance \u2014 2026-09-06",
+      "group": "Historical investigations",
+      "destination": "/developers/source-library/",
+      "treatment": "Historical evidence; not current instructions"
+    },
+    {
+      "source": "docs/performance/web-service-2026-09-06.md",
+      "title": "Pod web-service measurements \u2014 2026-09-06 UTC",
+      "group": "Historical investigations",
+      "destination": "/developers/source-library/",
+      "treatment": "Historical evidence; not current instructions"
+    },
+    {
+      "source": "docs/piezo-processor.md",
+      "title": "Piezo Processor v2",
+      "group": "Sensors and calibration",
+      "destination": "/developers/sensor-pipeline/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/sleep-detector.md",
+      "title": "Sleep Detector",
+      "group": "Sensors and calibration",
+      "destination": "/developers/sensor-pipeline/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/snoo-pentest-plan.md",
+      "title": "Snoo Smart Bassinet \u2014 Pentest Methodology & Reconnaissance Plan",
+      "group": "Historical investigations",
+      "destination": "/developers/source-library/",
+      "treatment": "Historical evidence; not current instructions"
+    },
+    {
+      "source": "docs/temperature-control.md",
+      "title": "Temperature ownership and manual holds",
+      "group": "Temperature control",
+      "destination": "/developers/temperature-control/",
+      "treatment": "Integrated guide"
+    },
+    {
+      "source": "docs/temperature-units-action-plan.md",
+      "title": "Temperature Units Action Plan",
+      "group": "Historical investigations",
+      "destination": "/developers/source-library/",
+      "treatment": "Historical evidence; not current instructions"
+    },
+    {
+      "source": "docs/testing/coverage-audit-2026-09-06.md",
+      "title": "Test coverage audit \u2014 2026-09-06",
+      "group": "Historical investigations",
+      "destination": "/developers/source-library/",
+      "treatment": "Historical evidence; not current instructions"
+    },
+    {
+      "source": "docs/trpc-api-architecture.md",
+      "title": "tRPC API Architecture",
+      "group": "API and architecture",
+      "destination": "/developers/api/",
+      "treatment": "Existing guide and primary reference"
+    },
+    {
+      "source": "docs/wiki/INDEX.md",
+      "title": "sleepypod core Wiki",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/compile-log.md",
+      "title": "Compile Log",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/schema.md",
+      "title": "Wiki Schema",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/api-architecture.md",
+      "title": "API Architecture",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/architecture-and-stack.md",
+      "title": "Architecture and Stack",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/biometrics-system.md",
+      "title": "Biometrics System",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/deployment.md",
+      "title": "Deployment",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/hardware-protocol.md",
+      "title": "Hardware Protocol",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/piezo-processing.md",
+      "title": "Piezo Processing",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/privacy.md",
+      "title": "Privacy",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/sensor-calibration.md",
+      "title": "Sensor Calibration",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/sensor-hardware.md",
+      "title": "Sensor Hardware",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    },
+    {
+      "source": "docs/wiki/topics/sleep-detection.md",
+      "title": "Sleep Detection",
+      "group": "Generated wiki",
+      "destination": "/developers/architecture/",
+      "treatment": "Index only; consult primary source"
+    }
+  ]
+}

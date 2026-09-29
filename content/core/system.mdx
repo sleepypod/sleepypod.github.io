@@ -1,0 +1,47 @@
+---
+title: 'System diagnostics'
+---
+
+# System diagnostics
+
+Open **System** for the Pod's operating state. **Settings** holds configuration; **Sleep** holds night records and biometrics. The sidebar footer summarizes health and issues. Select the version or DEV chip for host, branch, and commit details when reporting a problem.
+
+## Choose the right view
+
+| System page | Use it to                                                      |
+| ----------- | -------------------------------------------------------------- |
+| Dashboard   | Start with the overall state, maintenance, and network status  |
+| Calibration | Inspect sensor calibration and its readiness                   |
+| Databases   | Inspect configuration and biometrics database state            |
+| Hardware    | Exercise the available hardware diagnostics, including haptics |
+| Health      | Follow the data path and service health                        |
+| Logs        | Read service messages around a failure                         |
+| Pipeline    | Identify the sensor source and processing stages               |
+| Scheduler   | Check registered jobs and their upcoming execution             |
+| Sensors     | Inspect live sensor frames supported by this Pod               |
+| Storage     | Inspect disk usage and preview cleanup                         |
+| Thermal     | Compare targets, water temperatures, and pump evidence         |
+
+## Trace missing sleep data
+
+1. In **Pipeline**, identify whether this firmware produces RAW files or NATS frames.
+2. Check **Sensors** for fresh input. The existence of an archive is not required on NATS firmware.
+3. In **Health**, inspect the processing modules and their latest output.
+4. Check **Databases** and **Logs** for write or migration failures.
+5. Return to **Sleep → Biometrics** to inspect the results for the selected side and night.
+
+See the [sensor pipeline reference](/developers/sensor-pipeline/) for transport selection and [troubleshooting](/troubleshooting/core/#biometrics-are-empty) for command-line checks.
+
+## Investigate ineffective heating or cooling
+
+Compare the selected side's target with water temperature and recent pump readings in **Thermal**. A commanded power state is not proof of circulation. Pump telemetry varies by firmware; missing telemetry must not be interpreted as a measured zero RPM. Review the note and age of readings alongside the verdict.
+
+Hardware tests send real commands. Run them deliberately with awareness of anyone using the bed. Calibration requires appropriate sensor conditions; a profile or a successful test is not a guarantee of valid overnight measurements.
+
+## Capture a useful support report
+
+Record the app's commit, Pod generation, affected side, local time and timezone, symptom, and relevant recent logs. From an installed Pod, `sp-status` reports the firmware and processing pipeline; `sp-bundle-logs` produces a diagnostic archive with redaction enabled by default. Inspect the archive before sharing it.
+
+---
+
+**Source reference:** [System navigation](https://github.com/sleepypod/core/blob/17d5369e/src/components/System/systemTabs.ts) · [Debugging runbook](https://github.com/sleepypod/core/blob/17d5369e/docs/DEBUGGING.md) · [Support tools](https://github.com/sleepypod/core/blob/17d5369e/scripts/README.md)

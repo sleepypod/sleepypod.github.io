@@ -1,0 +1,99 @@
+---
+title: 'Technical source library'
+---
+
+# Technical source library
+
+The guides below condense the operational contracts from core into navigable documentation. This inventory also keeps specialist design notes and historical investigations discoverable without presenting every experiment as a supported workflow.
+
+- [Temperature ownership and holds](/developers/temperature-control/)
+- [Sensor ingestion, biometrics, and calibration](/developers/sensor-pipeline/)
+- [Hardware protocol, alarms, and safety](/developers/hardware/)
+- [Build, test, deployment, and releases](/developers/workflows/)
+- [System diagnostics](/core/system/)
+
+Core source is pinned to `17d5369ef921231e225d5f1ff0774fe965625f41`. Generated wiki pages are secondary summaries; prefer the primary implementation and documents when they differ. Historical performance results, security investigation plans, and review notes are evidence from a specific revision, not promises about current behavior.
+
+## Operations
+
+- [Debugging Runbook](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/DEBUGGING.md) — integrated guide.
+- [Deployment Guide](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/DEPLOYMENT.md) — integrated guide.
+
+## Privacy
+
+- [sleepypod Privacy Policy](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/PRIVACY.md) — existing guide and primary reference.
+
+## Architecture decisions
+
+- [ADR: Why this project lives in a new repository](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0001-new-repository.md) — pinned design reference.
+- [ADR: Core Application Stack](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0003-core-stack.md) — pinned design reference.
+- [ADR: TypeScript and React for Full-Stack Development](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0003-typescript-react.md) — pinned design reference.
+- [ADR: Next.js for Unified Frontend and Backend](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0004-nextjs-unified.md) — pinned design reference.
+- [ADR: tRPC for Type-Safe API Communication](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0005-trpc.md) — pinned design reference.
+- [ADR: Developer Tooling](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0006-developer-tooling.md) — pinned design reference.
+- [ADR: ESLint with Recommended Rules](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0006-eslint.md) — pinned design reference.
+- [ADR: Drizzle ORM with SQLite](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0010-drizzle-orm-sqlite.md) — pinned design reference.
+- [ADR: Biometrics Module System](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0012-biometrics-module-system.md) — pinned design reference.
+- [ADR: Yocto-compatible deployment toolchain](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0013-yocto-deployment-toolchain.md) — pinned design reference.
+- [ADR: Sensor Calibration System](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0014-sensor-calibration.md) — pinned design reference.
+- [ADR: Event Bus for Device Mutations](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0015-event-bus-mutation-broadcast.md) — pinned design reference.
+- [ADR: Raw Hardware Command Execution Endpoint](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0016-raw-command-execution.md) — pinned design reference.
+- [ADR: Use uv for Python package management](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0017-uv-python-package-management.md) — pinned design reference.
+- [ADR: tmpfs for live RAW frames + gzip cold archive on eMMC](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0018-tmpfs-raw-frames.md) — pinned design reference.
+- [ADR 0019: MQTT bridge for Home Assistant integration](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0019-mqtt-bridge.md) — pinned design reference.
+- [ADR 0020: Deterministic HomeKit identity derivation](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0020-homekit-identity-derivation.md) — pinned design reference.
+- [ADR 0021: Use `ALARM_SOLO` (cmd 2) for cover-only Pod 5 vibration alarms](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0021-alarm-solo-trigger.md) — pinned design reference.
+- [ADR 0022: Pump stall safety guard and conditional thermal cross-check](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0022-pump-stall-safety.md) — pinned design reference.
+- [ADR 0023: Reactive automations engine (Autopilot)](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/adr/0023-autopilot-reactive-automations.md) — pinned design reference.
+
+## Historical investigations
+
+- [Code Review Fix Plan — 2026-07-03](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/code-review-2026-07-03-fixes.md) — historical evidence; not current instructions.
+- [Startup and API performance — 2026-09-06](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/performance/startup-api-2026-09-06.md) — historical evidence; not current instructions.
+- [Pod web-service measurements — 2026-09-06 UTC](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/performance/web-service-2026-09-06.md) — historical evidence; not current instructions.
+- [Snoo Smart Bassinet — Pentest Methodology & Reconnaissance Plan](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/snoo-pentest-plan.md) — historical evidence; not current instructions.
+- [Temperature Units Action Plan](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/temperature-units-action-plan.md) — historical evidence; not current instructions.
+- [Test coverage audit — 2026-09-06](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/testing/coverage-audit-2026-09-06.md) — historical evidence; not current instructions.
+
+## Hardware
+
+- [DAC Hardware Protocol](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/hardware/DAC-PROTOCOL.md) — integrated guide and investigation reference.
+- [Alarm system](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/hardware/alarms.md) — integrated guide and investigation reference.
+- [DAC socket takeover — investigation technique and findings](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/hardware/dac-socket-takeover.md) — integrated guide and investigation reference.
+- [LPS diagnostic stream](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/hardware/lps-diagnostics.md) — integrated guide and investigation reference.
+
+## Sensors and calibration
+
+- [Calibration System Architecture](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/hardware/calibration-architecture.md) — integrated guide.
+- [Pod Hardware Sensor Profiles](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/hardware/sensor-profiles.md) — integrated guide.
+- [NATS Frame Readers](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/nats-frame-readers.md) — integrated guide.
+- [Piezo Processor v2](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/piezo-processor.md) — integrated guide.
+- [Sleep Detector](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/sleep-detector.md) — integrated guide.
+
+## Media
+
+- [README media](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/images/README.md) — media provenance.
+
+## Temperature control
+
+- [Temperature ownership and manual holds](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/temperature-control.md) — integrated guide.
+
+## API and architecture
+
+- [tRPC API Architecture](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/trpc-api-architecture.md) — existing guide and primary reference.
+
+## Generated wiki
+
+- [sleepypod core Wiki](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/INDEX.md) — index only; consult primary source.
+- [Compile Log](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/compile-log.md) — index only; consult primary source.
+- [Wiki Schema](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/schema.md) — index only; consult primary source.
+- [API Architecture](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/api-architecture.md) — index only; consult primary source.
+- [Architecture and Stack](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/architecture-and-stack.md) — index only; consult primary source.
+- [Biometrics System](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/biometrics-system.md) — index only; consult primary source.
+- [Deployment](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/deployment.md) — index only; consult primary source.
+- [Hardware Protocol](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/hardware-protocol.md) — index only; consult primary source.
+- [Piezo Processing](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/piezo-processing.md) — index only; consult primary source.
+- [Privacy](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/privacy.md) — index only; consult primary source.
+- [Sensor Calibration](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/sensor-calibration.md) — index only; consult primary source.
+- [Sensor Hardware](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/sensor-hardware.md) — index only; consult primary source.
+- [Sleep Detection](https://github.com/sleepypod/core/blob/17d5369ef921231e225d5f1ff0774fe965625f41/docs/wiki/topics/sleep-detection.md) — index only; consult primary source.
