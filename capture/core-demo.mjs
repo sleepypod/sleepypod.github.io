@@ -10,7 +10,83 @@ const sleep = {
   timesExitedBed: 1,
   presentIntervals: [[+enteredBedAt / 1000, +leftBedAt / 1000]],
 }
+const jobs = ['left', 'right']
+  .flatMap((side) =>
+    [
+      ['22:00', 78, '2026-09-28'],
+      ['23:15', 74, '2026-09-28'],
+      ['03:00', 70, '2026-09-29'],
+      ['07:00', 80, '2026-09-29'],
+    ].map(([time, temperature, date]) => ({
+      id: `${side}-${time}`,
+      type: 'temperature',
+      side,
+      schedule: `${Number(time.split(':')[1])} ${Number(time.split(':')[0])} * * *`,
+      oneTime: false,
+      nextRun: +new Date(`${date}T${time}:00-07:00`),
+      targetTempF: temperature + (side === 'right' ? -2 : 0),
+      brightness: null,
+    })),
+  )
+  .sort((a, b) => a.nextRun - b.nextRun)
 export function demoData(name, input) {
+  if (name === 'health.dataPath')
+    return {
+      at: +new Date(capturedTime),
+      occupancy: { left: 'empty', right: 'empty' },
+      nodes: [],
+      edges: [],
+      verdict: {
+        tone: 'warn',
+        headline: 'Documentation capture: no physical Pod connected',
+        nodeId: null,
+        lastGoodId: null,
+        fix: null,
+        also: [],
+      },
+    }
+  if (name === 'health.hardware')
+    return {
+      status: 'degraded',
+      socketPath: '/tmp/sleepypod-docs-no-device.sock',
+      latencyMs: 0,
+      error: 'Documentation capture: no physical Pod connected',
+    }
+  if (name === 'health.scheduler')
+    return {
+      enabled: true,
+      healthy: true,
+      jobCounts: {
+        temperature: 8,
+        powerOn: 0,
+        powerOff: 0,
+        alarm: 0,
+        prime: 0,
+        reboot: 0,
+        total: 8,
+      },
+      upcomingJobs: jobs.map((job) => ({ ...job, nextRun: new Date(job.nextRun).toISOString() })),
+    }
+  if (name === 'health.schedulerTimeline')
+    return {
+      enabled: true,
+      timezone: 'America/Los_Angeles',
+      now: +new Date(capturedTime),
+      jobs,
+      occurrences: Array.from({ length: 7 }, (_, day) =>
+        jobs.map((job) => ({
+          id: job.id,
+          type: job.type,
+          side: job.side,
+          at: job.nextRun + day * 86400000,
+          targetTempF: job.targetTempF,
+          brightness: null,
+        })),
+      )
+        .sort((a, b) => a.nextRun - b.nextRun)
+        .flat(),
+    }
+
   if (name === 'schedules.getAll') {
     const offset = input?.side === 'right' ? -2 : 0
     return {

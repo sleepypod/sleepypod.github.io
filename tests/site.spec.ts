@@ -129,3 +129,42 @@ test('docs theme preference persists', async ({ page }) => {
   await page.reload()
   await expect(page.locator('html')).toHaveClass(/light/)
 })
+
+for (const route of ['/', '/core/temperature/']) {
+  test(`control styles switch by pointer and keyboard on ${route}`, async ({ page }) => {
+    await page.goto(route)
+    const showcase = page.getByRole('region', { name: 'Not one size fits all.' })
+    const dial = showcase.getByRole('tab', { name: 'Dial', exact: true })
+    const slider = showcase.getByRole('tab', { name: 'Slider', exact: true })
+    const stepper = showcase.getByRole('tab', { name: 'Now · Night · Dawn', exact: true })
+    await expect(dial).toHaveAttribute('aria-selected', 'true')
+    for (const [tab, style] of [
+      [slider, 'slider'],
+      [stepper, 'stepper'],
+      [dial, 'dial'],
+    ] as const) {
+      await tab.click()
+      await expect(tab).toHaveAttribute('aria-selected', 'true')
+      const panel = showcase.getByRole('tabpanel')
+      await expect(panel).toHaveCount(1)
+      const image = panel.getByRole('img')
+      await expect(image).toHaveAttribute('src', `/media/core-control-${style}.png`)
+      await expect(image).toHaveJSProperty('naturalWidth', 410)
+      await expect(image).toHaveAttribute('alt', /78°F/)
+    }
+    await dial.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(slider).toBeFocused()
+    await expect(slider).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('End')
+    await expect(stepper).toBeFocused()
+    await expect(stepper).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('Home')
+    await expect(dial).toBeFocused()
+    await page.keyboard.press('ArrowLeft')
+    await expect(stepper).toBeFocused()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+      true,
+    )
+  })
+}

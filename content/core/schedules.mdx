@@ -27,6 +27,12 @@ The curve editor groups a routine across selected days. Review its start and end
 
 The scheduler uses the device timezone. Verify that setting when events fire at the wrong local time. The Pod's clock can reset after a power cycle; Core waits for a valid system clock before starting scheduled jobs.
 
+<BrowserFrame
+  src="/media/core-scheduler.png"
+  alt="sleepypod Scheduler view with upcoming temperature jobs for both sides"
+  caption="Check the registered jobs and upcoming runs after saving a routine. Synthetic example schedule."
+/>
+
 ## Vibration alarms
 
 Alarm configuration includes duration, intensity, and pattern. Hardware capability differs: the Core README notes that the Pod 5 J55 cover MCU clamps intensity and pattern even though the API accepts them. A saved value does not guarantee that hardware can reproduce it.

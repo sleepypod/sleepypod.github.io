@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ControlShowcase } from '../components/ControlShowcase'
 import { PhoneFrame, DialFrame, BrowserFrame } from '../components/media'
 export default function Home() {
   return (
@@ -84,6 +85,7 @@ export default function Home() {
             caption="The real Core web app, shown with example temperatures, schedules, and sleep data."
           />
         </section>
+        <ControlShowcase />
         <div className="principles">
           <div>
             <span>01 / LOCAL</span>

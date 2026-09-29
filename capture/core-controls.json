@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+  "capturedAt": "2026-09-29T21:29:22.532Z",
+  "controls": [
+    {
+      "control": "dial",
+      "path": "/en",
+      "output": "core-control-dial.png",
+      "element": "Left (left)"
+    },
+    {
+      "control": "slider",
+      "path": "/en",
+      "output": "core-control-slider.png",
+      "element": "Left (left)"
+    },
+    {
+      "control": "stepper",
+      "path": "/en",
+      "output": "core-control-stepper.png",
+      "element": "Left (left)"
+    }
+  ],
+  "method": "Unmodified real core UI; element screenshots of the left side card; browser appearance preference switched between dial, slider, and stepper; synthetic fixtures"
+}

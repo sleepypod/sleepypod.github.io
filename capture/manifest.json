@@ -246,6 +246,94 @@
       "bytes": 93455,
       "width": 1440,
       "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "src/components/TempScreen/SideCard.tsx",
+      "output": "core-control-dial.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures; element capture after switching browser control preference",
+      "sha256": "5be10e2eac9a6dcb24fa86c04e408916cd6468f112509bfdcf5ed69b8a233945",
+      "bytes": 20042,
+      "width": 410,
+      "height": 509
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "src/components/TempScreen/SideCard.tsx",
+      "output": "core-control-slider.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures; element capture after switching browser control preference",
+      "sha256": "4035681cea50213fd0225286c5bc68bf60a41441ba406ed1757d0b4dadd931a0",
+      "bytes": 16627,
+      "width": 410,
+      "height": 509
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "src/components/TempScreen/SideCard.tsx",
+      "output": "core-control-stepper.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures; element capture after switching browser control preference",
+      "sha256": "15216545d1da9a1a05dce41aa8b964944512c47a3d2ed7bb67ff02646545efe6",
+      "bytes": 52906,
+      "width": 410,
+      "height": 447
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "/en/system",
+      "output": "core-system.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures",
+      "sha256": "5acc9cb6d6e7b751ce4d5ef0446ab3274b69de971663a6022e245146237f95e3",
+      "bytes": 101005,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "/en/system?tab=scheduler",
+      "output": "core-scheduler.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures",
+      "sha256": "6ab0cc90703df2c4e7ca67f056447d7e61639f51ddd9532a4986a4313c25b89f",
+      "bytes": 98374,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "/en/sleep",
+      "output": "core-sleep.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures",
+      "sha256": "4ac9abd180f89905890d07a96e8ef99d41ec0a1765c24049eb23d5a53b98726f",
+      "bytes": 78329,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "/en/settings?section=gestures",
+      "output": "core-gestures.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures",
+      "sha256": "08de21c2689d99f851b168b3bd2c8366d179858e7e7ec834a1df5e6b89cda800",
+      "bytes": 66426,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "/en/settings?section=backup",
+      "output": "core-backup.png",
+      "method": "Playwright screenshot of unmodified real core UI on loopback with disposable databases and synthetic transport fixtures",
+      "sha256": "252e43e3e3ed781765b1ab5690b13222e4e6201f328665274bba17ef075cee18",
+      "bytes": 89581,
+      "width": 1440,
+      "height": 1000
     }
   ]
 }
