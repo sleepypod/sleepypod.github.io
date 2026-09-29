@@ -1,0 +1,40 @@
+---
+title: 'Controls and night mode'
+---
+
+# Controls and night mode
+
+## Read the arc
+
+The solid part represents the mattress temperature. The dim span toward the target shows the gap remaining. A shimmer communicates progress while the mattress is catching up.
+
+<Demo src="/media/dial-loader.mp4" poster="/media/dial-heating.png" title="Getting there">
+  The progress animation runs between the current temperature and the target. Silent device capture.
+</Demo>
+
+## Turn and click
+
+A normal detent changes the target by one degree; faster rotation accelerates to two degrees. Two detents below the 55°F lower limit reach the off stop. A click or tap on the power icon turns the side off, then back on at the last setpoint.
+
+<Demo src="/media/dial-power.mp4" poster="/media/dial-off.png" title="Off and back on">
+  The arc empties when power is off and returns when the selected side is powered again. Silent
+  device capture.
+</Demo>
+
+## Hold for settings
+
+A ring fills during a hold. Releasing early cancels. Settings include Wi-Fi, manual Pod IP, discovery, temperature units, night mode, and side. A local temperature-unit choice is retained even when the Pod uses another display unit.
+
+## At night
+
+Automatic night mode runs from **22:00 to 07:00** in the configured timezone. It switches to red on black and disables sounds. You can force it on or off in settings.
+
+The display dims after ten seconds of inactivity. Touching or turning while dim wakes it; make the next deliberate input to adjust the target.
+
+## If the display looks wrong
+
+Check night mode, timezone offsets, and whether the display is simply idle-dimmed. For connectivity and stale values, check the Pod IP and serial monitor. Normal synchronization occurs every 30 seconds.
+
+---
+
+**Source reference:** [Interaction reference](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md) · [Feature details](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/docs/features.md)

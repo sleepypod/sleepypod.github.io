@@ -1,0 +1,64 @@
+---
+title: 'Install and update Core'
+---
+
+# Install and update Core
+
+## Before you begin
+
+Use a supported Pod 3, 4, or 5 running stock embedded Linux. You need root shell access to the Pod and internet access for the initial download. This guide starts after device access is available; it is not an unlocking guide.
+
+Keep a backup of an existing installation's configuration and databases before changing it. The device has limited memory and storage; prefer published builds over compiling on the Pod.
+
+## Install on the Pod
+
+The upstream installer is a privileged script. Download and inspect it, then run it as root **on the Pod**, not on your computer:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sleepypod/core/main/scripts/install -o /tmp/sleepypod-install
+less /tmp/sleepypod-install
+sudo bash /tmp/sleepypod-install
+```
+
+If your shell is already root and has no `sudo`, run `bash /tmp/sleepypod-install`.
+
+The installer obtains Node.js and pnpm if needed, downloads the latest prebuilt release (with a source-build fallback), detects the DAC socket, migrates databases, and starts `sleepypod.service`. It also installs the Python biometrics modules. Optional SSH setup uses port **8822** with key-only authentication.
+
+## Verify the installation
+
+```bash
+sp-status
+sp-logs
+```
+
+Open `http://POD_IP:3000` from a browser on the same network. Confirm the timezone in settings, select your side, and check device status before changing the temperature.
+
+If it does not open, follow [connection troubleshooting](/troubleshooting/connection/). If the service fails, follow the [Core troubleshooting guide](/troubleshooting/core/).
+
+## Update
+
+Run on the installed Pod:
+
+```bash
+sp-update
+```
+
+The updater installs the latest prebuilt release, runs migrations, and restarts Core with rollback support. Read the [release notes](https://github.com/sleepypod/core/releases) before upgrading.
+
+## Useful commands
+
+| Command          | Purpose                                |
+| ---------------- | -------------------------------------- |
+| `sp-status`      | Service status                         |
+| `sp-logs`        | Follow the service journal             |
+| `sp-restart`     | Restart Core                           |
+| `sp-maintenance` | Manual prime, reboot, or status        |
+| `sp-uninstall`   | Remove services; optional data removal |
+
+Uninstalling and wiping data are separate decisions. Keep a backup before choosing data removal.
+
+Developers can [build locally and deploy over SSH](/developers/core/) to an already installed Pod.
+
+---
+
+**Source reference:** [Installer and CLI](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [Deployment guide](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEPLOYMENT.md) · [Script reference](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/scripts/README.md)

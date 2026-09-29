@@ -1,0 +1,40 @@
+---
+title: 'Find your setup'
+---
+
+# Find your setup
+
+Sleepypod gives you local control of an Eight Sleep Pod. **Core runs on the Pod**; the web interface, iOS app, and M5 Rotary Dial connect to it over your home network.
+
+## Start with Core
+
+You need a supported **Pod 3, 4, or 5**, access to its stock embedded Linux system, and a computer on the same network. Installing Core requires root access to the device; the installer does not unlock a stock Pod for you.
+
+1. [Install Core](/core/installation/) and open its web interface.
+2. Confirm the device timezone and the side you want to control.
+3. Set a comfortable target and check that the reported temperature changes toward it.
+4. [Create a schedule](/core/schedules/) for the nights you want automatic control.
+
+## Choose your controls
+
+| Interface    | What you need                                | Start here                                 |
+| ------------ | -------------------------------------------- | ------------------------------------------ |
+| Web app      | A browser on the Pod's LAN                   | [Core overview](/core/)                    |
+| iOS app      | iOS 26+, plus Xcode 26+ to build from source | [Set up iOS](/ios/setup/)                  |
+| Bedside Dial | M5Stack Dial, USB cable, PlatformIO, Wi-Fi   | [Build and connect the Dial](/dial/setup/) |
+
+The iOS app and Dial are optional. Schedules live in Core and do not require your phone to stay open.
+
+## Keep the connection local
+
+The Core API trusts your local network and has no authentication. **Do not expose port 3000 or the API to the internet.** Connect through a trusted home network; guest networks and client isolation can prevent discovery.
+
+The iOS app and Dial discover `_sleepypod._tcp` over mDNS. If discovery fails, use the Pod's LAN IP address. [Connection troubleshooting](/troubleshooting/connection/) walks through the checks.
+
+## Get help
+
+Use [troubleshooting](/troubleshooting/) for common problems. For a reproducible bug, include the product version and relevant logs in the appropriate [GitHub repository](https://github.com/sleepypod). Remove network credentials and personal sleep data before sharing.
+
+---
+
+**Source reference:** [Core requirements](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [LAN trust model](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/src/server/openapi.ts) · [iOS requirements](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md) · [Dial requirements](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md)

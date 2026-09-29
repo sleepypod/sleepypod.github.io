@@ -1,0 +1,36 @@
+---
+title: 'Dial development'
+---
+
+# Dial development
+
+## Build and test
+
+The firmware targets an ESP32-S3 M5Stack Dial using PlatformIO. Follow [setup](/dial/setup/) for credentials and flashing.
+
+```bash
+pio run
+pio test -e native
+```
+
+The native Unity suite exercises hardware-independent logic in `src/dial_logic.cpp`: temperature math, arc geometry and color, detent acceleration, the off stop, loader shimmer, and Pod JSON parsing.
+
+## Runtime structure
+
+The firmware joins Wi-Fi, discovers Core through mDNS (with an IP fallback), and synchronizes temperature state over HTTP. The input/rendering loop keeps local interaction responsive while network updates occur. Settings persist the chosen side and local preferences.
+
+Read the architecture document linked below for the actual boot sequence, task boundaries, and state transitions.
+
+## Capture real device output
+
+The repository includes `tools/dial_shot.py` for a still and `tools/walkthrough.py` for all states and short clips. They read the framebuffer from the serial debug interface. Use a test setup: walkthrough commands include interaction changes.
+
+```bash
+DIAL_PORT=/dev/cu.YOUR_PORT python tools/walkthrough.py
+```
+
+Use a Python environment with `pyserial`, plus `ffmpeg` for video. Review all generated files under `docs/screens/` and `docs/video/` before publishing. The site's [media workflow](/developers/media/) imports reviewed files and records source hashes.
+
+---
+
+**Source reference:** [Build and tests](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md) · [Firmware architecture](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/docs/architecture.md) · [Capture implementation](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/tools/walkthrough.py)

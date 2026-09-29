@@ -1,0 +1,31 @@
+---
+title: 'Temperature and power'
+---
+
+# Temperature and power
+
+## Choose a side
+
+The left and right sides have separate power and temperature state. Check the selected side before using the dial or power control. Linking sides in a client applies changes to both; it is useful when one person uses the whole bed.
+
+## Set the target
+
+Use the temperature dial or plus/minus controls. The target is where you want the bed to go; the current reading describes where it is now. Heating and cooling take time, so these values will often differ.
+
+The API accepts Fahrenheit temperatures; clients can display Celsius. The M5 Dial's configured range is 55–110°F. Consult the installed Core API schema for its current validation rules.
+
+## Turn power off
+
+Use the selected side's power control. A powered state is distinct from reaching a target temperature. Check the current temperature and water/pump status if the bed is not responding as expected.
+
+## When a schedule changes the target
+
+Schedules and manual controls share the same device. Review the next scheduled event if a setpoint changes unexpectedly. See [schedules and alarms](/core/schedules/) before editing or disabling recurring control.
+
+## If nothing changes
+
+Check the selected side, connection, service health, and water level. A powered side with flat temperature trends can indicate a pump problem; follow [Core troubleshooting](/troubleshooting/core/) instead of repeatedly sending commands.
+
+---
+
+**Source reference:** [Device API](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/src/server/routers/device.ts) · [Thermal diagnostics](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [Dial temperature range](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/include/config.h)

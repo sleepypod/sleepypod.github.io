@@ -1,0 +1,58 @@
+---
+title: 'Core API reference'
+---
+
+# Core API reference
+
+## Inspect the installed contract
+
+Core exposes its generated OpenAPI document at:
+
+```text
+http://POD_IP:3000/api/openapi.json
+```
+
+The REST API is under `/api/*`, and tRPC procedures are under `/api/trpc`. The generated document describes the version actually running on your Pod; use it for exact payloads and validation rules.
+
+**There is no authentication.** The API trusts the LAN and the Pod's firewall. Do not port-forward or publicly reverse-proxy these endpoints.
+
+## Read device status
+
+```bash
+curl --fail http://POD_IP:3000/api/device/status
+```
+
+## Change a target
+
+The following changes real hardware. Replace the host and choose the intended side:
+
+```bash
+curl --fail http://POD_IP:3000/api/device/temperature   -H 'Content-Type: application/json'   -d '{"side":"left","temperature":75}'
+```
+
+Temperatures at this API boundary are Fahrenheit. Clients presenting Celsius convert at the boundary.
+
+## Device routes
+
+| Method | Path (after `/api`)           | Purpose                      |
+| ------ | ----------------------------- | ---------------------------- |
+| GET    | `/device/status`              | Current device status        |
+| GET    | `/device/temperature/control` | Temperature control state    |
+| POST   | `/device/temperature`         | Request a target temperature |
+| POST   | `/device/power`               | Set power state              |
+| POST   | `/device/alarm`               | Trigger an alarm             |
+| POST   | `/device/alarm/clear`         | Clear an alarm               |
+| POST   | `/device/alarm/snooze`        | Snooze an alarm              |
+| POST   | `/device/prime`               | Start priming                |
+
+This is a navigation guide to the contract, not a frozen schema. Query the installed OpenAPI document before calling operations that affect hardware.
+
+## Streaming and integration
+
+Sensor WebSocket traffic uses port 3001. The stream normalizes hardware frames and also carries device state updates. For a higher-level integration with Home Assistant, prefer the [MQTT bridge](/core/integrations/#home-assistant--mqtt).
+
+The iOS repository includes a committed OpenAPI snapshot and a script to refresh it from a running Pod. Its contract tests catch mismatches between Swift models and Core responses.
+
+---
+
+**Source reference:** [OpenAPI generator and trust model](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/src/server/openapi.ts) · [Device routes](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/src/server/routers/device.ts) · [Spec sync](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/scripts/sync-api-spec.sh)

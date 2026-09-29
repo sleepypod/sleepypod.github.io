@@ -1,0 +1,47 @@
+---
+title: 'Build and connect iOS'
+---
+
+# Build and connect iOS
+
+## Build from source
+
+On a Mac with Xcode 26+ and Node/npm available:
+
+```bash
+git clone https://github.com/sleepypod/ios.git
+cd ios
+npm install
+brew install xcodegen
+xcodegen generate
+open Sleepypod.xcodeproj
+```
+
+In Xcode, select the **Sleepypod** scheme, choose your signing team and a compatible iPhone or simulator, then build and run. For a physical device, use your own development team and device provisioning.
+
+The repository also documents a command-line build:
+
+```bash
+xcodebuild -scheme Sleepypod   -destination 'platform=iOS,name=YOUR_DEVICE'   DEVELOPMENT_TEAM=YOUR_TEAM_ID build
+```
+
+## Connect to Core
+
+1. Confirm Core is reachable in a browser at `http://POD_IP:3000`.
+2. Join the same local network on your iPhone.
+3. Allow **Local Network** access when iOS asks.
+4. Use Pod discovery. Core advertises `_sleepypod._tcp` through Bonjour.
+5. If discovery does not find it, enter the Pod's IP manually.
+6. Select the correct side and verify the displayed device state.
+
+If the app cannot discover or reach the Pod, follow [connection troubleshooting](/troubleshooting/connection/). A simulator and a physical phone may have different network reachability.
+
+## Keep versions compatible
+
+The app includes both a Core tRPC client and a legacy FreeSleep client behind a shared protocol. Use the backend appropriate to your installation. Core is the backend described throughout these guides.
+
+Update from the repository and regenerate the Xcode project when project configuration changes. For API compatibility work, see [iOS development](/developers/ios/).
+
+---
+
+**Source reference:** [Setup and deployment](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md) · [Bonjour discovery](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/docs/adr/002-mdns-discovery.md)

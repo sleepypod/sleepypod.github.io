@@ -1,0 +1,47 @@
+---
+title: 'M5 Rotary Dial'
+---
+
+# M5 Rotary Dial
+
+A small bedside controller for the M5Stack Dial. Turn to adjust your side of the bed, click to turn it off, and let the screen fade into the background.
+
+<div className="media-grid">
+  <DialFrame
+    src="/media/dial-heating.png"
+    alt="Dial heating toward a 75 degree target"
+    caption="The solid arc shows the mattress temperature."
+  />
+  <DialFrame
+    src="/media/dial-night.png"
+    alt="Dial with red night theme"
+    caption="A red-on-black theme for nighttime."
+  />
+</div>
+
+## Five simple controls
+
+| Action               | Result                                                      |
+| -------------------- | ----------------------------------------------------------- |
+| Turn                 | Change target by 1° per detent, or 2° when turning quickly  |
+| Click or tap power   | Turn the selected side off, or back on at its last setpoint |
+| Hold or tap the gear | Open settings                                               |
+| Settings → Side      | Pick and remember left or right                             |
+| Touch while dim      | Wake the display; the next turn changes the target          |
+
+[Set up the Dial →](/dial/setup/)
+
+## Watch it work
+
+<Demo src="/media/dial-turn.mp4" poster="/media/dial-heating.png" title="Turn for comfort">
+  Rotating the encoder moves the target and the arc settles when you stop. Silent recording captured
+  from the device framebuffer.
+</Demo>
+
+## Print a bedside enclosure
+
+The project includes a base and faceplate for M5Stack Dial v1.1. Use the [MakerWorld print profile](https://makerworld.com/en/models/3365781-sleepypod-dial-enclosure-for-m5stack-dial) or the [repository's 3MF files](https://github.com/sleepypod/m5-rotary-dial/tree/main/hardware).
+
+---
+
+**Source reference:** [Dial overview](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md) · [Device capture workflow](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/tools/walkthrough.py) · [Enclosure print instructions](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/hardware/README.md)

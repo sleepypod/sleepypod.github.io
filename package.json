@@ -1,0 +1,35 @@
+{
+  "name": "sleepypod-site",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && pagefind --site out --output-path out/_pagefind",
+    "typecheck": "tsc --noEmit",
+    "media:import": "node scripts/import-media.mjs",
+    "media:verify": "node scripts/verify-media.mjs",
+    "test": "playwright test",
+    "check": "pnpm format:check && pnpm media:verify && pnpm build && pnpm typecheck && pnpm test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "next": "16.3.6",
+    "nextra": "4.6.1",
+    "nextra-theme-docs": "4.6.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "pagefind": "^1.5.2",
+    "prettier": "3.8.3",
+    "sharp": "0.35.4",
+    "superjson": "2.2.6",
+    "typescript": "^5.9.3"
+  }
+}

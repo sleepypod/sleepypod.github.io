@@ -1,0 +1,57 @@
+---
+title: 'Core development'
+---
+
+# Core development
+
+## Work locally
+
+Clone the repository and use the Node.js major in `.node-version` and pnpm version in `package.json`. Start with `AGENTS.md` and `docs/wiki/INDEX.md`.
+
+```bash
+git clone https://github.com/sleepypod/core.git
+cd core
+pnpm install
+pnpm dev
+```
+
+A development web server is not a hardware simulator. Configure disposable databases and hardware boundaries deliberately before testing write paths. Do not point an automated test at a live Pod unintentionally.
+
+## Validate a change
+
+Use the repository's lint, TypeScript, and relevant Vitest suites. Python modules have isolated locked environments and their own tests. For a schema change, generate migrations for the correct database.
+
+```bash
+pnpm lint
+pnpm tsc
+pnpm exec vitest run
+pnpm build
+```
+
+## Deploy a local build
+
+For an **already installed** Pod with root SSH key access (default port 8822):
+
+```bash
+./scripts/deploy POD_IP
+./scripts/deploy POD_IP fix/my-fix
+```
+
+The deploy helper builds locally, transfers an archive, and invokes the updater on the Pod. The updater preserves configuration, backs up code/database, installs native dependencies for the Pod, migrates, and restarts. The Pod may need temporary WAN access for dependencies; consult the deployment guide.
+
+Do not compile large development builds on the memory-constrained device when a local or CI build is available.
+
+## Key directories
+
+| Path                  | Responsibility                                      |
+| --------------------- | --------------------------------------------------- |
+| `src/hardware/`       | DAC transport, polling, locks, gestures, pump guard |
+| `src/server/routers/` | tRPC and REST procedures                            |
+| `src/scheduler/`      | Scheduled temperature, power, alarms, maintenance   |
+| `src/streaming/`      | WebSocket frames and MQTT bridge                    |
+| `src/db/`             | Configuration and biometrics schemas                |
+| `modules/`            | Python sensor processors                            |
+
+---
+
+**Source reference:** [Contribution instructions](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/AGENTS.md) · [Development commands](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/package.json) · [Local deployment](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEPLOYMENT.md)

@@ -1,0 +1,38 @@
+---
+title: 'Connection and discovery'
+---
+
+# Connection and discovery
+
+## 1. Test Core directly
+
+From a computer or phone on the same network, open `http://POD_IP:3000`. Use the current LAN address from your router, not an old address saved in a client.
+
+If it fails, verify the Pod is powered, connected, and running Core. On the Pod:
+
+```bash
+sp-status
+sp-logs
+```
+
+## 2. Check network isolation
+
+Guest Wi-Fi, separate VLANs, and access-point client isolation can block local traffic. Bonjour/mDNS discovery and HTTP connectivity are different: manual IP can work even when multicast discovery is unavailable.
+
+Core advertises `_sleepypod._tcp` and serves its API on **3000**. Its sensor WebSocket uses **3001**. Avoid opening either port to the public internet; the API has no authentication.
+
+## 3. Check iOS permissions
+
+In iOS Settings, ensure Sleepypod has **Local Network** permission. Reopen the app, retry discovery, then enter the Pod IP manually if needed. Confirm the selected backend matches Core.
+
+## 4. Check the Dial
+
+In settings, verify the Wi-Fi connection and Pod IP. Use **Discover Pod** or enter the address manually. Inspect the USB serial monitor for API errors. The Dial periodically synchronizes at a 30-second interval.
+
+## 5. Separate discovery from stale state
+
+If clients connect but disagree, compare the selected side, wait for their next update, then refresh. Confirm a control change in Core itself. Persistent disagreement after refresh is useful evidence for a client bug report.
+
+---
+
+**Source reference:** [Network trust](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/src/server/openapi.ts) · [HTTP and WebSocket architecture](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [iOS discovery](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/docs/adr/002-mdns-discovery.md) · [Dial troubleshooting](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md)
