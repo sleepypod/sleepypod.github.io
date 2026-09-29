@@ -609,3 +609,142 @@ button:focus-visible {
     gap: 5px;
   }
 }
+
+/* A real-product preview: only the chosen app screenshot changes. */
+.control-showcase {
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 36px 44px 100px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 72px;
+}
+.control-showcase h2 {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+  margin: 20px 0;
+}
+.control-showcase-intro {
+  font-size: 19px;
+  line-height: 1.65;
+  color: #b6b6bf;
+}
+.control-style-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 30px 0 24px;
+}
+.control-style-tabs button {
+  border: 1px solid #ffffff26;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  padding: 11px 16px;
+  cursor: pointer;
+}
+.control-style-tabs button:hover {
+  border-color: #7ab5e0;
+}
+.control-style-tabs button[aria-selected='true'] {
+  background: #7ab5e0;
+  color: #0b0b0c;
+  border-color: #7ab5e0;
+}
+.control-showcase :focus-visible {
+  outline: 2px solid #7ab5e0;
+  outline-offset: 4px;
+}
+.control-showcase-setup {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #a1a1aa;
+}
+.control-showcase-stage {
+  min-height: 550px;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  border: 1px solid #ffffff1a;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at top, #26324355, #101014 75%);
+}
+.control-showcase-stage img {
+  display: block;
+  width: 100%;
+  max-width: 410px;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 14px 40px #0004;
+}
+.control-showcase-detail {
+  min-height: 108px;
+  padding-top: 20px;
+}
+.control-showcase-detail h3 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 500;
+}
+.control-showcase-detail p {
+  margin: 0;
+  color: #b6b6bf;
+  line-height: 1.6;
+  font-size: 15px;
+}
+.control-showcase-note {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #92929d;
+}
+.control-showcase-compact {
+  padding: 28px;
+  margin: 28px 0;
+  background: #0b0b0c;
+  color: #ececec;
+  border-radius: 20px;
+  gap: 30px;
+  grid-template-columns: 1fr;
+}
+.control-showcase-compact h2 {
+  font-size: 32px;
+}
+.control-showcase-compact .control-showcase-stage {
+  min-height: 550px;
+}
+@media (max-width: 800px) {
+  .control-showcase {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px 24px 60px;
+  }
+  .control-showcase-stage {
+    min-height: 550px;
+  }
+  .control-showcase-compact {
+    padding: 20px;
+  }
+  .control-showcase-compact .control-showcase-stage {
+    min-height: 410px;
+    padding: 10px;
+  }
+}
+@media (max-width: 420px) {
+  .control-showcase-stage {
+    min-height: 470px;
+    padding: 12px;
+  }
+  .control-style-tabs {
+    gap: 6px;
+  }
+  .control-style-tabs button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}

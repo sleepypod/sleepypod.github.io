@@ -10,11 +10,23 @@ Settings contains things you configure. Live operating state belongs in [System]
 
 In **Appearance**, choose Dial, Slider, or Now · Night · Dawn, plus theme and temperature display. Control style, display mode, and theme are stored in this browser. Units use the Pod-wide setting.
 
+<BrowserFrame
+  src="/media/core-appearance.png"
+  alt="sleepypod Appearance settings with control style and temperature display choices"
+  caption="Choose how temperature controls look in this browser. Real core UI with example data."
+/>
+
 In **Sides**, select the person/side before changing its profile. Away mode pauses its schedule and keeps it off until you return. Auto-off uses bed-presence information, so check the presence availability indicator before relying on it. Always on refreshes the firmware's normal heating timeout; it does not remove the independent safety and configured power limits.
 
 ## Cover gestures
 
 Open **Gestures**, select a side, and choose the tap action to edit. Temperature actions specify direction and amount. Alarm actions specify what to do while ringing, snooze duration, and behavior when there is no alarm. Test the action on the correct side. Firmware and cover behavior vary, so confirm the physical result rather than assuming a saved configuration proves it.
+
+<BrowserFrame
+  src="/media/core-gestures.png"
+  alt="sleepypod cover gesture settings for the selected side"
+  caption="Configure tap actions per side, then test them on your cover."
+/>
 
 ## Device and network
 
@@ -27,6 +39,12 @@ Open **Gestures**, select a side, and choose the tap action to edit. Temperature
 ## Two different backup workflows
 
 **Settings → Backup** configures nightly archive push: sensor archives and a biometrics database dump are copied to an SSH host you control. Enter host, port, user, and remote path, configure the displayed SSH identity on the destination, and use **Test connection** before enabling the nightly push. A RAW archive may be empty on NATS-only firmware; inspect the pipeline rather than assuming the push failed.
+
+<BrowserFrame
+  src="/media/core-backup.png"
+  alt="sleepypod nightly backup settings with SSH destination fields"
+  caption="Nightly archive push is configured here; database downloads live in System → Databases. Example unconfigured instance."
+/>
 
 **System → Databases → Download backup** uses SQLite online backup to copy both databases while the Pod continues running. This is the appropriate distinction when you also need configuration and schedules. Store a known-good copy before migration or recovery work. Database files contain personal history; handle the download accordingly.
 

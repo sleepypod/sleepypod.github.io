@@ -73,11 +73,47 @@ try {
   await page.evaluate(() => document.fonts.ready)
   await page.getByRole('tab', { name: /Now$/ }).first().waitFor()
   await page.screenshot({ path: '.capture/core-temperature.png' })
+  const controls = []
+  for (const control of ['dial', 'slider', 'stepper']) {
+    await page.evaluate((value) => {
+      localStorage.setItem('sleepypod-pref-control', value)
+      window.dispatchEvent(new Event('sleepypod-prefs-change'))
+    }, control)
+    const card = page.getByRole('group', { name: 'Left (left)', exact: true })
+    if (control === 'stepper') await card.getByRole('tab', { name: /Now$/ }).waitFor()
+    else await card.getByRole('slider').waitFor()
+    await card.screenshot({ path: `.capture/core-control-${control}.png`, animations: 'disabled' })
+    controls.push({
+      control,
+      path: '/en',
+      output: `core-control-${control}.png`,
+      element: 'Left (left)',
+    })
+  }
+  await writeFile(
+    '.capture/core-controls.json',
+    JSON.stringify(
+      {
+        sourceCommit: process.env.CORE_SOURCE_COMMIT || null,
+        capturedAt: new Date().toISOString(),
+        controls,
+        method:
+          'Unmodified real core UI; element screenshots of the left side card; browser appearance preference switched between dial, slider, and stepper; synthetic fixtures',
+      },
+      null,
+      2,
+    ) + '\n',
+  )
   const captures = [{ path: '/en', output: 'core-temperature.png' }]
   for (const [path, output, heading] of [
     ['/en/schedule', 'core-schedule.png', 'Schedule'],
     ['/en/settings?section=appearance', 'core-appearance.png', 'Appearance'],
     ['/en/autopilot', 'core-autopilot.png', 'Automations'],
+    ['/en/system', 'core-system.png', 'Dashboard'],
+    ['/en/system?tab=scheduler', 'core-scheduler.png', 'Scheduler'],
+    ['/en/sleep', 'core-sleep.png', 'Nights'],
+    ['/en/settings?section=gestures', 'core-gestures.png', 'Gestures'],
+    ['/en/settings?section=backup', 'core-backup.png', 'Backup'],
   ]) {
     await page.goto(new URL(path, url).href, { waitUntil: 'networkidle' })
     await page
