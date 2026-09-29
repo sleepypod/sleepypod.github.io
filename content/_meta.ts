@@ -1,4 +1,5 @@
 export default {
+  index: 'Home',
   'getting-started': 'Get started',
   core: 'Core',
   ios: 'iOS app',

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
-      <Head color={{ hue: 175, saturation: 65 }} />
+      <Head color={{ hue: 175, saturation: 65, lightness: { light: 30, dark: 66 } }} />
       <body>{children}</body>
     </html>
   )

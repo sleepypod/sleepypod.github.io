@@ -569,3 +569,7 @@ button:focus-visible {
     animation: none !important;
   }
 }
+
+.light figure figcaption {
+  color: #52656a;
+}

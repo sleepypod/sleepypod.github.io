@@ -109,3 +109,22 @@ test('custom 404 export exists', async ({ request }) => {
   const response = await request.get('/this-page-does-not-exist/')
   expect(response.status()).toBe(404)
 })
+test('Core screenshot enlarges and closes', async ({ page }) => {
+  await page.goto('/core/')
+  await page
+    .getByRole('img', { name: 'Core temperature controls with separate left and right sides' })
+    .click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).not.toBeVisible()
+})
+test('docs theme preference persists', async ({ page }) => {
+  await page.goto('/getting-started/')
+  const menu = page.getByRole('button', { name: 'Menu', exact: true })
+  if (await menu.isVisible()) await menu.click()
+  await page.getByTitle('Change theme').filter({ visible: true }).first().click()
+  await page.getByRole('option', { name: 'Light', exact: true }).click()
+  await expect(page.locator('html')).toHaveClass(/light/)
+  await page.reload()
+  await expect(page.locator('html')).toHaveClass(/light/)
+})
