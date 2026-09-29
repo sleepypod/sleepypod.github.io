@@ -25,7 +25,7 @@ Use an isolated Core instance containing only disposable fixture data. Start it 
 CORE_CAPTURE_URL=http://127.0.0.1:3000   pnpm exec node scripts/capture-core.mjs
 ```
 
-The script only accepts a loopback origin, navigates the real UI, and captures the viewport with Playwright. It replaces hardware status with a committed synthetic transport fixture, blocks sensor WebSocket connections and tRPC writes, and reads all remaining data from disposable local databases. The development badge is hidden; the application UI is unchanged. Follow `capture/README.md` to start the isolated instance. Review `.capture/core-temperature.png` before promoting it and updating the manifest. Do not use real sleep histories or a live customer's system for documentation capture.
+The script only accepts a loopback origin, navigates the real UI, and captures the viewport with Playwright. It supplies hardware status, schedules, and sleep through committed synthetic transport fixtures, blocks sensor WebSocket connections and tRPC writes, and reads all remaining data from disposable local databases. The development badge is hidden; the application UI is unchanged. Follow `capture/README.md` to start the isolated instance. Review `.capture/core-temperature.png` before promoting it and updating the manifest. Do not use real sleep histories or a live customer's system for documentation capture.
 
 ## Fresh iOS capture
 

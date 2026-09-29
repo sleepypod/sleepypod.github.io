@@ -6,30 +6,71 @@ title: 'M5 Rotary Dial'
 
 A small bedside controller for the M5Stack Dial. Turn to adjust your side of the bed, click to turn it off, and let the screen fade into the background.
 
+## Controls
+
+| Action                   | Result                                                              |
+| ------------------------ | ------------------------------------------------------------------- |
+| Turn                     | Change target by 1° per detent, or 2° when turning quickly          |
+| Click or tap power       | Turn the selected side off, or back on using Core’s current target  |
+| Hold or tap the gear     | Open settings                                                       |
+| Settings → Side          | Pick and remember left or right                                     |
+| Touch while dim          | Wake the display; the next turn changes the target                  |
+| Settings → Hold duration | Choose 15, 30, 60, or 120 minutes for your next adjustment          |
+| Settings → Resume        | Release your side’s manual hold; Core resumes applicable automation |
+
+[Set up the Dial →](/dial/setup/)
+
+## The full walkthrough
+
+These nine screens were captured directly from the device. The recordings predate the newer manual-hold status line; current controls are documented above and in [Controls and night mode](/dial/controls/).
+
 <div className="media-grid">
   <DialFrame
     src="/media/dial-heating.png"
-    alt="Dial heating toward a 75 degree target"
-    caption="The solid arc shows the mattress temperature."
+    alt="Turn toward comfort"
+    caption="Solid fill is the mattress temperature; the moving span shows the distance to your target."
+  />
+  <DialFrame
+    src="/media/dial-cooling.png"
+    alt="Cooling works the same way"
+    caption="The cap marks your target as the mattress cools toward it."
+  />
+  <DialFrame
+    src="/media/dial-at-target.png"
+    alt="Then it goes quiet"
+    caption="The loader disappears once the mattress reaches the target."
+  />
+  <DialFrame
+    src="/media/dial-off.png"
+    alt="Off is a click"
+    caption="Click or tap power. The arc empties and the number dims."
+  />
+  <DialFrame
+    src="/media/dial-hold-ring.png"
+    alt="Hold for settings"
+    caption="A ring fills over 1.5 seconds. Releasing early cancels."
+  />
+  <DialFrame
+    src="/media/dial-settings.png"
+    alt="Your side is a preference"
+    caption="Choose Left or Right once in Settings. It stays selected."
   />
   <DialFrame
     src="/media/dial-night.png"
-    alt="Dial with red night theme"
-    caption="A red-on-black theme for nighttime."
+    alt="Red after ten"
+    caption="From 10 pm to 7 am: red on black, 20% brightness, no sounds."
+  />
+  <DialFrame
+    src="/media/dial-night-dim.png"
+    alt="Glanceable at 3 am"
+    caption="After five seconds at night, only the number and a status dot remain at about 1% brightness."
+  />
+  <DialFrame
+    src="/media/dial-day-dim.png"
+    alt="Wake without changing anything"
+    caption="The day display dims after ten seconds. Once safe wake arms, the first input only wakes it."
   />
 </div>
-
-## Five simple controls
-
-| Action               | Result                                                      |
-| -------------------- | ----------------------------------------------------------- |
-| Turn                 | Change target by 1° per detent, or 2° when turning quickly  |
-| Click or tap power   | Turn the selected side off, or back on at its last setpoint |
-| Hold or tap the gear | Open settings                                               |
-| Settings → Side      | Pick and remember left or right                             |
-| Touch while dim      | Wake the display; the next turn changes the target          |
-
-[Set up the Dial →](/dial/setup/)
 
 ## Watch it work
 
@@ -44,4 +85,4 @@ The project includes a base and faceplate for M5Stack Dial v1.1. Use the [MakerW
 
 ---
 
-**Source reference:** [Dial overview](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md) · [Device capture workflow](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/tools/walkthrough.py) · [Enclosure print instructions](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/hardware/README.md)
+**Source reference:** [Dial overview](https://github.com/sleepypod/m5-rotary-dial/blob/458335ad874baf7eac52a10180cd1df529228345/README.md) · [Device capture workflow](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/tools/walkthrough.py) · [Enclosure print instructions](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/hardware/README.md)

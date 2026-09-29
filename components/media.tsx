@@ -8,7 +8,7 @@ export function BrowserFrame({ src, alt, caption }: MediaProps) {
         <span>sleepypod.local:3000</span>
         <span>•••</span>
       </div>
-      <ImageZoom src={src} alt={alt} width={1440} height={820} loading="lazy" />
+      <ImageZoom src={src} alt={alt} width={1440} height={1000} loading="lazy" />
       <figcaption>{caption}</figcaption>
     </figure>
   )

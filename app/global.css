@@ -1,7 +1,7 @@
 :root {
-  --mint: #a5ebca;
-  --ink: #0c1618;
-  --muted: #9babac;
+  --cool: #7ab5e0;
+  --ink: #0b0b0c;
+  --muted: #8b8b92;
 }
 * {
   box-sizing: border-box;
@@ -17,13 +17,11 @@ html {
   font-weight: 700;
   letter-spacing: -1px;
 }
-.brand-dot {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: #9ce3c6;
-  box-shadow: inset -5px -2px 0 #4d9b85;
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .docs-label {
   font-size: 15px;
@@ -34,7 +32,7 @@ html {
 figure figcaption {
   font-size: 13px;
   line-height: 1.6;
-  color: #859b9f;
+  color: #a1a1a8;
   text-align: center;
   margin-top: 14px;
 }
@@ -72,7 +70,7 @@ figure figcaption {
   display: block;
 }
 .browser-frame {
-  border: 1px solid #526168;
+  border: 1px solid #26262a;
   border-radius: 14px;
   overflow: hidden;
   margin: 24px 0;
@@ -83,8 +81,8 @@ figure figcaption {
   gap: 20px;
   padding: 12px 18px;
   font-size: 12px;
-  background: #202b31;
-  color: #c2cecf;
+  background: #17171a;
+  color: #b0b0b6;
 }
 .browser-frame img {
   display: block;
@@ -107,8 +105,8 @@ figure figcaption {
   background: #080e12;
 }
 .home {
-  background: #0b1719;
-  color: #ecf0eb;
+  background: #0b0b0c;
+  color: #ececec;
   font-family: Arial, Helvetica, sans-serif;
 }
 .home a {
@@ -128,19 +126,19 @@ figure figcaption {
   display: flex;
   gap: 30px;
   font-size: 14px;
-  color: #bdcccc;
+  color: #a1a1a8;
 }
 .home-nav a:hover,
 .quick-links a:hover {
-  color: #a5ebca;
+  color: #7ab5e0;
 }
 .skip-link {
   position: fixed;
   top: -60px;
   left: 20px;
   z-index: 100;
-  background: #a5ebca;
-  color: #0b1719 !important;
+  background: #7ab5e0;
+  color: #0b0b0c !important;
   padding: 12px;
 }
 .skip-link:focus {
@@ -161,7 +159,7 @@ figure figcaption {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 2px;
-  color: #a5ebca;
+  color: #7ab5e0;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -169,7 +167,7 @@ figure figcaption {
 .eyebrow > span {
   width: 6px;
   height: 6px;
-  background: #a5ebca;
+  background: #7ab5e0;
   border-radius: 50%;
 }
 .hero h1 {
@@ -180,14 +178,14 @@ figure figcaption {
   margin: 28px 0;
 }
 .hero h1 em {
-  color: #a5ebca;
+  color: #7ab5e0;
   font-style: normal;
 }
 .hero-description {
   max-width: 400px;
   font-size: 18px;
   line-height: 1.7;
-  color: #b7c6c6;
+  color: #a1a1a8;
 }
 .actions {
   display: flex;
@@ -206,23 +204,23 @@ figure figcaption {
   font-weight: 600;
 }
 .primary {
-  background: #a5ebca;
-  color: #0c2221 !important;
+  background: #7ab5e0;
+  color: #0b0b0c !important;
 }
 .primary:hover {
-  background: #c4f5de;
+  background: #a6cdec;
 }
 .secondary {
-  border: 1px solid #3c5051;
+  border: 1px solid #26262a;
 }
 .secondary:hover {
-  background: #203537;
+  background: #17171a;
 }
 .hero-note {
   font-size: 11px;
   line-height: 1.6;
   margin-top: 26px;
-  color: #8fa3a4;
+  color: #a1a1a8;
 }
 .hero-media {
   position: relative;
@@ -256,23 +254,23 @@ figure figcaption {
   display: block;
   white-space: nowrap;
   font-size: 11px;
-  color: #94a7a7;
+  color: #a1a1a8;
   text-align: center;
   margin-top: 18px;
 }
 .orbit {
   position: absolute;
-  border: 1px solid #a5ebca12;
+  border: 1px solid #7ab5e012;
   border-radius: 50%;
   width: 520px;
   height: 520px;
   transform: rotate(-22deg);
-  background: radial-gradient(ellipse, #8ae0ba10, transparent 65%);
+  background: radial-gradient(ellipse, #e0976a10, transparent 65%);
 }
 .orbit-two {
   width: 400px;
   height: 400px;
-  border-color: #a5ebca0b;
+  border-color: #7ab5e00b;
 }
 .principles {
   border-block: 1px solid #ffffff15;
@@ -295,7 +293,7 @@ figure figcaption {
 .principles span {
   font-size: 10px;
   letter-spacing: 1.5px;
-  color: #819b9c;
+  color: #a1a1a8;
 }
 .principles p {
   font-size: 17px;
@@ -316,7 +314,7 @@ figure figcaption {
   margin: 22px 0;
 }
 .section-heading > p:last-child {
-  color: #9fb2b3;
+  color: #a1a1a8;
   line-height: 1.6;
 }
 .product-grid {
@@ -327,7 +325,7 @@ figure figcaption {
 }
 .product-card {
   border: 1px solid #ffffff1a;
-  background: #122326;
+  background: #0f0f11;
   padding: 28px;
   border-radius: 12px;
   transition:
@@ -336,25 +334,25 @@ figure figcaption {
 }
 .product-card:hover {
   transform: translateY(-5px);
-  border-color: #a5ebcaaa;
+  border-color: #7ab5e0aa;
 }
 .card-number {
   font-size: 10px;
   letter-spacing: 1.3px;
-  color: #92adae;
+  color: #a1a1a8;
 }
 .product-symbol {
   font-size: 64px;
-  color: #a5ebca;
+  color: #7ab5e0;
   height: 130px;
   display: flex;
   align-items: center;
 }
 .ios-card .product-symbol {
-  color: #a6c9f0;
+  color: #7ab5e0;
 }
 .dial-card .product-symbol {
-  color: #ebbc98;
+  color: #e0976a;
 }
 .product-card h3 {
   font-size: 22px;
@@ -366,7 +364,7 @@ figure figcaption {
 .product-card p {
   font-size: 14px;
   line-height: 1.8;
-  color: #a5b9bb;
+  color: #a1a1a8;
   min-height: 78px;
   margin: 16px 0 24px;
 }
@@ -375,7 +373,7 @@ figure figcaption {
   color: #d4e4df;
 }
 .night-section {
-  background: #112326;
+  background: #0f0f11;
   border-block: 1px solid #ffffff0c;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -393,7 +391,7 @@ figure figcaption {
 }
 .night-steps article > span {
   font-size: 12px;
-  color: #82ad9e;
+  color: #e0976a;
   padding-top: 4px;
 }
 .night-steps h3 {
@@ -404,7 +402,7 @@ figure figcaption {
 .night-steps p {
   font-size: 14px;
   line-height: 1.7;
-  color: #9eb6b8;
+  color: #a1a1a8;
   margin: 0;
 }
 .start-section {
@@ -415,7 +413,7 @@ figure figcaption {
   justify-content: center;
 }
 .start-section > p {
-  color: #9eb6b8;
+  color: #a1a1a8;
 }
 .start-section .button {
   margin-top: 30px;
@@ -424,7 +422,7 @@ figure figcaption {
   display: flex;
   justify-content: center;
   gap: 25px;
-  color: #93aaa9;
+  color: #a1a1a8;
   font-size: 12px;
   margin-top: 40px;
 }
@@ -441,11 +439,11 @@ figure figcaption {
 .home-footer p {
   font-size: 11px;
   line-height: 1.8;
-  color: #8a9fa1;
+  color: #a1a1a8;
 }
 .home-footer > a:last-child {
   font-size: 12px;
-  color: #bacac8;
+  color: #a1a1a8;
 }
 .media-grid {
   display: grid;
@@ -459,7 +457,7 @@ figure figcaption {
 }
 a:focus-visible,
 button:focus-visible {
-  outline: 3px solid #5fb898;
+  outline: 3px solid #7ab5e0;
   outline-offset: 5px;
 }
 @media (max-width: 800px) {
@@ -572,4 +570,42 @@ button:focus-visible {
 
 .light figure figcaption {
   color: #52656a;
+}
+
+.web-showcase {
+  max-width: 1260px;
+  margin: auto;
+  padding: 0 44px 80px;
+}
+.web-showcase .section-heading {
+  max-width: 700px;
+}
+.web-showcase .browser-frame {
+  box-shadow: 0 28px 80px #0005;
+  margin-top: 32px;
+}
+.home .text-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: #7ab5e0;
+}
+.hero h1 em {
+  color: #e0976a;
+}
+@media (max-width: 800px) {
+  .web-showcase {
+    padding: 0 24px 60px;
+  }
+}
+@media (max-width: 420px) {
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+  }
+  .home-nav {
+    padding-inline: 18px;
+  }
+  .wordmark {
+    gap: 5px;
+  }
 }

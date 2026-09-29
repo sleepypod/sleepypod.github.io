@@ -14,7 +14,7 @@ The solid part represents the mattress temperature. The dim span toward the targ
 
 ## Turn and click
 
-A normal detent changes the target by one degree; faster rotation accelerates to two degrees. Two detents below the 55°F lower limit reach the off stop. A click or tap on the power icon turns the side off, then back on at the last setpoint.
+A normal detent changes the target by one degree; faster rotation accelerates to two degrees. Two detents below the 55°F lower limit reach the off stop. A click or tap on the power icon turns the side off, then back on using Core’s current target.
 
 <Demo src="/media/dial-power.mp4" poster="/media/dial-off.png" title="Off and back on">
   The arc empties when power is off and returns when the selected side is powered again. Silent
@@ -25,11 +25,31 @@ A normal detent changes the target by one degree; faster rotation accelerates to
 
 A ring fills during a hold. Releasing early cancels. Settings include Wi-Fi, manual Pod IP, discovery, temperature units, night mode, and side. A local temperature-unit choice is retained even when the Pod uses another display unit.
 
+<Demo
+  src="/media/dial-settings.mp4"
+  poster="/media/dial-hold-ring.png"
+  title="Hold to open settings"
+>
+  The ring fills over 1.5 seconds, then settings opens. Silent device capture.
+</Demo>
+
+## Manual holds and Resume
+
+In **Settings → Hold duration**, choose 15, 30, 60, or 120 minutes (default 30) for future adjustments. Changing this preference does not extend an existing hold. **Settings → Resume** releases the active side’s hold so Core can resume applicable automation; it does not itself turn the side on.
+
+With a compatible Core version, the screen shows the current owner—Manual hold, Run once, Autopilot, Schedule, or No owner—and any safety/off block. Manual holds show their expiry when the Dial’s clock is initialized. Older Core versions continue to support temperature adjustments, but Resume remains unavailable until Core reports support.
+
+## Connection feedback
+
+A hollow end cap means Core has not yet confirmed the change. “No Wi-Fi” and “Pod offline” describe connection problems. “Updating...” and “Update failed” apply to the selected side’s write or confirming status read. The side name comes from Core’s settings.
+
+Background polling waits 30 seconds after interaction; a completed write refreshes ownership and the effective target immediately without overwriting newer queued input. The arc settles 180 milliseconds after rotation stops, and temperature writes are sent after a 500-millisecond debounce.
+
 ## At night
 
 Automatic night mode runs from **22:00 to 07:00** in the configured timezone. It switches to red on black and disables sounds. You can force it on or off in settings.
 
-The display dims after ten seconds of inactivity. Touching or turning while dim wakes it; make the next deliberate input to adjust the target.
+The display dims to about 1% brightness after ten seconds of inactivity by day, or five seconds at night. Safe wake arms three seconds after dimming: once armed, the first input only wakes the screen. Input during that initial three-second window still acts normally.
 
 ## If the display looks wrong
 
@@ -37,4 +57,4 @@ Check night mode, timezone offsets, and whether the display is simply idle-dimme
 
 ---
 
-**Source reference:** [Interaction reference](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/README.md) · [Feature details](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/docs/features.md)
+**Source reference:** [Interaction reference](https://github.com/sleepypod/m5-rotary-dial/blob/458335ad874baf7eac52a10180cd1df529228345/README.md) · [Feature details](https://github.com/sleepypod/m5-rotary-dial/blob/458335ad874baf7eac52a10180cd1df529228345/docs/features.md)
