@@ -1,3 +1,4 @@
+import { demoData, capturedTime } from '../capture/core-demo.mjs'
 import superjson from 'superjson'
 import { chromium } from '@playwright/test'
 import { mkdir, writeFile, readFile } from 'node:fs/promises'
@@ -8,13 +9,14 @@ await mkdir('.capture', { recursive: true })
 const browser = await chromium.launch()
 try {
   const context = await browser.newContext({
-    viewport: { width: 1440, height: 820 },
+    viewport: { width: 1440, height: 1000 },
     deviceScaleFactor: 1,
     colorScheme: 'dark',
+    timezoneId: 'America/Los_Angeles',
     reducedMotion: 'reduce',
   })
   // No remote destinations: keep captures on this isolated instance.
-  // Hardware status is a transport fixture; every other read uses the disposable DB.
+  // Hardware, schedules, and sleep use synthetic fixtures; other reads use the disposable DB.
   await context.route('**/*', (route) => {
     const u = new URL(route.request().url())
     return u.origin === url.origin ? route.continue() : route.abort()
@@ -32,6 +34,11 @@ try {
     const batch = requestUrl.searchParams.has('batch')
     const results = await Promise.all(
       names.map(async (name, i) => {
+        const demo = demoData(
+          name,
+          superjson.deserialize((batch ? input[i] : input) || { json: null }),
+        )
+        if (demo !== undefined) return { result: { data: superjson.serialize(demo) } }
         if (name === 'device.getStatus') return { result: { data: { json: status } } }
         const single = new URL('/api/trpc/' + name, url)
         single.searchParams.set('input', JSON.stringify(batch ? input[i] : input))
@@ -53,13 +60,11 @@ try {
     })
   })
   const page = await context.newPage()
+  await page.clock.setFixedTime(new Date(capturedTime))
   const response = await page.goto(new URL('/en', url).href, { waitUntil: 'domcontentloaded' })
   if (!response?.ok()) throw new Error('Core failed to load')
   await page.getByRole('main').waitFor()
-  await page
-    .getByText('No sleep recorded yet', { exact: false })
-    .first()
-    .waitFor({ timeout: 60000 })
+  await page.getByText('HR bpm', { exact: true }).first().waitFor({ timeout: 60000 })
   await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   await page.evaluate(() => document.fonts.ready)
   await page.screenshot({ path: '.capture/core-temperature.png' })
@@ -69,10 +74,10 @@ try {
       {
         url: url.origin,
         path: '/en',
-        viewport: { width: 1440, height: 820 },
+        viewport: { width: 1440, height: 1000 },
         capturedAt: new Date().toISOString(),
         method:
-          'Playwright screenshot of isolated Core with disposable databases and synthetic device-status transport fixture',
+          'Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures',
       },
       null,
       2,

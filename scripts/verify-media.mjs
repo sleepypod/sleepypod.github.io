@@ -21,3 +21,7 @@ for (const a of assets) {
     throw new Error(`Invalid MP4: ${a.output}`)
 }
 console.log(`Verified ${assets.length} product assets, dimensions, and SHA-256 checksums`)
+
+const icon = await readFile('app/icon.png')
+if (!icon.equals(await readFile('public/media/sleepypod-icon.png')))
+  throw new Error('App icon differs from original upstream icon')

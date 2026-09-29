@@ -101,18 +101,118 @@
       "bytes": 18657,
       "width": 480,
       "height": 480,
-      "duration": 2.0
+      "duration": 2
     },
     {
       "repository": "sleepypod-core",
-      "commit": "ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d",
+      "commit": "2d445d7d82c93aa17ce0593584f9f09a8fc368a4",
       "source": "app/[lang]/page.tsx",
       "output": "core-temperature.png",
-      "method": "Playwright real Core UI; disposable databases; capture/core-status.json hardware transport fixture; development badge hidden",
-      "sha256": "6237692f686eea41c8004ed8a35f990a92e484b879e239b0413f634e1fdeb6e0",
-      "bytes": 69954,
+      "method": "Playwright real Core UI; disposable databases; capture/core-status.json and capture/core-demo.mjs synthetic transport fixtures; development badge hidden",
+      "sha256": "eb27ef817e2f27860b7f631b974621a2483227d072df06381acc86c207708983",
+      "bytes": 101884,
       "width": 1440,
-      "height": 820
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "docs/screens/cooling.png",
+      "output": "dial-cooling.png",
+      "method": "USB framebuffer via tools/walkthrough.py",
+      "sha256": "904cbfbbd6f2bca574b931e9a12d1531710e06bf98790dbe99365fcfb82f7454",
+      "bytes": 5691,
+      "width": 240,
+      "height": 240
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "docs/screens/at-target.png",
+      "output": "dial-at-target.png",
+      "method": "USB framebuffer via tools/walkthrough.py",
+      "sha256": "508ef53d034c6f947e917cf4e7004953fbf54899f8bce6299acbd5b705274d83",
+      "bytes": 5417,
+      "width": 240,
+      "height": 240
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "docs/screens/hold-ring.png",
+      "output": "dial-hold-ring.png",
+      "method": "USB framebuffer via tools/walkthrough.py",
+      "sha256": "279cb212574d12a7aee1d646e3be4b1dcb4d21b09b59ac99bea93e77080c8a16",
+      "bytes": 5175,
+      "width": 240,
+      "height": 240
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "docs/screens/settings.png",
+      "output": "dial-settings.png",
+      "method": "USB framebuffer via tools/walkthrough.py",
+      "sha256": "b30112eeebade75dc0cdb1440f97c199c0235b9bed6b408e6774f50e25c35e24",
+      "bytes": 2394,
+      "width": 240,
+      "height": 240
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "docs/screens/night-dim.png",
+      "output": "dial-night-dim.png",
+      "method": "USB framebuffer via tools/walkthrough.py",
+      "sha256": "efecc24655e1014d1ac8eb6b40faa8429c1cd9da47306fc6bf35ffe41d54e243",
+      "bytes": 586,
+      "width": 240,
+      "height": 240
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "docs/screens/day-dim.png",
+      "output": "dial-day-dim.png",
+      "method": "USB framebuffer via tools/walkthrough.py",
+      "sha256": "9d6c2d4fffe52eeed37b349dc166e6620c5c86172659079f8da8633be1ce3127",
+      "bytes": 1139,
+      "width": 240,
+      "height": 240
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "docs/video/settings.mp4",
+      "output": "dial-settings.mp4",
+      "method": "USB framebuffer via tools/walkthrough.py",
+      "width": 480,
+      "height": 480,
+      "duration": 2.6,
+      "sha256": "b0e3cee4dd9872f19eb8be87cfa35c95d6334f099ffde05e2ab9cbaa8daaf8ca",
+      "bytes": 37197
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "2d445d7d82c93aa17ce0593584f9f09a8fc368a4",
+      "source": "public/logo.png",
+      "output": "sleepypod-logo.png",
+      "method": "original upstream brand artwork",
+      "sha256": "ab645a288f53de50481e7175a65863380563d2854bed598c7d20245a21f1eb6c",
+      "bytes": 24605,
+      "width": 128,
+      "height": 128
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "2d445d7d82c93aa17ce0593584f9f09a8fc368a4",
+      "source": "public/icon.png",
+      "output": "sleepypod-icon.png",
+      "method": "original upstream brand artwork",
+      "sha256": "e7f0f87245ac7c69699850bd6290264034a7d6d0093f648eaa88a3b1c7ac2900",
+      "bytes": 6973,
+      "width": 64,
+      "height": 64
     }
   ]
 }

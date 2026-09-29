@@ -7,7 +7,13 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
         <Navbar
           logo={
             <span className="wordmark">
-              <span className="brand-dot" />
+              <img
+                className="brand-logo"
+                src="/media/sleepypod-logo.png"
+                alt=""
+                width="48"
+                height="48"
+              />
               sleepypod<span className="docs-label"> / docs</span>
             </span>
           }

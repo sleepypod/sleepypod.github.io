@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { PhoneFrame, DialFrame } from '../components/media'
+import { PhoneFrame, DialFrame, BrowserFrame } from '../components/media'
 export default function Home() {
   return (
     <div className="home">
@@ -8,7 +8,13 @@ export default function Home() {
       </a>
       <header className="home-nav">
         <Link className="wordmark" href="/">
-          <span className="brand-dot" />
+          <img
+            className="brand-logo"
+            src="/media/sleepypod-logo.png"
+            alt=""
+            width="48"
+            height="48"
+          />
           sleepypod
         </Link>
         <nav aria-label="Main navigation">
@@ -59,6 +65,24 @@ export default function Home() {
               <span className="media-tag">A little less screen time.</span>
             </div>
           </div>
+        </section>
+        <section className="web-showcase" aria-labelledby="web-heading">
+          <div className="section-heading">
+            <p className="eyebrow">IN YOUR BROWSER. ON YOUR NETWORK.</p>
+            <h2 id="web-heading">Your whole night, in view.</h2>
+            <p>
+              Set each side’s temperature, see last night alongside tonight’s schedule, and keep an
+              eye on your Pod—all in the Core web app.
+            </p>
+            <Link className="text-link" href="/core/">
+              Explore the web app ↗
+            </Link>
+          </div>
+          <BrowserFrame
+            src="/media/core-temperature.png"
+            alt="Sleepypod Core web app with side-by-side temperature controls and the overnight timeline"
+            caption="The real Core web app, shown with example temperatures, schedules, and sleep data."
+          />
         </section>
         <div className="principles">
           <div>
@@ -167,7 +191,13 @@ export default function Home() {
       </main>
       <footer className="home-footer">
         <Link className="wordmark" href="/">
-          <span className="brand-dot" />
+          <img
+            className="brand-logo"
+            src="/media/sleepypod-logo.png"
+            alt=""
+            width="48"
+            height="48"
+          />
           sleepypod
         </Link>
         <p>

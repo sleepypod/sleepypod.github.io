@@ -29,7 +29,7 @@ CI=1 DATABASE_URL=file:./.capture/sleepypod.db \
   pnpm exec next dev --hostname 127.0.0.1 --port 3210
 ```
 
-Core migrates/seeds these new disposable databases. `CI=1` skips hardware/scheduler initialization. The capture intercepts `device.getStatus` with `core-status.json`, blocks the sensor WebSocket and non-GET tRPC calls, and makes remaining queries only to this loopback instance. There is no real hardware or personal history. It preserves real UI rendering, with the Next.js development badge hidden. The tRPC fixture transport uses SuperJSON/JSONL so the normal streaming client and Date values still work.
+Core migrates/seeds these new disposable databases. `CI=1` skips hardware/scheduler initialization. The capture intercepts `device.getStatus` with `core-status.json`, supplies example schedules and sleep from `core-demo.mjs`, blocks the sensor WebSocket and non-GET tRPC calls, and makes remaining queries only to this loopback instance. There is no real hardware or personal history. It preserves real UI rendering, with the Next.js development badge hidden. The tRPC fixture transport uses SuperJSON/JSONL so the normal streaming client and Date values still work.
 
 In the site worktree:
 
@@ -39,7 +39,7 @@ CORE_CAPTURE_URL=http://127.0.0.1:3210 node scripts/capture-core.mjs
 
 Inspect `.capture/core-temperature.png`. Then copy the unchanged PNG to `public/media/core-temperature.png`, update that entry's SHA-256, byte size, width, height, and source commit in `manifest.json`, and copy `.capture/core-capture.json` to `capture/core-capture.json`. `pnpm media:verify` checks the promoted asset. Stop the isolated server after capture; preserve the worktree if it will be reused.
 
-The published Core image intentionally shows a new installation with no recorded night or schedule. The two temperature states are synthetic transport fixtures, not measurements from a real bed.
+The published Core image shows synthetic temperatures, schedules, and sleep on a fixed example date (September 28, 2026, America/Los_Angeles). These are transport fixtures, not measurements from a real bed. The application renders all controls and charts without UI modifications. The original bed-and-moon logo and icon are imported byte-for-byte from Core; `app/icon.png` mirrors the imported icon.
 
 ## iOS and Dial
 
