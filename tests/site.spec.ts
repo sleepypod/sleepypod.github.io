@@ -22,7 +22,7 @@ for (const route of pages)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
       true,
     )
-    const images = page.locator('img')
+    const images = page.locator('img').filter({ visible: true })
     for (const image of await images.all()) {
       await image.scrollIntoViewIfNeeded()
       await expect(image).toHaveJSProperty('complete', true)
@@ -115,6 +115,7 @@ test('Core screenshot enlarges and closes', async ({ page }) => {
     .getByRole('img', { name: 'Core temperature controls with separate left and right sides' })
     .click()
   await expect(page.getByRole('dialog')).toBeVisible()
+  await expect(page.getByRole('dialog').locator('img')).toHaveJSProperty('naturalWidth', 1440)
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).not.toBeVisible()
 })
