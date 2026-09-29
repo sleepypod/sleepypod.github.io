@@ -1,4 +1,4 @@
-# Sleepypod product and documentation site
+# sleepypod product and documentation site
 
 Nextra + Next.js static export, served at https://sleepypod.github.io/.
 

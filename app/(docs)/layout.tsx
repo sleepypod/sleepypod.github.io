@@ -23,7 +23,7 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
       footer={
         <Footer>
           <span>
-            Sleepypod · Open source. Local by design. <a href="/">Back to home ↗</a>
+            sleepypod · Open source. Local by design. <a href="/">Back to home ↗</a>
           </span>
         </Footer>
       }

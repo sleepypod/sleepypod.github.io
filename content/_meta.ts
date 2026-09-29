@@ -6,5 +6,5 @@ export default {
   dial: 'M5 Rotary Dial',
   troubleshooting: 'Troubleshooting',
   developers: 'Developers',
-  about: 'About Sleepypod',
+  about: 'About sleepypod',
 }
