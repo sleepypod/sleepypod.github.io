@@ -8,14 +8,20 @@ Core runs scheduled jobs on the Pod. Closing the web app or iOS app does not sto
 
 ## Build a nightly routine
 
-1. Open **Schedule** and choose the side to configure.
-2. Select the days when the routine should run.
-3. Add a power-on event and optional warm-up temperature.
-4. Add temperature changes at the times you want them.
-5. Add a vibration alarm and a power-off event if desired.
-6. Save and review the selected days and side.
+1. Open **Schedule** and choose Left, Right, or Both.
+2. Select **New curve** (or the edit control on an existing curve).
+3. Choose its days, bedtime, wake time, and temperature limits.
+4. Start with Hot Sleeper, Balanced, or Cold Sleeper, then review the individual setpoints. Presets are starting points, not measured recommendations.
+5. Save the curve and review any conflicts with existing days. Edits remain local until Save.
+6. Use **Add alarm** for a vibration alarm and check its side and days separately.
 
-Start with a simple routine and confirm it runs as expected before adding more events. For a routine crossing midnight, check the calendar day attached to each event.
+The curve editor groups a routine across selected days. Review its start and end behavior in the resulting card. For detailed job timing, use **System → Scheduler**. The Schedule switch enables or disables the selected side's recurring schedule; a manual temperature hold does not change that switch.
+
+<BrowserFrame
+  src="/media/core-schedule.png"
+  alt="Recurring temperature curve in the core Schedule page"
+  caption="Real core UI in an isolated instance with synthetic example data."
+/>
 
 ## Check the timezone
 
@@ -27,7 +33,9 @@ Alarm configuration includes duration, intensity, and pattern. Hardware capabili
 
 ## Temporary changes
 
-Manual temperature changes and recurring schedules can interact. Review the next event and any active one-shot run when troubleshooting a setpoint that changes again later.
+A manual adjustment creates a hold, defaulting to 30 minutes. Schedule and run-once clocks continue during the hold; Resume returns to the point that applies now. A run-once session outranks recurring schedules and Autopilot but remains below a manual hold. See [temperature ownership](/core/temperature/#manual-holds-and-resume).
+
+On the Temp screen, Night and Dawn edits shift saved phase setpoints across every day matching tonight's curve. Use the Schedule editor when you want different days or individual point changes.
 
 ## iOS curve editor
 
@@ -35,4 +43,4 @@ The iOS companion provides per-phase temperature controls, day and side selectio
 
 ---
 
-**Source reference:** [Scheduler and alarms](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/hardware/alarms.md) · [iOS scheduling](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)
+**Source reference:** [Current curve editor](https://github.com/sleepypod/core/blob/17d5369e/src/components/Schedule/CurveEditor.tsx) · [Ownership contract](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md) · [Scheduler and alarms](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/hardware/alarms.md) · [iOS scheduling](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)

@@ -4,28 +4,57 @@ title: 'Temperature and power'
 
 # Temperature and power
 
-## Choose a side
+Choose the correct bed side before changing its temperature or power. The target is the requested temperature; the bed reading is measured state, so they often differ while heating or cooling.
 
-The left and right sides have separate power and temperature state. Check the selected side before using the dial or power control. Linking sides in a client applies changes to both; it is useful when one person uses the whole bed.
+## Now, Night, and Dawn
 
-## Set the target
+The stepper separates an immediate adjustment from a recurring schedule edit:
 
-Use the temperature dial or plus/minus controls. The target is where you want the bed to go; the current reading describes where it is now. Heating and cooling take time, so these values will often differ.
+| Control   | What changes                                               | What to check                                               |
+| --------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| **Now**   | The selected side's current target, with a manual hold     | The hold duration and power state                           |
+| **Night** | The earlier setpoints in tonight's saved temperature curve | The displayed days: all days with the same curve are edited |
+| **Dawn**  | The final portion of that curve                            | The phase time range and matching days                      |
 
-The API accepts Fahrenheit temperatures; clients can display Celsius. The M5 Dial's configured range is 55–110°F. Consult the installed Core API schema for its current validation rules.
+Use minus or plus on **Now** for an immediate adjustment. Use **Night** or **Dawn** to shift that phase's setpoints together while preserving the curve's shape. The phase value summarizes its setpoints; it is not a separate hardware measurement. A one-point schedule has no Dawn phase.
 
-## Turn power off
+If tonight has no schedule, Night and Dawn preview a balanced template. The first adjustment saves the template to nights without an existing schedule. Review the resulting days in **Schedule**. Existing scheduled nights are preserved.
 
-Use the selected side's power control. A powered state is distinct from reaching a target temperature. Check the current temperature and water/pump status if the bed is not responding as expected.
+<BrowserFrame
+  src="/media/core-temperature.png"
+  alt="Core temperature controls with separate left and right sides"
+  caption="Real core interface with synthetic example temperatures and schedules."
+/>
 
-## When a schedule changes the target
+## Manual holds and Resume
 
-Schedules and manual controls share the same device. Review the next scheduled event if a setpoint changes unexpectedly. See [schedules and alarms](/core/schedules/) before editing or disabling recurring control.
+**Hold after adjustment** sets the duration for your next manual change. The default is 30 minutes. Each accepted adjustment restarts that side's hold timer. The saved recurring schedule stays enabled and its clock continues advancing.
 
-## If nothing changes
+Select **Resume** to end a hold early. When a hold ends, core chooses the target applicable now; it does not replay missed schedule points. If no source has a target, the temperature remains unchanged.
 
-Check the selected side, connection, service health, and water level. A powered side with flat temperature trends can indicate a pump problem; follow [Core troubleshooting](/troubleshooting/core/) instead of repeatedly sending commands.
+Temperature ownership, from highest to lowest priority, is:
+
+1. Manual hold.
+2. Run-once session.
+3. Autopilot request.
+4. Recurring schedule.
+
+Power-off and pump safety remain independent. A temperature schedule does not ordinarily switch a powered-off side back on. Explicit shutdown ends a manual hold; alarm vibration can still fire during one.
+
+## Display and power
+
+**Settings → Appearance** selects the control style and temperature display. The stepper supports degrees, offset, and the −10…+10 level scale. A level step is approximately 2.75°F; API setpoints remain Fahrenheit. Display changes do not change the API's units.
+
+Use the selected side's power control to turn it off. If it reports powered but the bed is not responding, check **System → Thermal**, water level, and pump diagnostics rather than repeatedly adjusting the target.
+
+See [schedules](/core/schedules/), [Autopilot](/core/autopilot/), and the [temperature controller contract](/developers/temperature-control/).
+
+<BrowserFrame
+  src="/media/core-appearance.png"
+  alt="Appearance settings with dial, slider, and Now Night Dawn controls"
+  caption="Real core UI in an isolated instance with synthetic example data."
+/>
 
 ---
 
-**Source reference:** [Device API](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/src/server/routers/device.ts) · [Thermal diagnostics](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [Dial temperature range](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/include/config.h)
+**Source reference:** [Stepper and phase controls](https://github.com/sleepypod/core/tree/17d5369e/src/components/TempScreen) · [Temperature ownership](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md)

@@ -1,0 +1,42 @@
+---
+title: 'Hardware protocol and safety'
+---
+
+# Hardware protocol and safety
+
+## One transport, sequential commands
+
+Core owns the DAC Unix socket and frankenfirmware connects to it. All consumers share one transport and sequential command queue. The protocol has no correlation IDs: read the response for the command just sent before sending another. Creating competing transports can displace the real connection.
+
+Ordinary per-side writes also use `withSideLock`. Temperature changes pass through the [temperature controller](/developers/temperature-control/) so gestures, schedules, APIs, and integrations agree on ownership.
+
+## Wire format
+
+A command is a decimal opcode, newline, argument, then a blank line. Responses end with a blank line. Temperature levels range from −100 to +100; zero maps to 82.5°F. The hardware range is 55–110°F.
+
+| Opcode  | Purpose                         |
+| ------- | ------------------------------- |
+| 0       | Hello/connectivity              |
+| 5 / 6   | Left/right alarm configuration  |
+| 8       | Settings CBOR                   |
+| 9 / 10  | Left/right temperature duration |
+| 11 / 12 | Left/right temperature level    |
+| 13      | Priming                         |
+| 14      | Device status                   |
+| 16      | Alarm clear                     |
+
+Settings use short CBOR keys such as `gl`, `gr`, and `lb`, with merge semantics. A successful write with an unrecognized friendly key can be a silent no-op. Use the exact schemas in the protocol reference, not inferred JSON field names.
+
+## Alarms and cover differences
+
+Alarm payloads and motor behavior vary by firmware. Pod 5 J55 firmware can clamp accepted intensity and pattern values. Validate physical output rather than treating an accepted API request as proof of vibration. **System → Hardware** provides the haptics diagnostic surface.
+
+## Pump protection and recovery
+
+Power state reports the requested operation, not proof of water circulation. Pump readings and their age help diagnose stalled delivery; availability differs by firmware. The pump guard owns bounded probes and emergency cutoffs. Recovery must honor the current temperature owner and remaining duration rather than energizing a stale request.
+
+Raw command execution and socket takeover are specialist diagnostics. They can interrupt normal control and are not a substitute for the consumer API. The investigation notes include rejected approaches and unresolved questions; treat those as research evidence, not installation instructions.
+
+---
+
+**Source reference:** [DAC protocol](https://github.com/sleepypod/core/blob/17d5369e/docs/hardware/DAC-PROTOCOL.md) · [Alarm payloads and behavior](https://github.com/sleepypod/core/blob/17d5369e/docs/hardware/alarms.md) · [Pump safety design](https://github.com/sleepypod/core/blob/17d5369e/docs/adr/0022-pump-stall-safety.md) · [Socket investigation](https://github.com/sleepypod/core/blob/17d5369e/docs/hardware/dac-socket-takeover.md) · [LPS observations](https://github.com/sleepypod/core/blob/17d5369e/docs/hardware/lps-diagnostics.md)

@@ -59,6 +59,10 @@ try {
       body: JSON.stringify(superjson.serialize(resolved)) + '\n',
     })
   })
+  await context.addInitScript(() => {
+    localStorage.setItem('sleepypod-pref-control', 'stepper')
+    localStorage.setItem('sleepypod-pref-temp-display', 'degrees')
+  })
   const page = await context.newPage()
   await page.clock.setFixedTime(new Date(capturedTime))
   const response = await page.goto(new URL('/en', url).href, { waitUntil: 'domcontentloaded' })
@@ -67,13 +71,32 @@ try {
   await page.getByText('HR bpm', { exact: true }).first().waitFor({ timeout: 60000 })
   await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   await page.evaluate(() => document.fonts.ready)
+  await page.getByRole('tab', { name: /Now$/ }).first().waitFor()
   await page.screenshot({ path: '.capture/core-temperature.png' })
+  const captures = [{ path: '/en', output: 'core-temperature.png' }]
+  for (const [path, output, heading] of [
+    ['/en/schedule', 'core-schedule.png', 'Schedule'],
+    ['/en/settings?section=appearance', 'core-appearance.png', 'Appearance'],
+    ['/en/autopilot', 'core-autopilot.png', 'Automations'],
+  ]) {
+    await page.goto(new URL(path, url).href, { waitUntil: 'networkidle' })
+    await page
+      .getByRole('heading', { name: new RegExp(heading) })
+      .filter({ visible: true })
+      .first()
+      .waitFor()
+    await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
+    await page.evaluate(() => document.fonts.ready)
+    await page.screenshot({ path: '.capture/' + output })
+    captures.push({ path, output })
+  }
   await writeFile(
     '.capture/core-capture.json',
     JSON.stringify(
       {
         url: url.origin,
-        path: '/en',
+        captures,
+        preferences: { control: 'stepper', temperatureDisplay: 'degrees' },
         viewport: { width: 1440, height: 1000 },
         capturedAt: new Date().toISOString(),
         method:

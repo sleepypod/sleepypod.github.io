@@ -104,17 +104,6 @@
       "duration": 2
     },
     {
-      "repository": "sleepypod-core",
-      "commit": "2d445d7d82c93aa17ce0593584f9f09a8fc368a4",
-      "source": "app/[lang]/page.tsx",
-      "output": "core-temperature.png",
-      "method": "Playwright real Core UI; disposable databases; capture/core-status.json and capture/core-demo.mjs synthetic transport fixtures; development badge hidden",
-      "sha256": "eb27ef817e2f27860b7f631b974621a2483227d072df06381acc86c207708983",
-      "bytes": 101884,
-      "width": 1440,
-      "height": 1000
-    },
-    {
       "repository": "sleepypod-mt-rotary-dial",
       "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
       "source": "docs/screens/cooling.png",
@@ -213,6 +202,50 @@
       "bytes": 6973,
       "width": 64,
       "height": 64
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "17d5369ef921231e225d5f1ff0774fe965625f41",
+      "source": "app/[lang]/page.tsx",
+      "output": "core-temperature.png",
+      "method": "Playwright real core UI; disposable databases; synthetic transport fixtures; Stepper preference; development badge hidden",
+      "sha256": "b96d21a73d21d0354c8743891987bb84f08562371208ecab7472ae6a4f3132b8",
+      "bytes": 184455,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "17d5369ef921231e225d5f1ff0774fe965625f41",
+      "source": "app/[lang]/schedule/page.tsx",
+      "output": "core-schedule.png",
+      "method": "Playwright real core UI; disposable databases; synthetic transport fixtures; Stepper preference; development badge hidden",
+      "sha256": "db6b75b617c12248013ee719a498ab30d16868b523398683f96295be88574168",
+      "bytes": 67079,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "17d5369ef921231e225d5f1ff0774fe965625f41",
+      "source": "app/[lang]/settings/page.tsx",
+      "output": "core-appearance.png",
+      "method": "Playwright real core UI; disposable databases; synthetic transport fixtures; Stepper preference; development badge hidden",
+      "sha256": "c5c669305a91518706b88330c1bf42d7acde86b76353ae0719ffa48deed2a9b2",
+      "bytes": 125642,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "17d5369ef921231e225d5f1ff0774fe965625f41",
+      "source": "app/[lang]/autopilot/page.tsx",
+      "output": "core-autopilot.png",
+      "method": "Playwright real core UI; disposable databases; synthetic transport fixtures; Stepper preference; development badge hidden",
+      "sha256": "3038f074929437b890831d1df0aca98011aedf2bc5a98884c8c17fb60544ea57",
+      "bytes": 93455,
+      "width": 1440,
+      "height": 1000
     }
   ]
 }

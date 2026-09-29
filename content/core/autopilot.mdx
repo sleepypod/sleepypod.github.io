@@ -1,0 +1,41 @@
+---
+title: 'Autopilot automations'
+---
+
+# Autopilot automations
+
+Autopilot reacts to signals and conditions on the Pod. A recurring schedule answers “at what time?”; an automation also answers “under which conditions?” Both keep running when the browser closes.
+
+## Build and inspect a rule
+
+1. Open **Autopilot → Automations** and create a rule or start from a template.
+2. Choose its side, trigger, conditions, and actions. Check temperature bounds, priority, and cooldown.
+3. Start with a notification or dry run to inspect what the rule would do.
+4. Review the rule's run history and any backtest against a recorded night before enabling hardware actions.
+5. Use **Autopilot → Diagnostics** to inspect engine state and signals when results differ from expectations.
+
+The rule model is **WHEN / IF / THEN**: a trigger, a condition tree, and one or more actions. Conditions can combine time windows, live signals, and historical aggregates. Missing signals are not evidence that a condition is true.
+
+<BrowserFrame
+  src="/media/core-autopilot.png"
+  alt="Autopilot templates, temperature ownership timeline, and activity"
+  caption="Real core UI in an isolated instance with synthetic example data."
+/>
+
+## Understand temperature behavior
+
+Manual holds and run-once sessions outrank Autopilot. Among Autopilot requests, higher rule priority wins, then the newest activation. Recurring schedules supply the fallback.
+
+A continuous policy owns a target while its conditions remain valid. False or unknown conditions withdraw it, and its lease expires if the engine stops refreshing it. A one-shot resolves its target once and holds it for 30 minutes by default; repeated engine ticks do not keep adding its delta or extending its lifetime.
+
+Relative temperature actions use the schedule/session baseline, rather than their own previous output. Conditions still inspect live observations. This prevents a “lower by two degrees” expression from repeatedly lowering itself every tick.
+
+## Stop or troubleshoot a rule
+
+Disable the rule or use the global kill-switch to revoke its temperature requests. Editing or deleting a rule also revokes its old requests. Check the run log for fired, skipped, clamped, dry-run, and error outcomes. If another owner wins, inspect the [manual hold and Resume controls](/core/temperature/#manual-holds-and-resume).
+
+Temperature clamping, cooldowns, action-rate limits, and pump protection still apply. A successful rule evaluation does not prove the hardware is circulating water; inspect **System → Thermal** for delivery evidence.
+
+---
+
+**Source reference:** [Autopilot design](https://github.com/sleepypod/core/blob/17d5369e/docs/adr/0023-autopilot-reactive-automations.md) · [Current ownership and request lifetimes](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md) · [Autopilot interface](https://github.com/sleepypod/core/tree/17d5369e/src/components/Autopilot)

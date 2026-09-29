@@ -12,7 +12,7 @@ Web app / iOS / M5 Dial
           ▼
      Core on the Pod ─── Scheduler / Autopilot
           │
-   side controller + per-side lock
+   temperature ownership + per-side lock
           │
    sequential DAC transport
           ▼
@@ -28,14 +28,16 @@ The DAC monitor polls hardware, updates state, and broadcasts changes. WebSocket
 ## Biometrics pipeline
 
 ```text
-Firmware → RAW sensor frames → Python modules → biometrics.db → Core API → clients
-                 │
+Firmware → selected RAW or NATS source → modules → biometrics.db → API → clients
+                  │
+           RAW deployments only
+                  ▼
            linker / archiver
-                 ▼
-       compressed persistent archive
 ```
 
-The hot RAW directory is a RAM-backed filesystem. A linker pins frames before firmware deletion, and an archiver compresses them onto persistent storage. Python modules are independent systemd processes and communicate through a database schema contract.
+On RAW deployments, the hot RAW directory is a RAM-backed filesystem. A linker pins frames before firmware deletion, and an archiver compresses them onto persistent storage. Python modules are independent systemd processes and communicate through a database schema contract.
+
+NATS deployments use live sensor subscriptions instead; no RAW archive is required. The selector never runs both sources concurrently in one consumer. See [transport selection and calibration](/developers/sensor-pipeline/) for restart behavior and readiness.
 
 ## Two databases
 
@@ -52,4 +54,4 @@ The HTTP API is LAN-only and unauthenticated. MQTT is an outbound client connect
 
 ---
 
-**Source reference:** [Architecture invariants](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/AGENTS.md) · [System and storage diagrams](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [RAW frame retention](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/adr/0018-tmpfs-raw-frames.md)
+**Source reference:** [Current source selection](https://github.com/sleepypod/core/blob/17d5369e/docs/nats-frame-readers.md) · [Temperature arbitration](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md) · [Architecture invariants](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/AGENTS.md) · [System and storage diagrams](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [RAW frame retention](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/adr/0018-tmpfs-raw-frames.md)

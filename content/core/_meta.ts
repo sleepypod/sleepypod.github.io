@@ -5,4 +5,7 @@ export default {
   schedules: 'Schedules and alarms',
   biometrics: 'Sleep and biometrics',
   integrations: 'HomeKit and MQTT',
+  autopilot: 'Autopilot automations',
+  system: 'System diagnostics',
+  settings: 'Settings and maintenance',
 }

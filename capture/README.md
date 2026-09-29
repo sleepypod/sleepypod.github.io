@@ -37,7 +37,7 @@ In the site worktree:
 CORE_CAPTURE_URL=http://127.0.0.1:3210 node scripts/capture-core.mjs
 ```
 
-Inspect `.capture/core-temperature.png`. Then copy the unchanged PNG to `public/media/core-temperature.png`, update that entry's SHA-256, byte size, width, height, and source commit in `manifest.json`, and copy `.capture/core-capture.json` to `capture/core-capture.json`. `pnpm media:verify` checks the promoted asset. Stop the isolated server after capture; preserve the worktree if it will be reused.
+Inspect every `.capture/core-*.png` image (Temperature, Schedule, Appearance, and Autopilot). The script selects the real Stepper preference and degrees display through browser storage. Then copy each unchanged PNG to `public/media/`, preserving its filename, update each entry's SHA-256, byte size, width, height, and source commit in `manifest.json`, and copy `.capture/core-capture.json` to `capture/core-capture.json`. `pnpm media:verify` checks the promoted asset. Stop the isolated server after capture; preserve the worktree if it will be reused.
 
 The published Core image shows synthetic temperatures, schedules, and sleep on a fixed example date (September 28, 2026, America/Los_Angeles). These are transport fixtures, not measurements from a real bed. The application renders all controls and charts without UI modifications. The original bed-and-moon logo and icon are imported byte-for-byte from Core; `app/icon.png` mirrors the imported icon.
 
