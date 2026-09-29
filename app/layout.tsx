@@ -4,10 +4,10 @@ import 'nextra-theme-docs/style.css'
 import './global.css'
 export const metadata: Metadata = {
   metadataBase: new URL('https://sleepypod.github.io'),
-  title: { default: 'Sleepypod — Your bed. Your rules.', template: '%s — Sleepypod' },
+  title: { default: 'sleepypod — Your bed. Your rules.', template: '%s — sleepypod' },
   description:
-    'Local control for your Pod. Meet Sleepypod Core, the native iOS app, and the M5 Rotary Dial.',
-  openGraph: { siteName: 'Sleepypod', type: 'website' },
+    'Local control for your Pod. Meet sleepypod Core, the native iOS app, and the M5 Rotary Dial.',
+  openGraph: { siteName: 'sleepypod', type: 'website' },
 }
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

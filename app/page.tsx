@@ -54,7 +54,7 @@ export default function Home() {
               <PhoneFrame
                 priority
                 src="/media/ios-temperature.png"
-                alt="Sleepypod iOS temperature screen set to 75 degrees Fahrenheit"
+                alt="sleepypod iOS temperature screen set to 75 degrees Fahrenheit"
               />
             </div>
             <div className="hero-dial">
@@ -80,7 +80,7 @@ export default function Home() {
           </div>
           <BrowserFrame
             src="/media/core-temperature.png"
-            alt="Sleepypod Core web app with side-by-side temperature controls and the overnight timeline"
+            alt="sleepypod Core web app with side-by-side temperature controls and the overnight timeline"
             caption="The real Core web app, shown with example temperatures, schedules, and sleep data."
           />
         </section>
@@ -109,7 +109,7 @@ export default function Home() {
               <span className="card-number">01 — THE FOUNDATION</span>
               <div className="product-symbol">⌁</div>
               <h3>
-                Sleepypod Core <span>↗</span>
+                sleepypod Core <span>↗</span>
               </h3>
               <p>
                 The local server on your Pod. A web app, schedules, biometrics, and integrations in
@@ -121,7 +121,7 @@ export default function Home() {
               <span className="card-number">02 — IN YOUR HAND</span>
               <div className="product-symbol">◫</div>
               <h3>
-                Sleepypod iOS <span>↗</span>
+                sleepypod iOS <span>↗</span>
               </h3>
               <p>
                 A native companion for temperature, sleep trends, and the details of your night.
