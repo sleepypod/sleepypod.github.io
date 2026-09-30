@@ -111,9 +111,19 @@ test('custom 404 export exists', async ({ request }) => {
 })
 test('Core screenshot enlarges and closes', async ({ page }) => {
   await page.goto('/core/')
-  await page
-    .getByRole('img', { name: 'Core temperature controls with separate left and right sides' })
-    .click()
+  const image = page.getByRole('img', {
+    name: 'Core temperature controls with separate left and right sides',
+  })
+  await image.scrollIntoViewIfNeeded()
+  await expect(image).toHaveJSProperty('complete', true)
+  // Nextra adds this control only after the image and zoom handler are ready.
+  await expect(
+    page.getByRole('button', {
+      name: 'Expand image: Core temperature controls with separate left and right sides',
+      exact: true,
+    }),
+  ).toBeAttached()
+  await image.click()
   await expect(page.getByRole('dialog')).toBeVisible()
   await expect(page.getByRole('dialog').locator('img')).toHaveJSProperty('naturalWidth', 2880)
   await page.keyboard.press('Escape')
