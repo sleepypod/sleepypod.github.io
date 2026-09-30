@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
+  "bounds": {
+    "x": 275,
+    "y": 251.4375,
+    "width": 1114,
+    "height": 336.515625
+  },
+  "deviceScaleFactor": 2,
+  "framesPerSecond": 24,
+  "frameCount": 192,
+  "duration": 8,
+  "capturedTime": "2026-09-30T23:40:00-07:00",
+  "method": "Playwright 2x screenshots of the unmodified native SVG animation sampled at 24 fps for 8 seconds; synthetic health fixtures; silent H.264 encoding"
+}

@@ -15,7 +15,7 @@ Open **Sleep → Nights** for night records and **Sleep → Biometrics** for the
 <BrowserFrame
   src="/media/core-sleep.png"
   alt="sleepypod Nights view with an example sleep record"
-  caption="This example has a sleep record but insufficient vitals for sleep-stage classification. Synthetic data, not measurements from a real bed."
+  caption="Synthetic sleep measurements rendered by the real app. Stage estimates are computed by core’s classifier from the example vitals and movement."
 />
 
 ## What you will see
@@ -26,6 +26,12 @@ Open **Sleep → Nights** for night records and **Sleep → Biometrics** for the
 - **Environmental and hardware sensors:** temperature, light, flow, and water-level information where supported.
 
 Sensor availability depends on the Pod generation, firmware, and active modules. Missing measurements should be treated as missing, not as a zero value.
+
+<BrowserFrame
+  src="/media/core-biometrics.png"
+  alt="Biometrics view with a week of example heart-rate, HRV, and breathing measurements"
+  caption="Real core UI with deterministic synthetic measurements. These are illustrative examples, not personal sleep data."
+/>
 
 ## Give the sensors context
 

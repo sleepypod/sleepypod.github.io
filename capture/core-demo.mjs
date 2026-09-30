@@ -1,22 +1,14 @@
 // Synthetic example schedules and sleep. Rendered by the unmodified Core UI.
 // Fixed local date keeps the timeline repeatable; never reads a real bed's data.
-export const capturedTime = '2026-09-28T19:00:00-07:00'
-const enteredBedAt = new Date('2026-09-27T23:15:00-07:00')
-const leftBedAt = new Date('2026-09-28T07:10:00-07:00')
-const sleep = {
-  enteredBedAt,
-  leftBedAt,
-  sleepDurationSeconds: 27900,
-  timesExitedBed: 1,
-  presentIntervals: [[+enteredBedAt / 1000, +leftBedAt / 1000]],
-}
+import { richData, capturedTime } from './core-rich-data.mjs'
+export { capturedTime }
 const jobs = ['left', 'right']
   .flatMap((side) =>
     [
-      ['22:00', 78, '2026-09-28'],
-      ['23:15', 74, '2026-09-28'],
-      ['03:00', 70, '2026-09-29'],
-      ['07:00', 80, '2026-09-29'],
+      ['22:00', 78, '2026-09-30'],
+      ['23:15', 74, '2026-09-30'],
+      ['03:00', 70, '2026-10-01'],
+      ['07:00', 80, '2026-10-01'],
     ].map(([time, temperature, date]) => ({
       id: `${side}-${time}`,
       type: 'temperature',
@@ -30,28 +22,8 @@ const jobs = ['left', 'right']
   )
   .sort((a, b) => a.nextRun - b.nextRun)
 export function demoData(name, input) {
-  if (name === 'health.dataPath')
-    return {
-      at: +new Date(capturedTime),
-      occupancy: { left: 'empty', right: 'empty' },
-      nodes: [],
-      edges: [],
-      verdict: {
-        tone: 'warn',
-        headline: 'Documentation capture: no physical Pod connected',
-        nodeId: null,
-        lastGoodId: null,
-        fix: null,
-        also: [],
-      },
-    }
-  if (name === 'health.hardware')
-    return {
-      status: 'degraded',
-      socketPath: '/tmp/sleepypod-docs-no-device.sock',
-      latencyMs: 0,
-      error: 'Documentation capture: no physical Pod connected',
-    }
+  const rich = richData(name, input)
+  if (rich !== undefined) return rich
   if (name === 'health.scheduler')
     return {
       enabled: true,
@@ -115,17 +87,25 @@ export function demoData(name, input) {
       power: [],
     }
   }
-  if (name === 'biometrics.getLatestSleep') return sleep
-  if (name === 'biometrics.getSleepRecords') return [sleep]
   if (name === 'biometrics.getVitalsSummary')
     return { avgHeartRate: 56, avgHRV: 48, avgBreathingRate: 14 }
   if (name === 'health.thermalHistory')
     return {
       bucketSec: 240,
       points: Array.from({ length: 136 }, (_, i) => ({
-        t: +new Date('2026-09-27T22:00:00-07:00') + i * 240000,
+        t: +new Date('2026-09-29T22:00:00-07:00') + i * 240000,
         leftTarget: 74,
         rightTarget: 72,
+        leftBed: 74 + Math.sin(i / 12),
+        rightBed: 72 + Math.sin(i / 13),
+        leftSurface: 74 + Math.sin(i / 12),
+        rightSurface: 72 + Math.sin(i / 13),
+        leftWater: 76 + Math.sin(i / 12),
+        rightWater: 70 + Math.sin(i / 13),
+        leftRpm: 2200,
+        rightRpm: 2200,
+        ambient: 75,
+        heatsink: 86,
       })),
     }
 }
