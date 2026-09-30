@@ -1,3 +1,4 @@
+import { HomeStories } from '../components/HomeStories'
 import { BrandLogo } from '../components/BrandLogo'
 import { GitHubIcon } from 'nextra/icons'
 import Link from 'next/link'
@@ -85,6 +86,7 @@ export default function Home() {
           />
         </section>
         <ControlShowcase />
+        <HomeStories />
         <div className="principles">
           <div>
             <span>01 / LOCAL</span>
@@ -103,24 +105,40 @@ export default function Home() {
           <div className="section-heading">
             <p className="eyebrow">THREE WAYS TO FEEL AT HOME</p>
             <h2>One bed. A connected ecosystem.</h2>
-            <p>Core does the work. Choose how you take control.</p>
+            <p>Core does the work. Choose a client—or build your own.</p>
           </div>
           <div className="product-grid">
             <Link className="product-card core-card" href="/core/">
               <span className="card-number">01 — THE FOUNDATION</span>
-              <div className="product-symbol">⌁</div>
+              <div className="product-capture core-capture">
+                <img
+                  src="/media/core-temperature.png"
+                  alt="Core web app temperature controls"
+                  width="1440"
+                  height="1000"
+                  loading="lazy"
+                />
+              </div>
               <h3>
                 sleepypod Core <span>↗</span>
               </h3>
               <p>
-                The local server on your Pod. A web app, schedules, biometrics, and integrations in
-                one place.
+                The local server on your Pod. Client-agnostic APIs, a web app, schedules,
+                biometrics, and home automation.
               </p>
               <span className="card-link">Explore Core</span>
             </Link>
             <Link className="product-card ios-card" href="/ios/">
               <span className="card-number">02 — IN YOUR HAND</span>
-              <div className="product-symbol">◫</div>
+              <div className="product-capture ios-capture">
+                <img
+                  src="/media/ios-temperature.png"
+                  alt="Native iOS temperature screen"
+                  width="1206"
+                  height="2622"
+                  loading="lazy"
+                />
+              </div>
               <h3>
                 sleepypod iOS <span>↗</span>
               </h3>
@@ -131,16 +149,43 @@ export default function Home() {
             </Link>
             <Link className="product-card dial-card" href="/dial/">
               <span className="card-number">03 — AT YOUR BEDSIDE</span>
-              <div className="product-symbol">◉</div>
+              <div className="product-capture dial-capture">
+                <img
+                  src="/media/dial-heating.png"
+                  alt="Real M5 Dial display while heating"
+                  width="240"
+                  height="240"
+                  loading="lazy"
+                />
+              </div>
               <h3>
                 M5 Rotary Dial <span>↗</span>
               </h3>
               <p>
-                Turn for comfort. Click for off. A tactile controller designed to disappear into the
-                night.
+                An ESP32-based M5Stack Dial. Turn for comfort, click for off, and keep a tactile
+                controller at your bedside.
               </p>
               <span className="card-link">Explore the Dial</span>
             </Link>
+          </div>
+          <div className="build-invitation">
+            <div>
+              <p className="eyebrow">AN OPEN INVITATION</p>
+              <h3>Your interface belongs here, too.</h3>
+              <p>
+                Core is client-agnostic: use our apps, connect your home automation, or build your
+                own controller on the local API. A different screen, a physical button, your own ESP
+                project—make it yours.
+              </p>
+            </div>
+            <div className="integration-links">
+              <Link href="/developers/api/">Build with the API ↗</Link>
+              <Link href="/core/integrations/#home-assistant--mqtt">
+                Home Assistant &amp; MQTT ↗
+              </Link>
+              <Link href="/core/integrations/#apple-home--homekit">Apple Home &amp; HomeKit ↗</Link>
+              <Link href="/developers/dial/">Explore the ESP32 Dial ↗</Link>
+            </div>
           </div>
         </section>
         <section className="night-section">

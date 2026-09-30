@@ -6,6 +6,8 @@ title: 'Sleep and biometrics'
 
 Core processes the Pod's sensor data locally. Python sidecar processes extract vitals and sleep-session information and write them to `biometrics.db`; the app reads those results through the API.
 
+[Follow the visual data flow](/core/data-flow/) to see how sensor readings become measurements and night records.
+
 ## Find your data
 
 Open **Sleep → Nights** for night records and **Sleep → Biometrics** for the measurement view. Sensor and service troubleshooting now lives under **System → Sensors**, **Pipeline**, and **Health**. See the [system guide](/core/system/) when a night has missing measurements.
