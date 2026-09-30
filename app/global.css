@@ -694,7 +694,6 @@ button:focus-visible {
   place-items: center;
   padding: 20px;
   border-radius: 24px;
-  background: radial-gradient(ellipse at top, #26324355, #101014 75%);
 }
 .control-showcase-stage img {
   display: block;
@@ -815,8 +814,11 @@ button:focus-visible {
 .flow-preview li + li::before {
   content: '→';
   position: absolute;
-  left: -20px;
-  top: 8px;
+  /* Midpoint between 40px circles in equal columns with a 22px gap. */
+  left: calc(-50% + 9px);
+  top: 20px;
+  transform: translate(-50%, -50%);
+  line-height: 1;
   color: #7ab5e0;
 }
 .flow-preview span {
@@ -971,4 +973,12 @@ button:focus-visible {
     grid-template-columns: 1fr;
     gap: 20px;
   }
+}
+
+.external-link-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.25em;
+  vertical-align: -0.1em;
 }
