@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from './ExternalLinkIcon'
 import Link from 'next/link'
 import { BrowserFrame } from './media'
 
@@ -18,7 +19,7 @@ export function HomeStories() {
             records you can explore.
           </p>
           <Link className="text-link" href="/core/data-flow/">
-            Follow the data flow ↗
+            Follow the data flow <ExternalLinkIcon />
           </Link>
         </div>
         <ol className="flow-preview" aria-label="Simplified local biometrics data flow">
@@ -62,7 +63,7 @@ export function HomeStories() {
             This example records a service-log notification. It does not send a phone push.
           </p>
           <Link className="text-link" href="/core/autopilot/">
-            Explore Autopilot ↗
+            Explore Autopilot <ExternalLinkIcon />
           </Link>
         </div>
         <BrowserFrame
@@ -89,7 +90,7 @@ export function HomeStories() {
             without a full set of vitals.
           </p>
           <Link className="text-link" href="/core/biometrics/">
-            Understand your sleep data ↗
+            Understand your sleep data <ExternalLinkIcon />
           </Link>
         </div>
         <BrowserFrame
