@@ -7,13 +7,14 @@ if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname))
   throw new Error('Capture requires an isolated loopback Core instance')
 await mkdir('.capture', { recursive: true })
 const browser = await chromium.launch()
+let clockStarted = Date.now()
 try {
   const context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
-    deviceScaleFactor: 1,
+    deviceScaleFactor: 2,
     colorScheme: 'dark',
     timezoneId: 'America/Los_Angeles',
-    reducedMotion: 'reduce',
+    reducedMotion: 'no-preference',
   })
   // No remote destinations: keep captures on this isolated instance.
   // Hardware, schedules, and sleep use synthetic fixtures; other reads use the disposable DB.
@@ -24,7 +25,43 @@ try {
   const status = JSON.parse(await readFile('capture/core-status.json', 'utf8'))
   await context.routeWebSocket(
     (u) => u.port === '3001',
-    (ws) => ws.close(),
+    (ws) => {
+      // Synthetic live frames never connect to a real socket or device.
+      const send = () => {
+        const ts = (+new Date(capturedTime) + Date.now() - clockStarted) / 1000
+        for (const frame of [
+          {
+            type: 'piezo-dual',
+            ts,
+            freq: 500,
+            left1: [0, 12, 28, 10, -8, 0],
+            right1: [0, 10, 23, 8, -6, 0],
+          },
+          { type: 'capSense2', ts, left: [1.1, 1.2, 1.1], right: [1.2, 1.1, 1.2] },
+          {
+            type: 'bedTemp2',
+            ts,
+            ambientTemp: 23.9,
+            mcuTemp: 30,
+            humidity: 45,
+            leftOuterTemp: 23.3,
+            leftCenterTemp: 23.3,
+            leftInnerTemp: 23.3,
+            rightOuterTemp: 22.2,
+            rightCenterTemp: 22.2,
+            rightInnerTemp: 22.2,
+          },
+        ])
+          ws.send(JSON.stringify(frame))
+      }
+      const timer = setInterval(send, 1000)
+      ws.onClose(() => clearInterval(timer))
+      ws.onMessage((message) => {
+        const request = JSON.parse(String(message))
+        if (request.type === 'subscribe')
+          ws.send(JSON.stringify({ type: 'subscribed', sensors: request.sensors || [] }))
+      })
+    },
   )
   await context.route('**/api/trpc/**', async (route) => {
     const requestUrl = new URL(route.request().url())
@@ -64,7 +101,13 @@ try {
     localStorage.setItem('sleepypod-pref-temp-display', 'degrees')
   })
   const page = await context.newPage()
-  await page.clock.setFixedTime(new Date(capturedTime))
+  const errors = []
+  page.on('pageerror', (error) => {
+    errors.push(error.message)
+    if (!error.message.startsWith('Hydration failed')) console.error(error.message)
+  })
+  await page.clock.install({ time: new Date(capturedTime) })
+  clockStarted = Date.now()
   const response = await page.goto(new URL('/en', url).href, { waitUntil: 'domcontentloaded' })
   if (!response?.ok()) throw new Error('Core failed to load')
   await page.getByRole('main').waitFor()
@@ -110,8 +153,10 @@ try {
     ['/en/settings?section=appearance', 'core-appearance.png', 'Appearance'],
     ['/en/autopilot', 'core-autopilot.png', 'Automations'],
     ['/en/system', 'core-system.png', 'Dashboard'],
+    ['/en/system?tab=health', 'core-health.png', 'Health'],
     ['/en/system?tab=scheduler', 'core-scheduler.png', 'Scheduler'],
     ['/en/sleep', 'core-sleep.png', 'Nights'],
+    ['/en/sleep?view=biometrics', 'core-biometrics.png', 'Biometrics'],
     ['/en/settings?section=gestures', 'core-gestures.png', 'Gestures'],
     ['/en/settings?section=backup', 'core-backup.png', 'Backup'],
   ]) {
@@ -123,6 +168,10 @@ try {
       .waitFor()
     await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
     await page.evaluate(() => document.fonts.ready)
+    if (output === 'core-sleep.png')
+      await page.getByText('No heart-rate data for this night').waitFor({ state: 'hidden' })
+    if (output === 'core-health.png') await page.getByText('Data path', { exact: true }).waitFor()
+    if (path.startsWith('/en/system')) await page.waitForTimeout(6500)
     await page.screenshot({ path: '.capture/' + output })
     captures.push({ path, output })
   }
@@ -134,6 +183,8 @@ try {
         captures,
         preferences: { control: 'stepper', temperatureDisplay: 'degrees' },
         viewport: { width: 1440, height: 1000 },
+        deviceScaleFactor: 2,
+        sourceCommit: process.env.CORE_SOURCE_COMMIT,
         capturedAt: new Date().toISOString(),
         method:
           'Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures',
@@ -142,7 +193,56 @@ try {
       2,
     ) + '\n',
   )
-  console.log('Review .capture/core-temperature.png before promotion.')
+  // Next dev can recover a streamed metadata hydration mismatch; keep it in
+  // capture provenance and fail on every other browser exception.
+  await writeFile('.capture/browser-warnings.json', JSON.stringify(errors, null, 2) + '\n')
+  const failures = errors.filter(
+    (error) => !error.startsWith('Hydration failed because the server rendered HTML'),
+  )
+  if (failures.length) throw new Error(failures.join('\n'))
+  const videoPage = await context.newPage()
+  await videoPage.clock.install({ time: new Date(capturedTime) })
+  clockStarted = Date.now()
+  await videoPage.goto(new URL('/en/system?tab=health', url).href, { waitUntil: 'networkidle' })
+  await videoPage.getByText('Data path', { exact: true }).waitFor()
+  await videoPage.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
+  const diagram = videoPage.getByTestId('data-path-map')
+  await diagram.waitFor()
+  await videoPage.locator('animateMotion').first().waitFor({ state: 'attached' })
+  await diagram.screenshot({ path: '.capture/core-health-map.png' })
+  const bounds = await diagram.boundingBox()
+  if (!bounds) throw new Error('No animated Health map')
+  await mkdir('.capture/health-frames', { recursive: true })
+  // Sample the unmodified SVG's native animation clock; each frame is an
+  // actual 2x element screenshot, with no redraw or interpolation.
+  await diagram.evaluate((svg) => svg.pauseAnimations())
+  for (let frame = 0; frame < 192; frame++) {
+    await diagram.evaluate((svg, time) => svg.setCurrentTime(time), frame / 24)
+    await diagram.screenshot({
+      path: `.capture/health-frames/${String(frame).padStart(4, '0')}.png`,
+    })
+  }
+  await videoPage.close()
+  await writeFile(
+    '.capture/core-health-video.json',
+    JSON.stringify(
+      {
+        sourceCommit: process.env.CORE_SOURCE_COMMIT,
+        bounds,
+        deviceScaleFactor: 2,
+        framesPerSecond: 24,
+        frameCount: 192,
+        duration: 8,
+        capturedTime,
+        method:
+          'Playwright 2x screenshots of the unmodified native SVG animation sampled at 24 fps for 8 seconds; synthetic health fixtures; silent H.264 encoding',
+      },
+      null,
+      2,
+    ) + '\n',
+  )
+  await context.close()
+  console.log('Review all .capture/core-*.png and the Health video before promotion.')
 } finally {
   await browser.close()
 }

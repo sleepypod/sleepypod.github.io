@@ -115,7 +115,7 @@ test('Core screenshot enlarges and closes', async ({ page }) => {
     .getByRole('img', { name: 'Core temperature controls with separate left and right sides' })
     .click()
   await expect(page.getByRole('dialog')).toBeVisible()
-  await expect(page.getByRole('dialog').locator('img')).toHaveJSProperty('naturalWidth', 1440)
+  await expect(page.getByRole('dialog').locator('img')).toHaveJSProperty('naturalWidth', 2880)
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).not.toBeVisible()
 })
@@ -149,7 +149,7 @@ for (const route of ['/', '/core/temperature/']) {
       await expect(panel).toHaveCount(1)
       const image = panel.getByRole('img')
       await expect(image).toHaveAttribute('src', `/media/core-control-${style}.png`)
-      await expect(image).toHaveJSProperty('naturalWidth', 410)
+      await expect(image).toHaveJSProperty('naturalWidth', 820)
       await expect(image).toHaveAttribute('alt', /78°F/)
     }
     await dial.focus()
@@ -194,5 +194,29 @@ for (const [route, count] of [
       true,
     )
     expect(errors).toEqual([])
+  })
+}
+
+for (const route of ['/', '/core/data-flow/']) {
+  test(`Health map video plays on ${route}`, async ({ page }) => {
+    await page.goto(route)
+    const video = page
+      .locator('video')
+      .filter({ has: page.locator('source[src="/media/core-health-flow.mp4"]') })
+    await video.scrollIntoViewIfNeeded()
+    await expect(video).toHaveAttribute('controls', '')
+    expect(await video.evaluate((el: HTMLVideoElement) => el.autoplay)).toBe(false)
+    await video.evaluate((el: HTMLVideoElement) => {
+      el.muted = true
+      return el.play()
+    })
+    await expect
+      .poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime))
+      .toBeGreaterThan(0.5)
+    expect(await video.evaluate((el: HTMLVideoElement) => el.videoWidth)).toBeGreaterThanOrEqual(
+      2000,
+    )
+    expect(await video.evaluate((el: HTMLVideoElement) => el.error)).toBeNull()
+    await video.evaluate((el: HTMLVideoElement) => el.pause())
   })
 }

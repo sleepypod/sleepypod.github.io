@@ -1,5 +1,5 @@
 {
-  "url": "http://127.0.0.1:3211",
+  "url": "http://127.0.0.1:3212",
   "captures": [
     {
       "path": "/en",
@@ -16,6 +16,34 @@
     {
       "path": "/en/autopilot",
       "output": "core-autopilot.png"
+    },
+    {
+      "path": "/en/system",
+      "output": "core-system.png"
+    },
+    {
+      "path": "/en/system?tab=health",
+      "output": "core-health.png"
+    },
+    {
+      "path": "/en/system?tab=scheduler",
+      "output": "core-scheduler.png"
+    },
+    {
+      "path": "/en/sleep",
+      "output": "core-sleep.png"
+    },
+    {
+      "path": "/en/sleep?view=biometrics",
+      "output": "core-biometrics.png"
+    },
+    {
+      "path": "/en/settings?section=gestures",
+      "output": "core-gestures.png"
+    },
+    {
+      "path": "/en/settings?section=backup",
+      "output": "core-backup.png"
     }
   ],
   "preferences": {
@@ -26,7 +54,8 @@
     "width": 1440,
     "height": 1000
   },
-  "capturedAt": "2026-09-29T20:56:58.613Z",
-  "method": "Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures",
-  "sourceCommit": "17d5369ef921231e225d5f1ff0774fe965625f41"
+  "deviceScaleFactor": 2,
+  "sourceCommit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
+  "capturedAt": "2026-09-30T04:49:20.765Z",
+  "method": "Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures"
 }

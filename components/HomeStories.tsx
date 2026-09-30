@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from './ExternalLinkIcon'
 import Link from 'next/link'
-import { BrowserFrame } from './media'
+import { BrowserFrame, Demo } from './media'
 
 export function HomeStories() {
   return (
@@ -22,23 +22,15 @@ export function HomeStories() {
             Follow the data flow <ExternalLinkIcon />
           </Link>
         </div>
-        <ol className="flow-preview" aria-label="Simplified local biometrics data flow">
-          <li>
-            <span>01</span>
-            <strong>Sense</strong>
-            <small>Signals from your Pod</small>
-          </li>
-          <li>
-            <span>02</span>
-            <strong>Process</strong>
-            <small>Local sensor modules</small>
-          </li>
-          <li>
-            <span>03</span>
-            <strong>Explore</strong>
-            <small>Your nights and trends</small>
-          </li>
-        </ol>
+        <Demo
+          wide
+          src="/media/core-health-flow.mp4"
+          poster="/media/core-health-map.png"
+          title="Watch the data flow"
+        >
+          The real System → Health map, recorded with synthetic sensor and service data. Moving dots
+          trace the connections from sensors to outputs. Silent video; press play to watch.
+        </Demo>
       </article>
       <article className="feature-story">
         <div className="story-copy">
@@ -96,7 +88,7 @@ export function HomeStories() {
         <BrowserFrame
           src="/media/core-sleep.png"
           alt="Real core Nights view showing an example sleep record"
-          caption="Synthetic night record; insufficient vitals for sleep-stage classification."
+          caption="Real app capture with synthetic sleep stages, heart rate, and night records."
         />
       </article>
     </section>

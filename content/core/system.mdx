@@ -38,6 +38,18 @@ Open **System** for the Pod's operating state. **Settings** holds configuration;
 
 See the [sensor pipeline reference](/developers/sensor-pipeline/) for transport selection and [troubleshooting](/troubleshooting/core/#biometrics-are-empty) for command-line checks.
 
+## Follow the live data path
+
+**Health** traces sensor readings through hardware, services, and core to the outputs. Moving links indicate recent data. Select a stage for details; use the 24-hour history and incident list to find interruptions. A running service can still have stale output.
+
+<BrowserFrame
+  src="/media/core-health.png"
+  alt="System Health showing the sensor-to-output map and 24-hour history"
+  caption="Real core UI with synthetic healthy readings and one resolved example incident."
+/>
+
+[Watch the animated data-path walkthrough](/core/data-flow/#see-the-real-system-at-work).
+
 ## Investigate ineffective heating or cooling
 
 Compare the selected side's target with water temperature and recent pump readings in **Thermal**. A commanded power state is not proof of circulation. Pump telemetry varies by firmware; missing telemetry must not be interpreted as a measured zero RPM. Review the note and age of readings alongside the verdict.

@@ -21,6 +21,20 @@ flowchart TD
 
 </div>
 
+## See the real system at work
+
+<Demo
+  wide
+  src="/media/core-health-flow.mp4"
+  poster="/media/core-health-map.png"
+  title="From sensors to outputs"
+>
+  A silent recording of the real System → Health map with synthetic data. Moving dots trace active
+  connections through hardware, services, and core to the outputs. Press play to watch.
+</Demo>
+
+The map shows where data is flowing now. The history beneath it helps explain when a stage stopped producing output—even if its service was still running.
+
 ## 1. The Pod senses
 
 Piezo signals support heart-rate and breathing estimates. Capacitive sensors help detect presence and movement. Other records describe the bed and its environment. Which readings are available depends on the hardware, firmware, and active modules.
@@ -40,7 +54,7 @@ The core API reads the stored results for the web and iOS apps. iOS also perform
 <BrowserFrame
   src="/media/core-sleep.png"
   alt="Core Nights view with an example sleep record"
-  caption="Real app capture with synthetic data. This record has insufficient vitals for sleep-stage classification."
+  caption="Real app capture with synthetic sleep stages, heart rate, and night records."
 />
 
 A night record is not a guarantee of complete biometrics: power transitions can create records even when sensor modules are not running. [Learn what each measurement means](/core/biometrics/).

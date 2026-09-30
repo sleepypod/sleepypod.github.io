@@ -29,7 +29,7 @@ CI=1 DATABASE_URL=file:./.capture/sleepypod.db \
   pnpm exec next dev --hostname 127.0.0.1 --port 3210
 ```
 
-Core migrates/seeds these new disposable databases. `CI=1` skips hardware/scheduler initialization. The capture intercepts `device.getStatus` with `core-status.json`, supplies example schedules and sleep from `core-demo.mjs`, blocks the sensor WebSocket and non-GET tRPC calls, and makes remaining queries only to this loopback instance. Hardware health and scheduler queries also use fixtures to avoid hardware probes. The Dashboard deliberately shows disconnected hardware, and Nights demonstrates a sleep record without enough vitals for stage classification. There is no real hardware or personal history. It preserves real UI rendering, with the Next.js development badge hidden. The tRPC fixture transport uses SuperJSON/JSONL so the normal streaming client and Date values still work.
+Core migrates/seeds these new disposable databases. `CI=1` skips hardware/scheduler initialization. The capture intercepts `device.getStatus` with `core-status.json`, supplies schedules from `core-demo.mjs` and richer API responses from `core-rich-data.mjs` / `core-rich-demo.json`, replaces the sensor WebSocket with synthetic frames and blocks non-GET tRPC calls, and makes remaining queries only to this loopback instance. Hardware health and scheduler queries also use fixtures to avoid hardware probes. The demo shows a healthy Pod, a week of synthetic vitals and sleep records, active and dry-run rules, and a resolved example service incident. The Health map uses core’s own status evaluator; sleep stages use its real classifier. There is no real hardware or personal history. It preserves real UI rendering, with the Next.js development badge hidden. The tRPC fixture transport uses SuperJSON/JSONL so the normal streaming client and Date values still work.
 
 In the site worktree:
 
@@ -37,9 +37,24 @@ In the site worktree:
 CORE_CAPTURE_URL=http://127.0.0.1:3210 CORE_SOURCE_COMMIT=<full-core-commit> node scripts/capture-core.mjs
 ```
 
-Inspect every `.capture/core-*.png` image: Temperature, Schedule, Appearance, Autopilot, Dashboard, Scheduler, Nights, Gestures, Backup, and the three temperature-control cards. The script selects the real Stepper preference and degrees display through browser storage, then switches the actual browser preference to capture Dial, Slider, and Stepper cards without changing the app UI. Then copy each unchanged PNG to `public/media/`, preserving its filename, update each entry's SHA-256, byte size, width, height, and source commit in `manifest.json`, and copy `.capture/core-capture.json` to `capture/core-capture.json`. `pnpm media:verify` checks the promoted asset. When promoting only a subset, preserve older asset provenance and record the new routes in `core-workflows.json`; control cards have their own `core-controls.json`. Stop the isolated server after capture; preserve the worktree if it will be reused.
+Still captures use a 1440×1000 CSS viewport at 2× device scale (2880×2000 PNGs). The three control cards use element captures at the same scale. The native Health SVG animation is sampled through its own animation clock at 24 frames per second for eight seconds. Each frame is a real 2× element screenshot, encoded as silent H.264 with fast-start metadata. No UI pixels are redrawn. Playback is user-initiated, with a still poster and no autoplay.
 
-The published Core image shows synthetic temperatures, schedules, and sleep on a fixed example date (September 28, 2026, America/Los_Angeles). These are transport fixtures, not measurements from a real bed. The application renders all controls and charts without UI modifications. The original bed-and-moon logo and icon are imported byte-for-byte from Core; `app/icon.png` mirrors the imported icon.
+To regenerate the deterministic fixture JSON, run from the pinned Core checkout (Core's `tsx` resolves its pure source modules):
+
+```sh
+pnpm exec tsx /path/to/site/scripts/generate-core-demo.mts /path/to/site/capture/core-rich-demo.json
+```
+
+Inspect every `.capture/core-*.png`, including Health and Biometrics, then promote the reviewed stills and encode the video:
+
+```sh
+node scripts/promote-core-capture.mjs
+pnpm media:verify
+```
+
+Promotion updates source commits, methods, dimensions, byte sizes, and SHA-256 checksums for just these captures. The capture records any recoverable Next.js development metadata hydration warnings separately in `.capture/browser-warnings.json` and rejects other browser exceptions. Stop the isolated Core server when finished.
+
+The published Core image shows synthetic temperatures, schedules, and sleep on a fixed example date (September 30, 2026, America/Los_Angeles). These are transport fixtures, not measurements from a real bed. The application renders all controls and charts without UI modifications. The original bed-and-moon logo and icon are imported byte-for-byte from Core; `app/icon.png` mirrors the imported icon.
 
 ## Hardware access photos
 
