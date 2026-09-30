@@ -1,3 +1,5 @@
+import { BrandLogo } from '../components/BrandLogo'
+import { GitHubIcon } from 'nextra/icons'
 import Link from 'next/link'
 import { ControlShowcase } from '../components/ControlShowcase'
 import { PhoneFrame, DialFrame, BrowserFrame } from '../components/media'
@@ -9,18 +11,15 @@ export default function Home() {
       </a>
       <header className="home-nav">
         <Link className="wordmark" href="/">
-          <img
-            className="brand-logo"
-            src="/media/sleepypod-logo.png"
-            alt=""
-            width="48"
-            height="48"
-          />
+          <BrandLogo />
           sleepypod
         </Link>
         <nav aria-label="Main navigation">
           <Link href="/getting-started/">Documentation</Link>
-          <a href="https://github.com/sleepypod">GitHub ↗</a>
+          <a className="github-link" href="https://github.com/sleepypod">
+            <GitHubIcon aria-hidden="true" focusable="false" />
+            GitHub
+          </a>
         </nav>
       </header>
       <main id="main" data-pagefind-body>
@@ -193,13 +192,7 @@ export default function Home() {
       </main>
       <footer className="home-footer">
         <Link className="wordmark" href="/">
-          <img
-            className="brand-logo"
-            src="/media/sleepypod-logo.png"
-            alt=""
-            width="48"
-            height="48"
-          />
+          <BrandLogo />
           sleepypod
         </Link>
         <p>

@@ -24,7 +24,7 @@ for (const asset of manifest.assets) {
   }
   asset.sha256 = createHash('sha256').update(bytes).digest('hex')
   asset.bytes = bytes.length
-  if (asset.output.endsWith('.png')) {
+  if (/\.(png|jpe?g)$/.test(asset.output)) {
     const m = await sharp(bytes).metadata()
     asset.width = m.width
     asset.height = m.height

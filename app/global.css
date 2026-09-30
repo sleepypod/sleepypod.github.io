@@ -17,10 +17,31 @@ html {
   font-weight: 700;
   letter-spacing: -1px;
 }
+.brand-logo-frame {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  border-radius: 12px;
+  background: #000;
+  flex-shrink: 0;
+  overflow: hidden;
+}
 .brand-logo {
-  width: 40px;
-  height: 40px;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+}
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.github-link svg {
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 }
 .docs-label {
@@ -598,9 +619,11 @@ button:focus-visible {
   }
 }
 @media (max-width: 420px) {
-  .brand-logo {
-    width: 28px;
-    height: 28px;
+  .brand-logo-frame {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    border-radius: 9px;
   }
   .home-nav {
     padding-inline: 18px;
@@ -670,7 +693,6 @@ button:focus-visible {
   display: grid;
   place-items: center;
   padding: 20px;
-  border: 1px solid #ffffff1a;
   border-radius: 24px;
   background: radial-gradient(ellipse at top, #26324355, #101014 75%);
 }
