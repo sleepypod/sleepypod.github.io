@@ -1,5 +1,6 @@
 export default {
   index: 'Overview',
+  'root-access': 'Open the Pod and get root',
   installation: 'Install and update',
   temperature: 'Temperature and power',
   schedules: 'Schedules and alarms',

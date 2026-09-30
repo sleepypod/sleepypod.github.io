@@ -168,3 +168,30 @@ for (const route of ['/', '/core/temperature/']) {
     )
   })
 }
+
+for (const [route, count] of [
+  ['/core/autopilot/', 2],
+  ['/developers/architecture/', 2],
+  ['/developers/temperature-control/', 1],
+] as const) {
+  test(`Mermaid diagrams render accessibly on ${route}`, async ({ page }) => {
+    const errors: string[] = []
+    page.on('pageerror', (error) => errors.push(error.message))
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text())
+    })
+    await page.goto(route)
+    const diagrams = page.locator('.docs-diagram')
+    await expect(diagrams).toHaveCount(count, { timeout: 30000 })
+    for (const diagram of await diagrams.all()) {
+      await diagram.scrollIntoViewIfNeeded()
+      await expect(diagram.locator('svg')).toBeVisible({ timeout: 30000 })
+      await expect(diagram.locator('title')).not.toBeEmpty()
+      await expect(diagram.locator('desc')).not.toBeEmpty()
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+      true,
+    )
+    expect(errors).toEqual([])
+  })
+}

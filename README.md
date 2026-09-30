@@ -22,6 +22,8 @@ pnpm check
 
 ## Guide map
 
+- First-time setup: [open the Pod and get root access](content/core/root-access.mdx), then [install Core](content/core/installation.mdx).
+
 - Everyday controls: [temperature and holds](content/core/temperature.mdx), [schedules](content/core/schedules.mdx), and [Autopilot](content/core/autopilot.mdx).
 - Operations: [system diagnostics](content/core/system.mdx), [settings and backups](content/core/settings.mdx), installation, integrations, sleep, and troubleshooting.
 - Technical reference: [temperature controller](content/developers/temperature-control.mdx), [sensor pipeline](content/developers/sensor-pipeline.mdx), [hardware](content/developers/hardware.mdx), and [CI/deployment workflows](content/developers/workflows.mdx).

@@ -42,6 +42,33 @@ Resume resolves the currently applicable request. It does not replay elapsed sch
 
 The selected target may differ from the effective hardware target when blocked. It remains Fahrenheit even if surrounding status was requested in Celsius. Tolerate an absent control object on older versions or before startup completes.
 
+## Resolve competing requests
+
+For each side, choose the highest-priority **currently valid** request. Autopilot ties use rule priority, then newest activation, then a stable request ID. Selection and permission to write hardware are separate decisions.
+
+<div className="docs-diagram">
+
+```mermaid
+flowchart TD
+  accTitle: Temperature ownership and hardware gating
+  accDescr: Use a live manual hold first, otherwise a run-once session, otherwise an Autopilot request, otherwise the schedule. No target leaves the temperature unchanged. An off side or safety block prevents energizing writes even when a target is selected.
+  M{"Live manual hold?"} -->|Yes| T["Select target"]
+  M -->|No| R{"Run-once target?"}
+  R -->|Yes| T
+  R -->|No| A{"Autopilot request?"}
+  A -->|Yes| T
+  A -->|No| S{"Schedule target?"}
+  S -->|Yes| T
+  S -->|No| U["Release ownership; leave temperature unchanged"]
+  T --> G{"Off or safety-blocked?"}
+  G -->|Yes| B["Report selected target and blocked state; no energizing write"]
+  G -->|No| W["Reconcile through per-side lock"]
+```
+
+</div>
+
+Schedules and sessions keep their clocks while a higher-priority request wins. After Resume or expiry, reconcile the target that applies now. A temperature-only reconciliation must not repower an off side.
+
 ## Duration is a separate clock
 
 The existing `duration` field is hardware heating duration in seconds, not a hold duration. An explicit duration creates a persisted absolute cutoff. Resume, hold expiry, restart, keepalive, and safety recovery cannot extend it. Duration zero shuts the side off without creating a hold.

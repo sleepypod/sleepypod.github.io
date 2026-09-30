@@ -334,6 +334,72 @@
       "bytes": 89581,
       "width": 1440,
       "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "docs/hardware/pod-5/002-rubber-feet-removed.jpg",
+      "output": "pod5-base-screws.jpg",
+      "method": "upstream hardware photograph, copied unchanged",
+      "sha256": "9fa0920c0d75ae228d43f97cbe12b238478977f0cee91e154db1c4cdb86123d7",
+      "bytes": 218768,
+      "width": 1372,
+      "height": 1030
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "docs/hardware/pod-5/003-bottom-cover-removed.jpg",
+      "output": "pod5-base-open.jpg",
+      "method": "upstream hardware photograph, copied unchanged",
+      "sha256": "5a5b6cfe5232010783aaf0a2dd016c1f131aa05409a139517589eec924d1c8b6",
+      "bytes": 346478,
+      "width": 1372,
+      "height": 1030
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "a1ecf7ea02826c8381b686a3ac7f30024dd24633",
+      "source": "docs/hardware/pod-5/006-jtag-connection-closeup.jpg",
+      "output": "pod5-serial-header.jpg",
+      "method": "upstream hardware photograph, copied unchanged",
+      "sha256": "4603b2c2a56896031cb61fa9c85a50134ec7a28b5a3c13646bd6f5b8ee43d6b7",
+      "bytes": 451320,
+      "width": 1372,
+      "height": 1030
+    },
+    {
+      "repository": "free-sleep",
+      "commit": "e615820a347db068fedc3d8cf6e684884fb96c8a",
+      "source": "docs/jtag/pinout.jpeg",
+      "output": "serial-board-pinout.jpeg",
+      "method": "upstream hardware photograph, copied unchanged",
+      "sha256": "eeae990a03900ed58b43814c89325060d8be2ac049a52e7f2a336f4d73bbda1b",
+      "bytes": 1366210,
+      "width": 1938,
+      "height": 2584
+    },
+    {
+      "repository": "free-sleep",
+      "commit": "e615820a347db068fedc3d8cf6e684884fb96c8a",
+      "source": "docs/jtag/4_module_connection.png",
+      "output": "serial-adapter.png",
+      "method": "upstream hardware photograph, copied unchanged",
+      "sha256": "0d05d8bf1e70cccdeafa29674f6c5bb576dbc61d1eda27fb025ef846a9de3c5d",
+      "bytes": 2437356,
+      "width": 1054,
+      "height": 1335
+    },
+    {
+      "repository": "free-sleep",
+      "commit": "e615820a347db068fedc3d8cf6e684884fb96c8a",
+      "source": "docs/jtag/1_connection_layout.jpeg",
+      "output": "serial-harness-layout.jpeg",
+      "method": "upstream hardware photograph, copied unchanged",
+      "sha256": "d666e0379a9f2b624a94daa7c414a506f64d6703298cb901cc754e7972485652",
+      "bytes": 1330741,
+      "width": 4032,
+      "height": 3024
     }
   ]
 }

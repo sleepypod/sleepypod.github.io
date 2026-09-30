@@ -12,10 +12,14 @@ for (const a of assets) {
   if (createHash('sha256').update(b).digest('hex') !== a.sha256)
     throw new Error(`Checksum mismatch: ${a.output}`)
   if (b.length !== a.bytes) throw new Error(`Byte size mismatch: ${a.output}`)
-  if (a.output.endsWith('.png')) {
+  if (/\.(png|jpe?g)$/.test(a.output)) {
     const m = await sharp(b).metadata()
-    if (m.format !== 'png' || m.width !== a.width || m.height !== a.height)
-      throw new Error(`Invalid PNG: ${a.output}`)
+    if (
+      m.format !== (a.output.endsWith('.png') ? 'png' : 'jpeg') ||
+      m.width !== a.width ||
+      m.height !== a.height
+    )
+      throw new Error(`Invalid image: ${a.output}`)
   }
   if (a.output.endsWith('.mp4') && b.subarray(4, 8).toString() !== 'ftyp')
     throw new Error(`Invalid MP4: ${a.output}`)

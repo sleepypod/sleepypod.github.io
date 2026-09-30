@@ -6,18 +6,21 @@ title: 'System architecture'
 
 ## Control plane
 
-```text
-Web app / iOS / M5 Dial
-          │ HTTP / tRPC / REST
-          ▼
-     Core on the Pod ─── Scheduler / Autopilot
-          │
-   temperature ownership + per-side lock
-          │
-   sequential DAC transport
-          ▼
-     Pod hardware daemon
+<div className="docs-diagram">
+
+```mermaid
+flowchart TD
+  accTitle: Ordinary temperature commands reach hardware through one controller
+  accDescr: Web, iOS, Dial, scheduler, and Autopilot requests enter the temperature controller. It selects ownership per side, then uses a side lock and sequential DAC transport to reach the hardware daemon.
+  C["Web / iOS / M5 Dial"] -->|HTTP APIs| O["Per-side temperature controller"]
+  S["Scheduler / run-once"] --> O
+  A["Autopilot requests"] --> O
+  O --> L["Per-side lock"]
+  L --> D["Sequential DAC transport"]
+  D --> H["Pod hardware daemon"]
 ```
+
+</div>
 
 Hardware writes use per-side locking. The DAC protocol has no correlation IDs, so commands are strictly sequential and each response belongs to the command just sent. Shared singletons live on `globalThis` to survive multiple module instances under Turbopack.
 
@@ -27,13 +30,24 @@ The DAC monitor polls hardware, updates state, and broadcasts changes. WebSocket
 
 ## Biometrics pipeline
 
-```text
-Firmware → selected RAW or NATS source → modules → biometrics.db → API → clients
-                  │
-           RAW deployments only
-                  ▼
-           linker / archiver
+<div className="docs-diagram">
+
+```mermaid
+flowchart TD
+  accTitle: Sensor data reaches clients through the selected transport
+  accDescr: Each consumer selects RAW files or NATS subscriptions, not both. Processing modules write biometrics.db, which the API reads for clients. RAW deployments additionally retain files through a linker and archiver.
+  F["Firmware"] --> R["RAW files"]
+  F --> N["NATS messages"]
+  R --> S["Consumer selects one source"]
+  N --> S
+  S --> M["Processing modules"]
+  M --> DB["biometrics.db"]
+  DB --> API["API"]
+  API --> C["Clients"]
+  R --> AR["RAW only: linker and archiver"]
 ```
+
+</div>
 
 On RAW deployments, the hot RAW directory is a RAM-backed filesystem. A linker pins frames before firmware deletion, and an archiver compresses them onto persistent storage. Python modules are independent systemd processes and communicate through a database schema contract.
 

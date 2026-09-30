@@ -41,6 +41,10 @@ Inspect every `.capture/core-*.png` image: Temperature, Schedule, Appearance, Au
 
 The published Core image shows synthetic temperatures, schedules, and sleep on a fixed example date (September 28, 2026, America/Los_Angeles). These are transport fixtures, not measurements from a real bed. The application renders all controls and charts without UI modifications. The original bed-and-moon logo and icon are imported byte-for-byte from Core; `app/icon.png` mirrors the imported icon.
 
+## Hardware access photos
+
+`content/core/root-access.mdx` uses original Pod 5 photos from core and wiring photos from free-sleep. The manifest pins each Git blob; JPEG and PNG dimensions and checksums are verified. Importing these requires the `free-sleep` sibling checkout as well. The original free-sleep license is retained in `licenses/free-sleep.md`. Images are copied unchanged, including existing annotations.
+
 ## iOS and Dial
 
 The published iOS screenshots are imported byte-for-byte from the pinned iOS repository. Fresh iOS capture requires Xcode Simulator and a mock backend; see `content/developers/media.mdx` for `simctl` commands. Inspect status bars and data before promotion.

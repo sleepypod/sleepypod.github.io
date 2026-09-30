@@ -1,3 +1,4 @@
+import { BrandLogo } from '../../components/BrandLogo'
 import { Layout, Navbar, Footer } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 export default async function DocsLayout({ children }: { children: React.ReactNode }) {
@@ -7,13 +8,7 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
         <Navbar
           logo={
             <span className="wordmark">
-              <img
-                className="brand-logo"
-                src="/media/sleepypod-logo.png"
-                alt=""
-                width="48"
-                height="48"
-              />
+              <BrandLogo />
               sleepypod<span className="docs-label"> / docs</span>
             </span>
           }

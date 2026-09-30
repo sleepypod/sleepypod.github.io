@@ -6,6 +6,58 @@ title: 'Autopilot automations'
 
 Autopilot reacts to signals and conditions on the Pod. A recurring schedule answers “at what time?”; an automation also answers “under which conditions?” Both keep running when the browser closes.
 
+## Read a rule as a sentence
+
+Think of a rule as: **“When something happens, if these checks pass, then do this.”** Choose the bed side as well: an action for Left should not change Right.
+
+| Part     | Plain-language meaning      | Example                                     |
+| -------- | --------------------------- | ------------------------------------------- |
+| **WHEN** | When should the rule check? | The water-level reading changes.            |
+| **IF**   | What must be true?          | The new reading says the tank is low.       |
+| **THEN** | What should happen?         | Record a notification that the tank is low. |
+
+<div className="docs-diagram">
+
+```mermaid
+flowchart TD
+  accTitle: A water-low rule in three steps
+  accDescr: A changed water-level reading starts a check. A known low reading records a notification. A normal or unavailable reading does not fire the action.
+  W["WHEN: water-level reading changes"] --> I{"IF: does it say low?"}
+  I -->|Yes| T["THEN: record a notification"]
+  I -->|No or unavailable| S["Do not fire the action"]
+```
+
+</div>
+
+The **Tell me when water is low** template follows this pattern. A refill also changes the reading, but the IF check prevents a low-water notification when the tank is OK. In the referenced implementation, **Notify writes to the core service log**, with the action visible in rule activity; it does not send a phone push notification or email.
+
+The engine checks on a roughly one-minute tick; a change trigger is not an instant hardware interrupt. A trigger starts a check; it is not proof that an action happened. A missing reading is **unknown**, not zero or “all clear.” The engine can combine conditions using ALL, ANY, and NOT. ALL requires every check to pass; ANY needs at least one. An unknown value stays unknown when inverted with NOT.
+
+## Two temperature examples
+
+The templates are starting points. Check the actual signal availability in **Autopilot → Diagnostics** and try a dry run before relying on a rule. A signal appearing in the editor or a recorded-night backtest does not guarantee a fresh live reading.
+
+### Follow the room overnight
+
+The **Hold room +3°F** template means: between **11 PM and 6 AM**, request a bed target **3°F above room temperature**, limited to the template's **60–85°F** range. These are example template values, not recommended temperatures for everyone.
+
+This is a **continuous policy**: it keeps asking for a target while its conditions remain true. Leaving the time window or losing a required condition withdraws the policy. Another available temperature source can then take over.
+
+### Make a temporary adjustment
+
+The **Cool when restless** template checks whether average movement over **10 minutes** exceeds **200**, then requests a target **2°F below the schedule/session baseline** for **20 minutes**. Its **30-minute cooldown** spaces out new activations. The movement threshold is an example signal value, not a clinical definition of restlessness.
+
+This is a **one-shot**: the target is calculated once. If the baseline is 76°F, the request is 74°F, subject to its configured limits. Repeated checks do not turn it into 72°F, then 70°F. Conditions becoming false do not cancel an already-active one-shot; its expiry, or disabling/editing the rule, ends it.
+
+| Setting            | What it controls                                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Temperature limits | The lowest and highest target the action may request.                                                      |
+| Hold / revert time | How long a one-shot request remains eligible to control the side.                                          |
+| Cooldown           | How long the rule waits before another activation; it is not the hold timer.                               |
+| Priority           | Which Autopilot request wins when several are active. Manual holds and run-once sessions still come first. |
+
+“Revert” means choose whichever source applies **now**. It does not restore an old temperature or replay missed schedule points.
+
 ## Build and inspect a rule
 
 1. Open **Autopilot → Automations** and create a rule or start from a template.
@@ -30,6 +82,25 @@ A continuous policy owns a target while its conditions remain valid. False or un
 
 Relative temperature actions use the schedule/session baseline, rather than their own previous output. Conditions still inspect live observations. This prevents a “lower by two degrees” expression from repeatedly lowering itself every tick.
 
+## Why did nothing change?
+
+<div className="docs-diagram">
+
+```mermaid
+flowchart TD
+  accTitle: Explain an automation that did not change the bed
+  accDescr: Check enablement, trigger and conditions, dry-run mode, then temperature ownership and power or safety blocking. Use the activity log and diagnostics to find the reason.
+  A["No temperature change"] --> B["Rule and global switch enabled?"]
+  B --> C["Activity: trigger, conditions, cooldown"]
+  C --> D["Dry run? Inspect the recorded result"]
+  D --> E["Manual hold or run-once taking priority?"]
+  E --> F["Side off or safety-blocked? Check System"]
+```
+
+</div>
+
+Read the activity reason before changing the rule. **Outside its window**, **signal unavailable**, **cooling down**, and **another source owns the side** explain different situations. A temperature request alone does not turn an off side back on. Turning power on is a separate action.
+
 ## Stop or troubleshoot a rule
 
 Disable the rule or use the global kill-switch to revoke its temperature requests. Editing or deleting a rule also revokes its old requests. Check the run log for fired, skipped, clamped, dry-run, and error outcomes. If another owner wins, inspect the [manual hold and Resume controls](/core/temperature/#manual-holds-and-resume).
@@ -38,4 +109,4 @@ Temperature clamping, cooldowns, action-rate limits, and pump protection still a
 
 ---
 
-**Source reference:** [Autopilot design](https://github.com/sleepypod/core/blob/17d5369e/docs/adr/0023-autopilot-reactive-automations.md) · [Current ownership and request lifetimes](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md) · [Autopilot interface](https://github.com/sleepypod/core/tree/17d5369e/src/components/Autopilot)
+**Source reference:** [Rule templates and builder](https://github.com/sleepypod/core/blob/a1ecf7ea02826c8381b686a3ac7f30024dd24633/src/components/Autopilot/builderModel.ts) · [Engine and notification wiring](https://github.com/sleepypod/core/blob/a1ecf7ea02826c8381b686a3ac7f30024dd24633/src/automation/instance.ts) · [Autopilot design](https://github.com/sleepypod/core/blob/17d5369e/docs/adr/0023-autopilot-reactive-automations.md) · [Current ownership and request lifetimes](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md) · [Autopilot interface](https://github.com/sleepypod/core/tree/17d5369e/src/components/Autopilot)
