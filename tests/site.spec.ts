@@ -170,6 +170,7 @@ for (const route of ['/', '/core/temperature/']) {
 }
 
 for (const [route, count] of [
+  ['/core/data-flow/', 1],
   ['/core/autopilot/', 2],
   ['/developers/architecture/', 2],
   ['/developers/temperature-control/', 1],

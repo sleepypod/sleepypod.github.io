@@ -4,6 +4,7 @@ export default {
   installation: 'Install and update',
   temperature: 'Temperature and power',
   schedules: 'Schedules and alarms',
+  'data-flow': 'Follow your data',
   biometrics: 'Sleep and biometrics',
   integrations: 'HomeKit and MQTT',
   autopilot: 'Autopilot automations',
