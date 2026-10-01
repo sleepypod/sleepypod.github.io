@@ -1,6 +1,7 @@
 import { ExternalLinkIcon } from './ExternalLinkIcon'
 import Link from 'next/link'
 import { BrowserFrame, Demo } from './media'
+import { RuleTicker } from './RuleTicker'
 
 export function HomeStories() {
   return (
@@ -42,20 +43,7 @@ export function HomeStories() {
             When something happens, if your conditions match, then take an action. Start with a
             template and inspect what it would do.
           </p>
-          <div className="rule-preview" aria-label="Example water-low rule">
-            <span>
-              <b>WHEN</b> Water level changes
-            </span>
-            <span>
-              <b>IF</b> The reading says low
-            </span>
-            <span>
-              <b>THEN</b> Record a notification
-            </span>
-          </div>
-          <p className="story-note">
-            This example records a service-log notification. It does not send a phone push.
-          </p>
+          <RuleTicker />
           <Link className="text-link" href="/core/autopilot/">
             Explore Autopilot <ExternalLinkIcon />
           </Link>

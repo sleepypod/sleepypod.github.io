@@ -181,7 +181,7 @@ for (const route of ['/', '/core/temperature/']) {
 
 for (const [route, count] of [
   ['/core/data-flow/', 1],
-  ['/core/autopilot/', 2],
+  ['/core/autopilot/', 4],
   ['/developers/architecture/', 2],
   ['/developers/temperature-control/', 1],
 ] as const) {
@@ -228,3 +228,22 @@ for (const route of ['/', '/core/data-flow/']) {
     await video.evaluate((el: HTMLVideoElement) => el.pause())
   })
 }
+
+test('Autopilot rule preview cycles through example rules', async ({ page }) => {
+  await page.goto('/')
+  const ticker = page.locator('.rule-ticker')
+  await ticker.scrollIntoViewIfNeeded()
+  await expect(ticker).toHaveAttribute('data-rule', '0')
+  await expect(ticker).toContainText('Water level changes')
+  await expect(ticker).toHaveAttribute('data-rule', '1', { timeout: 10000 })
+  await expect(ticker).toContainText('11 PM')
+})
+
+test('Autopilot rule preview stays still with reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  const ticker = page.locator('.rule-ticker')
+  await ticker.scrollIntoViewIfNeeded()
+  await page.waitForTimeout(4500)
+  await expect(ticker).toHaveAttribute('data-rule', '0')
+})
