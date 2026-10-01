@@ -7,9 +7,9 @@
     "height": 336.515625
   },
   "deviceScaleFactor": 2,
-  "framesPerSecond": 24,
-  "frameCount": 192,
-  "duration": 8,
+  "framesPerSecond": 25,
+  "frameCount": 180,
+  "duration": 7.2,
   "capturedTime": "2026-09-30T23:40:00-07:00",
-  "method": "Playwright 2x screenshots of the unmodified native SVG animation sampled at 24 fps for 8 seconds; synthetic health fixtures; silent H.264 encoding"
+  "method": "Playwright 2x screenshots of the unmodified native SVG animation sampled at 25 fps for 7.2 seconds (three 2.4 s dot cycles, seamless loop); synthetic health fixtures; silent H.264 encoding"
 }

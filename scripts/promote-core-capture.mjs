@@ -30,7 +30,7 @@ execFileSync(
   [
     '-y',
     '-framerate',
-    '24',
+    '25',
     '-i',
     '.capture/health-frames/%04d.png',
     '-an',
@@ -63,14 +63,14 @@ for (const capture of captures) {
   const image = capture.output.endsWith('.png') ? await sharp(bytes).metadata() : null
   const dimensions = image
     ? { width: image.width, height: image.height }
-    : { width: Math.floor(width / 2) * 2, height: Math.floor(height / 2) * 2, durationSeconds: 8 }
+    : { width: Math.floor(width / 2) * 2, height: Math.floor(height / 2) * 2, durationSeconds: 7.2 }
   const asset = {
     repository: 'sleepypod-core',
     commit: meta.sourceCommit,
     source: capture.path,
     output: capture.output,
     method:
-      'Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 24 fps for silent H.264 video' +
+      'Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 25 fps for silent H.264 video' +
       (capture.output.startsWith('core-health-') && capture.output !== 'core-health.png'
         ? `; map and video padded ${padding}px with the card colour`
         : ''),

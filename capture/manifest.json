@@ -428,7 +428,7 @@
       "commit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
       "source": "/en/system?tab=health",
       "output": "core-health-map.png",
-      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 24 fps for silent H.264 video; map and video padded 96px with the card colour",
+      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 25 fps for silent H.264 video; map and video padded 96px with the card colour",
       "sha256": "c7d0fbc835c7db5647143642e9606eebf7f2e882a93cad6783a762cd9145ff0a",
       "bytes": 153938,
       "width": 2420,
@@ -439,12 +439,12 @@
       "commit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
       "source": "/en/system?tab=health",
       "output": "core-health-flow.mp4",
-      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 24 fps for silent H.264 video; map and video padded 96px with the card colour",
-      "sha256": "6a72383c5f2092299d3f7a882754f601d6c400dd4aefb6a4e33dcece2307fe7a",
-      "bytes": 339118,
+      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 25 fps for silent H.264 video; map and video padded 96px with the card colour",
+      "sha256": "c511dc76a38d4a87e77cdcb03bf713c37fdb0c49944182da741ca5fcb06f3ba9",
+      "bytes": 311519,
       "width": 2420,
       "height": 866,
-      "durationSeconds": 8
+      "durationSeconds": 7.2
     }
   ]
 }

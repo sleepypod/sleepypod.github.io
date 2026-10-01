@@ -40,6 +40,6 @@
   },
   "deviceScaleFactor": 2,
   "sourceCommit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
-  "capturedAt": "2026-10-01T03:56:27.084Z",
+  "capturedAt": "2026-10-01T04:34:10.377Z",
   "method": "Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures"
 }
