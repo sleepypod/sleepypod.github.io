@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from './ExternalLinkIcon'
+import { LinkArrow } from './LinkArrow'
 import Link from 'next/link'
 import { BrowserFrame, Demo } from './media'
 import { RuleTicker } from './RuleTicker'
@@ -20,7 +20,7 @@ export function HomeStories() {
             records you can explore.
           </p>
           <Link className="text-link" href="/core/data-flow/">
-            Follow the data flow <ExternalLinkIcon />
+            Follow the data flow <LinkArrow />
           </Link>
         </div>
         <Demo
@@ -49,7 +49,7 @@ export function HomeStories() {
             <Link href="/core/autopilot/#backtest-before-you-trust-it">See how backtests work</Link>
           </p>
           <Link className="text-link" href="/core/autopilot/">
-            Explore Autopilot <ExternalLinkIcon />
+            Explore Autopilot <LinkArrow />
           </Link>
         </div>
         <BrowserFrame
@@ -76,7 +76,7 @@ export function HomeStories() {
             without a full set of vitals.
           </p>
           <Link className="text-link" href="/core/biometrics/">
-            Understand your sleep data <ExternalLinkIcon />
+            Understand your sleep data <LinkArrow />
           </Link>
         </div>
         <BrowserFrame

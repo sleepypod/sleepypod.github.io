@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from 'react'
 import Link from 'next/link'
+import { LinkArrow } from './LinkArrow'
 
 const controls = [
   {
@@ -82,7 +83,7 @@ export function ControlShowcase({ compact = false }: { compact?: boolean }) {
         </p>
         {!compact && (
           <Link className="text-link" href="/core/temperature/#choose-your-controls">
-            Find your controls ↗
+            Find your controls <LinkArrow />
           </Link>
         )}
       </div>

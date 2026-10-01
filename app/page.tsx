@@ -3,6 +3,7 @@ import { BrandLogo } from '../components/BrandLogo'
 import { GitHubIcon } from 'nextra/icons'
 import Link from 'next/link'
 import { ControlShowcase } from '../components/ControlShowcase'
+import { LinkArrow } from '../components/LinkArrow'
 import { PhoneFrame, DialFrame, BrowserFrame } from '../components/media'
 export default function Home() {
   return (
@@ -42,10 +43,10 @@ export default function Home() {
             </p>
             <div className="actions">
               <Link className="button primary" href="/getting-started/">
-                Get started <span>↗</span>
+                Get started <LinkArrow />
               </Link>
               <a className="button secondary" href="#ecosystem">
-                Meet the ecosystem ↓
+                Meet the ecosystem <LinkArrow direction="down" />
               </a>
             </div>
             <p className="hero-note">Open source · Pod 3, 4 & 5 · Built for your local network</p>
@@ -78,7 +79,7 @@ export default function Home() {
               eye on your Pod—all in the Core web app.
             </p>
             <Link className="text-link" href="/core/">
-              Explore the web app ↗
+              Explore the web app <LinkArrow />
             </Link>
           </div>
           <BrowserFrame
@@ -122,7 +123,7 @@ export default function Home() {
                 />
               </div>
               <h3>
-                sleepypod Core <span>↗</span>
+                sleepypod Core <LinkArrow />
               </h3>
               <p>
                 The local server on your Pod. Client-agnostic APIs, a web app, schedules,
@@ -142,7 +143,7 @@ export default function Home() {
                 />
               </div>
               <h3>
-                sleepypod iOS <span>↗</span>
+                sleepypod iOS <LinkArrow />
               </h3>
               <p>
                 A native companion for temperature, sleep trends, and the details of your night.
@@ -161,7 +162,7 @@ export default function Home() {
                 />
               </div>
               <h3>
-                M5 Rotary Dial <span>↗</span>
+                M5 Rotary Dial <LinkArrow />
               </h3>
               <p>
                 An ESP32-based M5Stack Dial. Turn for comfort, click for off, and keep a tactile
@@ -181,13 +182,21 @@ export default function Home() {
               </p>
             </div>
             <div className="integration-links">
-              <Link href="/developers/api/">Build with the API ↗</Link>
-              <Link href="/core/integrations/#home-assistant--mqtt">
-                Home Assistant &amp; MQTT ↗
+              <Link href="/developers/api/">
+                Build with the API <LinkArrow />
               </Link>
-              <Link href="/core/integrations/#apple-home--homekit">Apple Home &amp; HomeKit ↗</Link>
-              <Link href="/core/mcp/">MCP for agents ↗</Link>
-              <Link href="/developers/dial/">Explore the ESP32 Dial ↗</Link>
+              <Link href="/core/integrations/#home-assistant--mqtt">
+                Home Assistant &amp; MQTT <LinkArrow />
+              </Link>
+              <Link href="/core/integrations/#apple-home--homekit">
+                Apple Home &amp; HomeKit <LinkArrow />
+              </Link>
+              <Link href="/core/mcp/">
+                MCP for agents <LinkArrow />
+              </Link>
+              <Link href="/developers/dial/">
+                Explore the ESP32 Dial <LinkArrow />
+              </Link>
             </div>
           </div>
         </section>
@@ -229,7 +238,7 @@ export default function Home() {
           <h2>A home for your hardware.</h2>
           <p>Start with Core, then add the controls that fit your routine.</p>
           <Link className="button primary" href="/getting-started/">
-            Find your setup ↗
+            Find your setup <LinkArrow />
           </Link>
           <div className="quick-links">
             <Link href="/troubleshooting/">Troubleshooting</Link>
@@ -248,7 +257,9 @@ export default function Home() {
           <br />
           Not affiliated with Eight Sleep or M5Stack.
         </p>
-        <a href="https://github.com/sleepypod">Made in the open ↗</a>
+        <a href="https://github.com/sleepypod">
+          Made in the open <LinkArrow direction="external" />
+        </a>
       </footer>
     </div>
   )

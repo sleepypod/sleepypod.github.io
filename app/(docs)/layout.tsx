@@ -1,4 +1,5 @@
 import { BrandLogo } from '../../components/BrandLogo'
+import { LinkArrow } from '../../components/LinkArrow'
 import { Layout, Navbar, Footer } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 export default async function DocsLayout({ children }: { children: React.ReactNode }) {
@@ -18,7 +19,10 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
       footer={
         <Footer>
           <span>
-            sleepypod · Open source. Local by design. <a href="/">Back to home ↗</a>
+            sleepypod · Open source. Local by design.{' '}
+            <a href="/">
+              Back to home <LinkArrow />
+            </a>
           </span>
         </Footer>
       }
