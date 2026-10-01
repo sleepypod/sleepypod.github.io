@@ -43,11 +43,42 @@ The **Hold room +3°F** template means: between **11 PM and 6 AM**, request a be
 
 This is a **continuous policy**: it keeps asking for a target while its conditions remain true. Leaving the time window or losing a required condition withdraws the policy. Another available temperature source can then take over.
 
+<div className="docs-diagram">
+
+```mermaid
+flowchart TD
+  accTitle: Follow the room overnight as a continuous policy
+  accDescr: Each minute the engine checks whether the time is between 11 PM and 6 AM and a room reading is available. While both hold, it keeps requesting a bed target 3°F above room temperature, clamped to 60–85°F. When either stops holding, the request is withdrawn and another temperature source takes over.
+  W["WHEN: the engine ticks (about once a minute)"] --> I{"IF: between 11 PM and 6 AM, and room temperature is known?"}
+  I -->|Yes| T["THEN: request room + 3°F, clamped to 60–85°F"]
+  T --> K["Keep requesting on each tick while conditions hold"]
+  K --> W
+  I -->|No or unknown| S["Withdraw the request; another temperature source takes over"]
+```
+
+</div>
+
 ### Make a temporary adjustment
 
 The **Cool when restless** template checks whether average movement over **10 minutes** exceeds **200**, then requests a target **2°F below the schedule/session baseline** for **20 minutes**. Its **30-minute cooldown** spaces out new activations. The movement threshold is an example signal value, not a clinical definition of restlessness.
 
 This is a **one-shot**: the target is calculated once. If the baseline is 76°F, the request is 74°F, subject to its configured limits. Repeated checks do not turn it into 72°F, then 70°F. Conditions becoming false do not cancel an already-active one-shot; its expiry, or disabling/editing the rule, ends it.
+
+<div className="docs-diagram">
+
+```mermaid
+flowchart TD
+  accTitle: Make a temporary adjustment as a one-shot
+  accDescr: When the 10-minute movement average exceeds 200 and the rule is not in cooldown, the engine computes one target 2°F below the schedule or session baseline and holds it for 20 minutes. Conditions turning false do not cancel it; it ends at expiry or when the rule is disabled or edited. A 30-minute cooldown then blocks new activations.
+  W["WHEN: 10-minute movement average is sampled"] --> I{"IF: average over 200, and not in cooldown?"}
+  I -->|Yes| T["THEN: compute baseline − 2°F once (76°F becomes 74°F)"]
+  T --> H["Hold that target for 20 minutes"]
+  H --> E["Ends at expiry, or when the rule is disabled or edited"]
+  E --> C["30-minute cooldown before the next activation"]
+  I -->|No or unknown| S["Do not fire; an active one-shot keeps running"]
+```
+
+</div>
 
 | Setting            | What it controls                                                                                           |
 | ------------------ | ---------------------------------------------------------------------------------------------------------- |
