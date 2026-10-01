@@ -215,11 +215,9 @@ for (const route of ['/', '/core/data-flow/']) {
       .filter({ has: page.locator('source[src="/media/core-health-flow.mp4"]') })
     await video.scrollIntoViewIfNeeded()
     await expect(video).toHaveAttribute('controls', '')
-    expect(await video.evaluate((el: HTMLVideoElement) => el.autoplay)).toBe(false)
-    await video.evaluate((el: HTMLVideoElement) => {
-      el.muted = true
-      return el.play()
-    })
+    expect(await video.evaluate((el: HTMLVideoElement) => el.autoplay)).toBe(true)
+    expect(await video.evaluate((el: HTMLVideoElement) => el.muted)).toBe(true)
+    expect(await video.evaluate((el: HTMLVideoElement) => el.loop)).toBe(true)
     await expect
       .poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime))
       .toBeGreaterThan(0.5)
