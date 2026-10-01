@@ -35,8 +35,10 @@ export default function Home() {
               <em>Your rules.</em>
             </h1>
             <p className="hero-description">
-              Make your Pod feel like yours. Set the temperature, shape your night, and keep your
-              sleep data at home.
+              Make your Pod feel like yours. Control it from your browser, your phone, an AI agent
+              over MCP, or your home automation through MQTT and Apple HomeKit. Core is modular, so
+              a new client or integration slots in without touching the rest. Your sleep data stays
+              at home.
             </p>
             <div className="actions">
               <Link className="button primary" href="/getting-started/">
