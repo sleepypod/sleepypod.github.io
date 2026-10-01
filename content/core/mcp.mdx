@@ -2,32 +2,68 @@
 title: 'Talk to your Pod with an AI assistant'
 ---
 
-import { Callout } from 'nextra/components'
+import { Tabs } from 'nextra/components'
 
 # Talk to your Pod with an AI assistant
 
-Core includes a [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server. Any MCP host, such as Claude Desktop, Claude Code, Cursor, or a Home Assistant agent, can connect to it and read or control the Pod in plain language. "How did I sleep?", "Set my side to 68 for an hour", and "Is everything OK?" each map to one tool call.
-
-<Callout type="info">
-  The MCP server is in Core's `feat/mcp` branch and is not yet part of a tagged release. The
-  endpoint below is unavailable until that branch is promoted to `main` and installed on your Pod.
-</Callout>
+Core includes a [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server. Any MCP host, such as Claude Desktop, Claude Code, Codex, Cursor, or a Home Assistant agent, can connect to it and read or control the Pod in plain language. "How did I sleep?", "Set my side to 68 for an hour", and "Is everything OK?" each map to one tool call.
 
 ## Connect a host
 
-The endpoint is a stateless Streamable HTTP server on the same port as the web app:
+The endpoint is a stateless Streamable HTTP server on the same port as the web app. Replace `POD_IP` with your Pod's address or `sleepypod.local`.
 
 ```text
 http://POD_IP:3000/api/mcp
 ```
 
-Claude Code:
+<Tabs items={['Claude Code', 'Claude Desktop', 'Codex', 'Cursor', 'Other hosts']}>
+  <Tabs.Tab>
+    ```bash
+    claude mcp add --transport http sleepypod http://POD_IP:3000/api/mcp
+    ```
 
-```bash
-claude mcp add --transport http sleepypod http://POD_IP:3000/api/mcp
-```
+    Run `claude mcp list` to confirm the server is connected, then ask Claude Code about the Pod.
 
-Claude Desktop, Cursor, and other hosts: add a remote MCP server with the same URL. No token is needed.
+  </Tabs.Tab>
+  <Tabs.Tab>
+    1. Open **Settings → Connectors** (or **Integrations** on older builds).
+    2. Choose **Add custom connector**.
+    3. Name it `sleepypod` and paste `http://POD_IP:3000/api/mcp` as the URL. Leave authentication empty.
+    4. Enable the connector in a chat from the tools menu.
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    codex mcp add sleepypod --url http://POD_IP:3000/api/mcp
+    ```
+
+    This writes an `mcp_servers.sleepypod` entry to `~/.codex/config.toml`. Run `codex mcp list` to confirm.
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    Add the server to `.cursor/mcp.json` in your project, or `~/.cursor/mcp.json` for every project:
+
+    ```json
+    {
+      "mcpServers": {
+        "sleepypod": {
+          "url": "http://POD_IP:3000/api/mcp"
+        }
+      }
+    }
+    ```
+
+    Cursor shows the server under **Settings → MCP**; enable it there if it is listed as disabled.
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    Any host that supports remote MCP servers over Streamable HTTP can connect. Register a server of that type with the URL above and no credentials. Hosts that only support stdio servers can use a bridge such as `mcp-remote`:
+
+    ```bash
+    npx mcp-remote http://POD_IP:3000/api/mcp
+    ```
+
+  </Tabs.Tab>
+</Tabs>
 
 **There is no authentication.** Like the [REST API](/developers/api/), the MCP endpoint trusts the local network. Do not port-forward it or expose it through a public reverse proxy. Browsers cannot reach it cross-origin: a request with an `Origin` header that does not match the Pod's host is rejected, which blocks DNS-rebinding pages.
 
@@ -78,4 +114,4 @@ Developer and installer surfaces stay REST-only: raw hardware opcodes, raw senso
 
 ---
 
-**Source reference:** [MCP server README and intent catalogue](https://github.com/sleepypod/core/blob/7d9bcdf0a08308c2987672b95065b2e5b9a6c2eb/src/mcp/README.md) · [Server and prompts](https://github.com/sleepypod/core/blob/7d9bcdf0a08308c2987672b95065b2e5b9a6c2eb/src/mcp/server.ts) · [HTTP endpoint and origin check](https://github.com/sleepypod/core/blob/7d9bcdf0a08308c2987672b95065b2e5b9a6c2eb/app/api/mcp/route.ts)
+**Source reference:** [MCP server README and intent catalogue](https://github.com/sleepypod/core/blob/c44e17c54135d42158ad02832abc2b356e57ca8f/src/mcp/README.md) · [Server and prompts](https://github.com/sleepypod/core/blob/c44e17c54135d42158ad02832abc2b356e57ca8f/src/mcp/server.ts) · [HTTP endpoint and origin check](https://github.com/sleepypod/core/blob/c44e17c54135d42158ad02832abc2b356e57ca8f/app/api/mcp/route.ts)
