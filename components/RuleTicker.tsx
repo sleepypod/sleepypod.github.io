@@ -40,7 +40,20 @@ export function RuleTicker() {
     return () => clearInterval(timer)
   }, [paused])
 
+  const [previous, setPrevious] = useState<number | null>(null)
+  const [shown, setShown] = useState(index)
+  if (shown !== index) {
+    setPrevious(shown)
+    setShown(index)
+  }
+  useEffect(() => {
+    if (previous === null) return
+    const timer = setTimeout(() => setPrevious(null), 420)
+    return () => clearTimeout(timer)
+  }, [previous])
+
   const rule = rules[index]
+  const outgoing = previous === null ? null : rules[previous]
   return (
     <div
       className="rule-preview rule-ticker"
@@ -55,6 +68,15 @@ export function RuleTicker() {
         <span key={part}>
           <b>{part.toUpperCase()}</b>
           <span className="rule-slot">
+            {outgoing && (
+              <span
+                key={`out-${previous}`}
+                className="rule-value rule-value-out"
+                aria-hidden="true"
+              >
+                {outgoing[part]}
+              </span>
+            )}
             <span key={index} className="rule-value">
               {rule[part]}
             </span>
@@ -64,6 +86,18 @@ export function RuleTicker() {
       <p className="story-note rule-note" key={`note-${index}`}>
         {rule.note}
       </p>
+      <div className="rule-dots" role="group" aria-label="Choose an example rule">
+        {rules.map((item, i) => (
+          <button
+            key={item.when}
+            type="button"
+            className="rule-dot"
+            aria-label={`Example ${i + 1} of ${rules.length}: ${item.then}`}
+            aria-pressed={i === index}
+            onClick={() => setIndex(i)}
+          />
+        ))}
+      </div>
     </div>
   )
 }
