@@ -105,6 +105,32 @@ The rule model is **WHEN / IF / THEN**: a trigger, a condition tree, and one or 
   caption="Real core UI in an isolated instance with synthetic example data."
 />
 
+## Backtest before you trust it
+
+Every rule in the editor is replayed against **real recorded history** as you edit it. Pick one of the last five recorded nights and the backtest shows what the rule would have done that night, before it ever touches the bed. Nothing in the panel changes your Pod. It is a dry preview computed from the night's stored signals.
+
+<BrowserFrame
+  src="/media/core-autopilot-backtest.png"
+  alt="The Cool when restless rule editor with its backtest chart: the movement trace, the 200 threshold, two fire markers, cooldown bands, and the resulting setpoint"
+  caption="The real rule editor replaying “Cool when restless” over a synthetic night. The backtest uses Core's own replay engine."
+/>
+
+The chart has two modes, matching the two kinds of rule:
+
+| Mode           | When it applies                                                                            | What you see                                                                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Edge**       | A threshold or windowed aggregate crossing fires a one-shot, such as _Cool when restless_. | The raw signal, its windowed average, the threshold, a red dot at each point the rule **would fire**, a tick where a fire was **suppressed** by cooldown, and the setpoint as a step line. The stats show would-fire count, suppressed count, and net effect. |
+| **Continuous** | The setpoint tracks a live signal inside a time window, such as _Hold room +3°F_.          | The tracked signal and the resulting setpoint on one temperature scale, the pre-clamp setpoint as a dashed ghost line, and the clamp band. The stats show clamp hits and the setpoint range.                                                                  |
+
+A few things the replay makes explicit:
+
+- **Cooldown is not the hold timer.** In the capture above the rule fires twice and is suppressed five times. Each suppression is a tick where the conditions held but the 30-minute cooldown had not elapsed.
+- **Edge-mode setpoints are relative to a nominal baseline.** Per-side target history is not stored, so the step line shows the action's delta applied to the midpoint of the safety clamp, not the exact temperature the bed was at.
+- **The threshold range helps you aim.** Under the trigger, the editor prints the compared value's recorded range over the last five nights, so you do not set a threshold the signal never reaches.
+- **The list shows a five-night summary** for every saved rule: how many times it would have fired, and for threshold rules the peak value against the threshold. Templates are marked **live** or **backtest only** depending on whether their signals are wired on your Pod.
+
+If a side has no recorded nights yet, the panel says so instead of drawing a chart. Backtests replay the full recorded series, which can include signals that are not yet available live; check **Autopilot → Diagnostics** before relying on one.
+
 ## Understand temperature behavior
 
 Manual holds and run-once sessions outrank Autopilot. Among Autopilot requests, higher rule priority wins, then the newest activation. Recurring schedules supply the fallback.

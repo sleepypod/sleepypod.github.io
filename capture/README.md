@@ -29,7 +29,7 @@ CI=1 DATABASE_URL=file:./.capture/sleepypod.db \
   pnpm exec next dev --hostname 127.0.0.1 --port 3210
 ```
 
-Core migrates/seeds these new disposable databases. `CI=1` skips hardware/scheduler initialization. The capture intercepts `device.getStatus` with `core-status.json`, supplies schedules from `core-demo.mjs` and richer API responses from `core-rich-data.mjs` / `core-rich-demo.json`, replaces the sensor WebSocket with synthetic frames and blocks non-GET tRPC calls, and makes remaining queries only to this loopback instance. Hardware health and scheduler queries also use fixtures to avoid hardware probes. The demo shows a healthy Pod, a week of synthetic vitals and sleep records, active and dry-run rules, and a resolved example service incident. The Health map uses core’s own status evaluator; sleep stages use its real classifier. There is no real hardware or personal history. It preserves real UI rendering, with the Next.js development badge hidden. The tRPC fixture transport uses SuperJSON/JSONL so the normal streaming client and Date values still work.
+Core migrates/seeds these new disposable databases. `CI=1` skips hardware/scheduler initialization. The capture intercepts `device.getStatus` with `core-status.json`, supplies schedules from `core-demo.mjs` and richer API responses from `core-rich-data.mjs` / `core-rich-demo.json`, replaces the sensor WebSocket with synthetic frames and blocks non-GET tRPC calls, and makes remaining queries only to this loopback instance. Hardware health and scheduler queries also use fixtures to avoid hardware probes. The demo shows a healthy Pod, a week of synthetic vitals and sleep records, active and dry-run rules, and a resolved example service incident. The Health map uses core’s own status evaluator; sleep stages use its real classifier; the Autopilot backtest capture opens the saved “Cool when restless” rule, and its chart comes from core’s own `runBacktest` replayed over the synthetic nights at fixture-generation time. There is no real hardware or personal history. It preserves real UI rendering, with the Next.js development badge hidden. The tRPC fixture transport uses SuperJSON/JSONL so the normal streaming client and Date values still work.
 
 In the site worktree:
 
@@ -42,7 +42,7 @@ Still captures use a 1440×1000 CSS viewport at 2× device scale (2880×2000 PNG
 To regenerate the deterministic fixture JSON, run from the pinned Core checkout (Core's `tsx` resolves its pure source modules):
 
 ```sh
-pnpm exec tsx /path/to/site/scripts/generate-core-demo.mts /path/to/site/capture/core-rich-demo.json
+pnpm exec tsx /path/to/site/scripts/generate-core-demo.cts /path/to/site/capture/core-rich-demo.json
 ```
 
 Inspect every `.capture/core-*.png`, including Health and Biometrics, then promote the reviewed stills and encode the video:

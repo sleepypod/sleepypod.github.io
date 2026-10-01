@@ -445,6 +445,17 @@
       "width": 2420,
       "height": 866,
       "durationSeconds": 7.2
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
+      "source": "/en/autopilot",
+      "output": "core-autopilot-backtest.png",
+      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 25 fps for silent H.264 video",
+      "sha256": "4d43ff0d0a52bb296dc49d8a554453363fa26fac280013989be14ab745484346",
+      "bytes": 351937,
+      "width": 2880,
+      "height": 2000
     }
   ]
 }
