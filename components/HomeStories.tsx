@@ -24,12 +24,14 @@ export function HomeStories() {
         </div>
         <Demo
           wide
+          autoplay
           src="/media/core-health-flow.mp4"
           poster="/media/core-health-map.png"
           title="Watch the data flow"
         >
           The real System → Health map, recorded with synthetic sensor and service data. Moving dots
-          trace the connections from sensors to outputs. Silent video; press play to watch.
+          trace the connections from sensors to outputs. Silent video; it plays and loops on its
+          own.
         </Demo>
       </article>
       <article className="feature-story">

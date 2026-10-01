@@ -428,22 +428,22 @@
       "commit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
       "source": "/en/system?tab=health",
       "output": "core-health-map.png",
-      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 24 fps for silent H.264 video",
-      "sha256": "96bdf36d1b46b5d08afc1e4abb024cfb8d4ab3efbaa54d0171a955b909a82f7a",
-      "bytes": 151041,
-      "width": 2228,
-      "height": 674
+      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 24 fps for silent H.264 video; map and video padded 96px with the card colour",
+      "sha256": "c7d0fbc835c7db5647143642e9606eebf7f2e882a93cad6783a762cd9145ff0a",
+      "bytes": 153938,
+      "width": 2420,
+      "height": 866
     },
     {
       "repository": "sleepypod-core",
       "commit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
       "source": "/en/system?tab=health",
       "output": "core-health-flow.mp4",
-      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 24 fps for silent H.264 video",
-      "sha256": "9e937bc24b0b83cdffc40452992771c5952dbcb7a408b463d20b8ce33cb5969a",
-      "bytes": 334633,
-      "width": 2228,
-      "height": 674,
+      "method": "Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 24 fps for silent H.264 video; map and video padded 96px with the card colour",
+      "sha256": "6a72383c5f2092299d3f7a882754f601d6c400dd4aefb6a4e33dcece2307fe7a",
+      "bytes": 339118,
+      "width": 2420,
+      "height": 866,
       "durationSeconds": 8
     }
   ]

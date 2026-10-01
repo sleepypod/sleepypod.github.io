@@ -37,7 +37,7 @@ In the site worktree:
 CORE_CAPTURE_URL=http://127.0.0.1:3210 CORE_SOURCE_COMMIT=<full-core-commit> node scripts/capture-core.mjs
 ```
 
-Still captures use a 1440×1000 CSS viewport at 2× device scale (2880×2000 PNGs). The three control cards use element captures at the same scale. The native Health SVG animation is sampled through its own animation clock at 24 frames per second for eight seconds. Each frame is a real 2× element screenshot, encoded as silent H.264 with fast-start metadata. No UI pixels are redrawn. Playback is user-initiated, with a still poster and no autoplay.
+Still captures use a 1440×1000 CSS viewport at 2× device scale (2880×2000 PNGs). The three control cards use element captures at the same scale. The native Health SVG animation is sampled through its own animation clock at 24 frames per second for eight seconds. Each frame is a real 2× element screenshot, encoded as silent H.264 with fast-start metadata. Promotion pads the poster and every frame by 96 device pixels with the map's own corner colour so player controls never cover the bottom row of nodes. No UI pixels are redrawn. The Health map clip is silent and loops automatically with controls visible; it has a still poster.
 
 To regenerate the deterministic fixture JSON, run from the pinned Core checkout (Core's `tsx` resolves its pure source modules):
 

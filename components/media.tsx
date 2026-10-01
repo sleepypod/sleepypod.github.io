@@ -45,17 +45,28 @@ export function Demo({
   poster,
   title,
   wide = false,
+  autoplay = false,
   children,
 }: {
   src: string
   poster: string
   title: string
   wide?: boolean
+  autoplay?: boolean
   children: React.ReactNode
 }) {
   return (
     <figure className={wide ? 'demo demo-wide' : 'demo'}>
-      <video controls playsInline preload="metadata" poster={poster} aria-label={title}>
+      <video
+        controls
+        playsInline
+        preload={autoplay ? 'auto' : 'metadata'}
+        autoPlay={autoplay}
+        muted={autoplay}
+        loop={autoplay}
+        poster={poster}
+        aria-label={title}
+      >
         <source src={src} type="video/mp4" />
       </video>
       <figcaption>
