@@ -49,7 +49,7 @@ This is a navigation guide to the contract, not a frozen schema. Query the insta
 
 ## Streaming and integration
 
-Sensor WebSocket traffic uses port 3001. The stream normalizes hardware frames and also carries device state updates. For a higher-level integration with Home Assistant, prefer the [MQTT bridge](/core/integrations/#home-assistant--mqtt).
+Sensor WebSocket traffic uses port 3001. The stream normalizes hardware frames and also carries device state updates. For a higher-level integration with Home Assistant, prefer the [MQTT bridge](/core/integrations/#home-assistant--mqtt). For LLM hosts such as Claude Desktop or Cursor, Core's [MCP server](/core/mcp/) wraps the same procedures as intent-shaped tools.
 
 The iOS repository includes a committed OpenAPI snapshot and a script to refresh it from a running Pod. Its contract tests catch mismatches between Swift models and Core responses.
 
