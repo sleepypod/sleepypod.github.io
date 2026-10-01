@@ -44,6 +44,16 @@ html {
   height: 18px;
   flex-shrink: 0;
 }
+.docs-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 36px 0;
+  padding: 32px 16px;
+}
+.docs-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
 .docs-label {
   font-size: 15px;
   font-weight: 400;
