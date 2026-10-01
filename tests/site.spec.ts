@@ -237,6 +237,12 @@ test('Autopilot rule preview cycles through example rules', async ({ page }) => 
   await expect(ticker).toContainText('Water level changes')
   await expect(ticker).toHaveAttribute('data-rule', '1', { timeout: 10000 })
   await expect(ticker).toContainText('11 PM')
+  const dots = ticker.getByRole('button')
+  await expect(dots).toHaveCount(3)
+  await expect(dots.nth(1)).toHaveAttribute('aria-pressed', 'true')
+  await dots.nth(2).click()
+  await expect(ticker).toHaveAttribute('data-rule', '2')
+  await expect(ticker).toContainText('Movement is sampled')
 })
 
 test('Autopilot rule preview stays still with reduced motion', async ({ page }) => {

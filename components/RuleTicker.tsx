@@ -64,6 +64,18 @@ export function RuleTicker() {
       <p className="story-note rule-note" key={`note-${index}`}>
         {rule.note}
       </p>
+      <div className="rule-dots" role="group" aria-label="Choose an example rule">
+        {rules.map((item, i) => (
+          <button
+            key={item.when}
+            type="button"
+            className="rule-dot"
+            aria-label={`Example ${i + 1} of ${rules.length}: ${item.then}`}
+            aria-pressed={i === index}
+            onClick={() => setIndex(i)}
+          />
+        ))}
+      </div>
     </div>
   )
 }

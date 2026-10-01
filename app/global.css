@@ -848,6 +848,31 @@ button:focus-visible {
   min-height: 3em;
   animation: rule-fade 420ms ease both;
 }
+.rule-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.rule-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: #3a3a46;
+  cursor: pointer;
+  transition:
+    width 240ms ease,
+    background 240ms ease;
+}
+.rule-dot:hover,
+.rule-dot:focus-visible {
+  background: #6f6f80;
+}
+.rule-dot[aria-pressed='true'] {
+  width: 24px;
+  background: #b9a6e5;
+}
 @keyframes rule-tick {
   from {
     transform: translateY(110%);
