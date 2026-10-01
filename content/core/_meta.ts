@@ -7,7 +7,7 @@ export default {
   'data-flow': 'Follow your data',
   biometrics: 'Sleep and biometrics',
   integrations: 'HomeKit and MQTT',
-  mcp: 'AI assistants (MCP)',
+  mcp: 'MCP for agents',
   autopilot: 'Autopilot automations',
   system: 'System diagnostics',
   settings: 'Settings and maintenance',
