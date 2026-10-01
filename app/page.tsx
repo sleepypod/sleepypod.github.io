@@ -186,7 +186,7 @@ export default function Home() {
                 Home Assistant &amp; MQTT ↗
               </Link>
               <Link href="/core/integrations/#apple-home--homekit">Apple Home &amp; HomeKit ↗</Link>
-              <Link href="/core/mcp/">AI assistants via MCP ↗</Link>
+              <Link href="/core/mcp/">MCP for agents ↗</Link>
               <Link href="/developers/dial/">Explore the ESP32 Dial ↗</Link>
             </div>
           </div>
