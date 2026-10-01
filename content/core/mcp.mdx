@@ -1,0 +1,81 @@
+---
+title: 'Talk to your Pod with an AI assistant'
+---
+
+import { Callout } from 'nextra/components'
+
+# Talk to your Pod with an AI assistant
+
+Core includes a [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server. Any MCP host, such as Claude Desktop, Claude Code, Cursor, or a Home Assistant agent, can connect to it and read or control the Pod in plain language. "How did I sleep?", "Set my side to 68 for an hour", and "Is everything OK?" each map to one tool call.
+
+<Callout type="info">
+  The MCP server is in Core's `feat/mcp` branch and is not yet part of a tagged release. The
+  endpoint below is unavailable until that branch is promoted to `main` and installed on your Pod.
+</Callout>
+
+## Connect a host
+
+The endpoint is a stateless Streamable HTTP server on the same port as the web app:
+
+```text
+http://POD_IP:3000/api/mcp
+```
+
+Claude Code:
+
+```bash
+claude mcp add --transport http sleepypod http://POD_IP:3000/api/mcp
+```
+
+Claude Desktop, Cursor, and other hosts: add a remote MCP server with the same URL. No token is needed.
+
+**There is no authentication.** Like the [REST API](/developers/api/), the MCP endpoint trusts the local network. Do not port-forward it or expose it through a public reverse proxy. Browsers cannot reach it cross-origin: a request with an `Origin` header that does not match the Pod's host is rejected, which blocks DNS-rebinding pages.
+
+## What the assistant can do
+
+The server is intent-shaped, not endpoint-shaped. Twenty-two tools cover roughly 110 Core procedures; each tool is one thing a person would ask for. Every tool calls the same procedures the web app uses, so validation, side locks, the pump-stall guard, and live updates all apply.
+
+| You say                                                         | Tool                  |
+| --------------------------------------------------------------- | --------------------- |
+| "What's the bed set to?" / "Is it priming?"                     | `get_pod_status`      |
+| "Who's in bed?"                                                 | `get_bed_occupancy`   |
+| "How warm is the room?"                                         | `get_environment`     |
+| "How did I sleep?" / "How much deep sleep?"                     | `get_sleep_summary`   |
+| "Bedtime this week?"                                            | `get_sleep_history`   |
+| "Is my HRV trending down?"                                      | `get_vitals_trend`    |
+| "Set my side to 68" / "Warm it up for an hour"                  | `set_temperature`     |
+| "Turn my side off"                                              | `set_power`           |
+| "Go back to the schedule"                                       | `resume_schedule`     |
+| "68 now, 72 at 3 am, wake at 7" (tonight only)                  | `run_once_curve`      |
+| "Buzz my side" / "Snooze 10 minutes"                            | `manage_alarm`        |
+| "Prime the pod"                                                 | `prime_pod`           |
+| "What's my schedule?"                                           | `get_schedules`       |
+| "Every weekday cool to 66 at 10 pm" / "Delete Monday's alarm"   | `manage_schedule`     |
+| "What unit is it on?"                                           | `get_settings`        |
+| "I'm away until Friday" / "Rename my side"                      | `set_side_settings`   |
+| "Switch to Celsius" / "Dim the LED at night"                    | `set_device_settings` |
+| "What's controlling the bed tonight?"                           | `get_automations`     |
+| "Pause all automations" / "Make a rule that cools when HR > 60" | `manage_automation`   |
+| "Something's wrong" / "Is the bed actually cooling?"            | `diagnose_pod`        |
+| "Show me the logs"                                              | `get_logs`            |
+| "Clear the pump alert" / "Restart the piezo service" / "Update" | `pod_maintenance`     |
+
+Temperatures accept your unit (`F` or `C`, defaulting to the device setting) and are converted to the 55–110°F hardware setpoint. Errors come back as readable text with the Core error code, so the assistant can explain "pump stall guard tripped" instead of retrying.
+
+Two resources, `sleepypod://status` and `sleepypod://settings`, give hosts a compact snapshot to attach as context. Two prompts are built in: **Morning report** summarizes last night for both sides and flags anything degraded, and **Set up tonight** turns a plain-language request for one side into the right tool calls.
+
+## Approvals and safety
+
+Tool annotations tell the host which calls are read-only and which change or delete something. Reads such as `get_pod_status` and `get_sleep_summary` are marked read-only. Anything that deletes, restarts, re-energizes, or replaces an active curve is marked destructive, so a well-behaved host asks before running it. The server's own instructions also tell the model to confirm before priming, maintenance actions, and schedule deletion.
+
+Temperature precedence is the same as everywhere else in Core, highest first: manual hold, run-once curve, automation, schedule. See [Temperature and power](/core/temperature/).
+
+Tool output is untrusted input for the model. Logs, sleep records, and settings can contain text written by anything on the LAN or by firmware. Annotations are hints to the host, not a security boundary.
+
+## Deliberately not exposed
+
+Developer and installer surfaces stay REST-only: raw hardware opcodes, raw sensor files, database row browsing, calibration triggers, MQTT, HomeKit, and archive-push configuration, backtests, cap-zone replays, and vitals ingestion. They are either dangerous without context or useless to a sleeper. Use the [API reference](/developers/api/) for those.
+
+---
+
+**Source reference:** [MCP server README and intent catalogue](https://github.com/sleepypod/core/blob/7d9bcdf0a08308c2987672b95065b2e5b9a6c2eb/src/mcp/README.md) · [Server and prompts](https://github.com/sleepypod/core/blob/7d9bcdf0a08308c2987672b95065b2e5b9a6c2eb/src/mcp/server.ts) · [HTTP endpoint and origin check](https://github.com/sleepypod/core/blob/7d9bcdf0a08308c2987672b95065b2e5b9a6c2eb/app/api/mcp/route.ts)
