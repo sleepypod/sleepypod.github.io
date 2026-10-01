@@ -214,10 +214,12 @@ try {
   if (!bounds) throw new Error('No animated Health map')
   await mkdir('.capture/health-frames', { recursive: true })
   // Sample the unmodified SVG's native animation clock; each frame is an
-  // actual 2x element screenshot, with no redraw or interpolation.
+  // actual 2x element screenshot, with no redraw or interpolation. The dots
+  // move on a 2.4 s cycle, so 180 frames at 25 fps is exactly three cycles
+  // and the clip loops without a visible cut.
   await diagram.evaluate((svg) => svg.pauseAnimations())
-  for (let frame = 0; frame < 192; frame++) {
-    await diagram.evaluate((svg, time) => svg.setCurrentTime(time), frame / 24)
+  for (let frame = 0; frame < 180; frame++) {
+    await diagram.evaluate((svg, time) => svg.setCurrentTime(time), frame / 25)
     await diagram.screenshot({
       path: `.capture/health-frames/${String(frame).padStart(4, '0')}.png`,
     })
@@ -230,12 +232,12 @@ try {
         sourceCommit: process.env.CORE_SOURCE_COMMIT,
         bounds,
         deviceScaleFactor: 2,
-        framesPerSecond: 24,
-        frameCount: 192,
-        duration: 8,
+        framesPerSecond: 25,
+        frameCount: 180,
+        duration: 7.2,
         capturedTime,
         method:
-          'Playwright 2x screenshots of the unmodified native SVG animation sampled at 24 fps for 8 seconds; synthetic health fixtures; silent H.264 encoding',
+          'Playwright 2x screenshots of the unmodified native SVG animation sampled at 25 fps for 7.2 seconds (three 2.4 s dot cycles, seamless loop); synthetic health fixtures; silent H.264 encoding',
       },
       null,
       2,
