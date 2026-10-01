@@ -40,7 +40,20 @@ export function RuleTicker() {
     return () => clearInterval(timer)
   }, [paused])
 
+  const [previous, setPrevious] = useState<number | null>(null)
+  const [shown, setShown] = useState(index)
+  if (shown !== index) {
+    setPrevious(shown)
+    setShown(index)
+  }
+  useEffect(() => {
+    if (previous === null) return
+    const timer = setTimeout(() => setPrevious(null), 420)
+    return () => clearTimeout(timer)
+  }, [previous])
+
   const rule = rules[index]
+  const outgoing = previous === null ? null : rules[previous]
   return (
     <div
       className="rule-preview rule-ticker"
@@ -55,6 +68,15 @@ export function RuleTicker() {
         <span key={part}>
           <b>{part.toUpperCase()}</b>
           <span className="rule-slot">
+            {outgoing && (
+              <span
+                key={`out-${previous}`}
+                className="rule-value rule-value-out"
+                aria-hidden="true"
+              >
+                {outgoing[part]}
+              </span>
+            )}
             <span key={index} className="rule-value">
               {rule[part]}
             </span>

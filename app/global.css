@@ -836,8 +836,19 @@ button:focus-visible {
 }
 .rule-ticker .rule-slot {
   display: block;
+  position: relative;
   overflow: hidden;
   min-height: 1.4em;
+}
+@keyframes rule-tick-out {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-110%);
+    opacity: 0;
+  }
 }
 .rule-ticker .rule-value {
   display: block;
@@ -872,6 +883,11 @@ button:focus-visible {
 .rule-dot[aria-pressed='true'] {
   width: 24px;
   background: #b9a6e5;
+}
+.rule-ticker .rule-value.rule-value-out {
+  position: absolute;
+  inset: 0 auto auto 0;
+  animation: rule-tick-out 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 @keyframes rule-tick {
   from {
