@@ -19,6 +19,21 @@ const movement = fixture.movement.map((r) => ({ ...r, timestamp: new Date(r.time
 const inRange = (r, input, key = 'timestamp') =>
   (!input?.startDate || +r[key] >= +input.startDate) &&
   (!input?.endDate || +r[key] <= +input.endDate)
+// Backtests were replayed by Core's own engine at fixture-generation time for
+// the saved rules; match the editor's inline rule back to one of them.
+const astKey = (r) =>
+  JSON.stringify({
+    side: r.side ?? null,
+    cooldownMin: r.cooldownMin ?? null,
+    trigger: r.trigger,
+    conditions: r.conditions,
+    actions: r.actions,
+  })
+const ruleFor = (rule) =>
+  fixture.rules.find((r) => astKey(r) === astKey(rule)) ||
+  fixture.rules.find(
+    (r) => r.trigger.kind === rule.trigger.kind && r.actions[0]?.kind === rule.actions[0]?.kind,
+  )
 export function richData(name, input) {
   if (name === 'calibration.getStatus')
     return Object.fromEntries(
@@ -182,14 +197,31 @@ export function richData(name, input) {
         firesToday: 1,
       })),
     }
-  if (name === 'automations.backtestSummaries')
-    return fixture.rules.map((r) => ({
-      id: r.id,
-      nights: 7,
-      wouldFire: r.id === 3 ? 1 : 5,
-      peak: null,
-      threshold: null,
-    }))
+  if (name === 'automations.get') {
+    const r = fixture.rules.find((r) => r.id === input.id)
+    return r && { ...r, createdAt: new Date(r.createdAt), updatedAt: new Date(r.updatedAt) }
+  }
+  if (name === 'automations.backtestSummaries') return fixture.backtestSummaries
+  if (name === 'automations.nights') return fixture.nights
+  if (name === 'automations.backtest') {
+    const rule = ruleFor(input.rule)
+    const night = input.sleepRecordId || fixture.nights[0].sleepRecordId
+    return (
+      (rule && fixture.backtests[`${rule.id}:${night}`]) || {
+        ok: false,
+        message: 'No recorded nights for this side yet — backtest needs sleep history.',
+        night: null,
+        result: null,
+      }
+    )
+  }
+  if (name === 'automations.backtestRange') {
+    const rule = ruleFor(input.rule)
+    const summary = rule && fixture.backtestSummaries.find((s) => s.id === rule.id)
+    if (!summary) return { nights: 0, wouldFire: 0, peak: null, low: null, threshold: null }
+    const { id: _id, ...range } = summary
+    return range
+  }
   if (name === 'automations.tonight')
     return {
       now,

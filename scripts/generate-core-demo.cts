@@ -1,14 +1,19 @@
 // Run with Core's tsx and tsconfig, from the pinned clean Core checkout.
 // Pure product algorithms turn deterministic synthetic inputs into API fixtures.
+// CommonJS on purpose: the backtest module reaches cron-parser, whose named
+// exports Node's ESM loader cannot see.
 import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 const core = process.cwd()
-const { evaluateDataPath, NODES } = await import(resolve(core, 'src/lib/dataPath.ts'))
-const { templateRule, toAST } = await import(
-  resolve(core, 'src/components/Autopilot/builderModel.ts')
-)
-const { classifySleepStages, mergeIntoBlocks, calculateDistribution, calculateQualityScore } =
-  await import(resolve(core, 'src/lib/sleep-stages.ts'))
+const { evaluateDataPath, NODES } = require(resolve(core, 'src/lib/dataPath.ts'))
+const { templateRule, toAST } = require(resolve(core, 'src/components/Autopilot/builderModel.ts'))
+const {
+  classifySleepStages,
+  mergeIntoBlocks,
+  calculateDistribution,
+  calculateQualityScore,
+} = require(resolve(core, 'src/lib/sleep-stages.ts'))
+const { runBacktest } = require(resolve(core, 'src/automation/backtest.ts'))
 const capturedTime = '2026-09-30T23:40:00-07:00'
 const now = +new Date(capturedTime)
 const health = evaluateDataPath({
@@ -128,7 +133,7 @@ for (let day = 0; day < 7; day++) {
     leftBedAt: end,
   }
 }
-const rules = ['hold-room', 'hold-room', 'water-low'].map((id, i) => {
+const rules = ['hold-room', 'hold-room', 'water-low', 'restless'].map((id, i) => {
   const b = templateRule(id)
   if (!b) throw new Error('Unknown template ' + id)
   b.enabled = true
@@ -137,10 +142,92 @@ const rules = ['hold-room', 'hold-room', 'water-low'].map((id, i) => {
   if (i === 1) b.name = 'Preview room +3°F'
   return { ...toAST(b), id: i + 1, createdAt: capturedTime, updatedAt: capturedTime }
 })
+// Real backtests: Core's own replay engine over the synthetic nights. The
+// room cools from 73°F to 67°F overnight so the policy rule has something to
+// track; movement is the same series the sleep classifier consumed.
+const timezone = 'America/Los_Angeles'
+const weekday = new Intl.DateTimeFormat('en-US', { timeZone: timezone, weekday: 'short' })
+const monthDay = new Intl.DateTimeFormat('en-US', {
+  timeZone: timezone,
+  month: 'short',
+  day: 'numeric',
+})
+const nights = records.slice(0, 5).map((r, i) => ({
+  sleepRecordId: r.id,
+  label: i === 0 ? 'Last night' : weekday.format(r.enteredBedAt),
+  date: monthDay.format(r.enteredBedAt),
+  startMs: +r.enteredBedAt,
+  endMs: +r.leftBedAt,
+}))
+const seriesFor = (startMs: number, endMs: number, side: string) => {
+  const mv = movement
+    .filter((m) => +m.timestamp >= startMs && +m.timestamp <= endMs)
+    .map((m) => ({ t: +m.timestamp, v: m.totalMovement }))
+  const ambient = []
+  for (let t = startMs; t <= endMs; t += 300000) {
+    const f = (t - startMs) / (endMs - startMs)
+    ambient.push({
+      t,
+      v: Math.round((73 - 6 * Math.sin(f * Math.PI) ** 0.7 + 0.4 * Math.sin(f * 40)) * 10) / 10,
+    })
+  }
+  return { [`${side}.movement`]: mv, 'ambient.temperature': ambient }
+}
+const astOf = (r: any) => ({
+  side: r.side,
+  cooldownMin: r.cooldownMin,
+  trigger: r.trigger,
+  conditions: r.conditions,
+  actions: r.actions,
+})
+const backtests: Record<string, any> = {}
+const summaries: any[] = []
+for (const r of rules) {
+  const side = r.side === 'right' ? 'right' : 'left'
+  let wouldFire = 0
+  let peak: number | null = null
+  let low: number | null = null
+  let threshold: number | null = null
+  for (const n of nights) {
+    const result = runBacktest({
+      rule: { ...astOf(r), side },
+      timezone,
+      startMs: n.startMs,
+      endMs: n.endMs,
+      stepMin: 2,
+      series: seriesFor(n.startMs, n.endMs, side),
+    })
+    backtests[`${r.id}:${n.sleepRecordId}`] = {
+      ok: true,
+      night: { label: n.label, date: n.date },
+      result,
+    }
+    wouldFire += result.summary.wouldFire
+    threshold ??= result.threshold
+    for (const v of (result.avg ?? result.primary)?.values ?? []) {
+      if (v == null) continue
+      if (peak == null || v > peak) peak = v
+      if (low == null || v < low) low = v
+    }
+  }
+  summaries.push({ id: r.id, nights: nights.length, wouldFire, peak, low, threshold })
+}
 writeFileSync(
   process.argv[2],
   JSON.stringify(
-    { capturedTime, health, history, records, vitals, movement, stages, rules },
+    {
+      capturedTime,
+      health,
+      history,
+      records,
+      vitals,
+      movement,
+      stages,
+      rules,
+      nights,
+      backtests,
+      backtestSummaries: summaries,
+    },
     null,
     2,
   ) + '\n',

@@ -70,10 +70,12 @@ for (const capture of captures) {
     source: capture.path,
     output: capture.output,
     method:
-      'Playwright real core UI; isolated loopback; synthetic fixtures; 2x still captures; native SVG animation sampled at 25 fps for silent H.264 video' +
-      (capture.output.startsWith('core-health-') && capture.output !== 'core-health.png'
-        ? `; map and video padded ${padding}px with the card colour`
-        : ''),
+      'Playwright real core UI; isolated loopback; synthetic fixtures; ' +
+      (capture.output.endsWith('.mp4')
+        ? `native SVG animation sampled at 25 fps for silent H.264 video; map and video padded ${padding}px with the card colour`
+        : capture.output === 'core-health-map.png'
+          ? `2x still capture of the Health map; padded ${padding}px with the card colour`
+          : '2x still capture'),
     sha256: createHash('sha256').update(bytes).digest('hex'),
     bytes: bytes.length,
     ...dimensions,

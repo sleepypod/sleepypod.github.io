@@ -152,6 +152,7 @@ try {
     ['/en/schedule', 'core-schedule.png', 'Schedule'],
     ['/en/settings?section=appearance', 'core-appearance.png', 'Appearance'],
     ['/en/autopilot', 'core-autopilot.png', 'Automations'],
+    ['/en/autopilot', 'core-autopilot-backtest.png', 'Automations'],
     ['/en/system', 'core-system.png', 'Dashboard'],
     ['/en/system?tab=health', 'core-health.png', 'Health'],
     ['/en/system?tab=scheduler', 'core-scheduler.png', 'Scheduler'],
@@ -171,6 +172,17 @@ try {
     if (output === 'core-sleep.png')
       await page.getByText('No heart-rate data for this night').waitFor({ state: 'hidden' })
     if (output === 'core-health.png') await page.getByText('Data path', { exact: true }).waitFor()
+    if (output === 'core-autopilot-backtest.png') {
+      // Open the saved "Cool when restless" rule; its editor replays the rule
+      // against the fixture nights through Core's real backtest panel.
+      await page.getByTestId('rule-4').click()
+      const panel = page.getByText('Backtest · edge')
+      await panel.waitFor()
+      await page.locator('svg circle[fill="var(--status-danger)"]').first().waitFor()
+      await panel.scrollIntoViewIfNeeded()
+      await page.evaluate(() => document.fonts.ready)
+      await page.waitForTimeout(800)
+    }
     if (path.startsWith('/en/system')) await page.waitForTimeout(6500)
     await page.screenshot({ path: '.capture/' + output })
     captures.push({ path, output })
