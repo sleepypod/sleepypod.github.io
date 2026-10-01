@@ -44,14 +44,18 @@ export function HomeStories() {
             template and inspect what it would do.
           </p>
           <RuleTicker />
+          <p className="story-note">
+            Replay any rule against a recorded night before it touches your bed.{' '}
+            <Link href="/core/autopilot/#backtest-before-you-trust-it">See how backtests work</Link>
+          </p>
           <Link className="text-link" href="/core/autopilot/">
             Explore Autopilot <ExternalLinkIcon />
           </Link>
         </div>
         <BrowserFrame
-          src="/media/core-autopilot.png"
-          alt="Real core Autopilot interface showing templates and automation activity"
-          caption="Real app capture with synthetic example data."
+          src="/media/core-autopilot-backtest.png"
+          alt="Real core rule editor replaying the Cool when restless rule over a recorded night, with fire markers and the resulting setpoint"
+          caption="Real app capture: a rule backtested over a synthetic night with Core's own replay engine."
         />
       </article>
       <article className="feature-story biometrics-story">
