@@ -50,8 +50,8 @@ export default function Home() {
               <Link className="button primary" href="/getting-started/">
                 Get started <LinkArrow />
               </Link>
-              <a className="button secondary" href="#ecosystem">
-                Meet the ecosystem <LinkArrow direction="down" />
+              <a className="button secondary" href="https://sleepypod-demo.vercel.app">
+                Try the live demo <LinkArrow direction="external" />
               </a>
             </div>
             <p className="hero-note">Open source · Pod 3, 4 & 5 · Built for your local network</p>
