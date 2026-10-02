@@ -647,6 +647,11 @@ button:focus-visible {
   margin-top: 16px;
   color: #7ab5e0;
 }
+.showcase-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+}
 .hero h1 em {
   color: #e0976a;
 }
