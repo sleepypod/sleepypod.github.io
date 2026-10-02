@@ -18,6 +18,7 @@ export default function Home() {
         </Link>
         <nav aria-label="Main navigation">
           <Link href="/getting-started/">Documentation</Link>
+          <a href="https://sleepypod-demo.vercel.app">Live demo</a>
           <a className="github-link" href="https://github.com/sleepypod" aria-label="GitHub">
             <GitHubIcon aria-hidden="true" focusable="false" />
             <span className="link-label">GitHub</span>
@@ -82,9 +83,14 @@ export default function Home() {
               Set each side’s temperature, see last night alongside tonight’s schedule, and keep an
               eye on your Pod—all in the Core web app.
             </p>
-            <Link className="text-link" href="/core/">
-              Explore the web app <LinkArrow />
-            </Link>
+            <div className="showcase-links">
+              <a className="text-link" href="https://sleepypod-demo.vercel.app">
+                Try the live demo <LinkArrow direction="external" />
+              </a>
+              <Link className="text-link" href="/core/">
+                Explore the web app <LinkArrow />
+              </Link>
+            </div>
           </div>
           <BrowserFrame
             src="/media/core-temperature.png"
@@ -245,6 +251,7 @@ export default function Home() {
             Find your setup <LinkArrow />
           </Link>
           <div className="quick-links">
+            <a href="https://sleepypod-demo.vercel.app">Live demo</a>
             <Link href="/troubleshooting/">Troubleshooting</Link>
             <Link href="/developers/">Developer reference</Link>
             <Link href="/about/">About the project</Link>
