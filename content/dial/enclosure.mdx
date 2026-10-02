@@ -1,0 +1,51 @@
+---
+title: 'Print the Dial enclosure'
+---
+
+# Print the Dial enclosure
+
+A two-part bedside stand for the M5Stack Dial v1.1: a base that holds the Dial at an angle, and a faceplate that closes the front. Turn the model below to see both parts.
+
+<EnclosureViewer
+  src="/media/dial-enclosure.glb"
+  alt="3D model of the two-part Dial enclosure: the base on the left and the faceplate on the right"
+  caption="Drag to turn the parts. The geometry is the repository's own 3MF, converted to glTF without changes."
+/>
+
+## Get the files
+
+- **Easiest:** open the [MakerWorld listing](https://makerworld.com/en/models/3365781-sleepypod-dial-enclosure-for-m5stack-dial) and print its profile.
+- **From the repository:** the [3MF files in `hardware/`](https://github.com/sleepypod/m5-rotary-dial/tree/main/hardware) are the same parts.
+
+| File                      | What it is                                                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `enclosure-base.3mf`      | Bambu Studio project with both parts placed on one plate and the print profile below. Open this on a Bambu printer. |
+| `enclosure-faceplate.3mf` | The faceplate on its own, geometry only. Use it with any slicer.                                                    |
+
+## Orientation
+
+- **Base:** print on its rear face.
+- **Faceplate:** print on its back face.
+
+The project prints both parts in these orientations with supports off.
+
+## Settings used
+
+These come from the Bambu Studio project file.
+
+| Setting      | Value               |
+| ------------ | ------------------- |
+| Printer      | Bambu Lab X1 Carbon |
+| Nozzle       | 0.2 mm              |
+| Layer height | 0.10 mm             |
+| Filament     | Bambu PLA Matte     |
+| Walls        | 4                   |
+| Infill       | 15% grid            |
+| Supports     | Off                 |
+| Brim         | Auto                |
+
+Once printed, follow [Build and connect](/dial/setup/) to flash the Dial and point it at Core.
+
+---
+
+**Source reference:** [Enclosure print instructions](https://github.com/sleepypod/m5-rotary-dial/blob/ebcaba1f5715ff9d7db495d8d07a205c59750682/hardware/README.md) · [Enclosure 3MF files](https://github.com/sleepypod/m5-rotary-dial/tree/ebcaba1f5715ff9d7db495d8d07a205c59750682/hardware)
