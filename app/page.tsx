@@ -18,7 +18,7 @@ export default function Home() {
         </Link>
         <nav aria-label="Main navigation">
           <Link href="/getting-started/">Documentation</Link>
-          <a href="https://sleepypod-demo.vercel.app">Live demo</a>
+          <a href="https://sleepypod.vercel.app">Live demo</a>
           <a className="github-link" href="https://github.com/sleepypod" aria-label="GitHub">
             <GitHubIcon aria-hidden="true" focusable="false" />
             <span className="link-label">GitHub</span>
@@ -50,7 +50,7 @@ export default function Home() {
               <Link className="button primary" href="/getting-started/">
                 Get started <LinkArrow />
               </Link>
-              <a className="button secondary" href="https://sleepypod-demo.vercel.app">
+              <a className="button secondary" href="https://sleepypod.vercel.app">
                 Try the live demo <LinkArrow direction="external" />
               </a>
             </div>
@@ -84,7 +84,7 @@ export default function Home() {
               eye on your Pod—all in the Core web app.
             </p>
             <div className="showcase-links">
-              <a className="text-link" href="https://sleepypod-demo.vercel.app">
+              <a className="text-link" href="https://sleepypod.vercel.app">
                 Try the live demo <LinkArrow direction="external" />
               </a>
               <Link className="text-link" href="/core/">
@@ -251,7 +251,7 @@ export default function Home() {
             Find your setup <LinkArrow />
           </Link>
           <div className="quick-links">
-            <a href="https://sleepypod-demo.vercel.app">Live demo</a>
+            <a href="https://sleepypod.vercel.app">Live demo</a>
             <Link href="/troubleshooting/">Troubleshooting</Link>
             <Link href="/developers/">Developer reference</Link>
             <Link href="/about/">About the project</Link>
