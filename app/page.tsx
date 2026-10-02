@@ -1,6 +1,6 @@
 import { HomeStories } from '../components/HomeStories'
 import { BrandLogo } from '../components/BrandLogo'
-import { GitHubIcon } from 'nextra/icons'
+import { DiscordIcon, GitHubIcon } from 'nextra/icons'
 import Link from 'next/link'
 import { ControlShowcase } from '../components/ControlShowcase'
 import { LinkArrow } from '../components/LinkArrow'
@@ -18,9 +18,13 @@ export default function Home() {
         </Link>
         <nav aria-label="Main navigation">
           <Link href="/getting-started/">Documentation</Link>
-          <a className="github-link" href="https://github.com/sleepypod">
+          <a className="github-link" href="https://github.com/sleepypod" aria-label="GitHub">
             <GitHubIcon aria-hidden="true" focusable="false" />
-            GitHub
+            <span className="link-label">GitHub</span>
+          </a>
+          <a className="github-link" href="https://discord.gg/UMmv5R6MXa" aria-label="Discord">
+            <DiscordIcon aria-hidden="true" focusable="false" />
+            <span className="link-label">Discord</span>
           </a>
         </nav>
       </header>
@@ -257,9 +261,14 @@ export default function Home() {
           <br />
           Not affiliated with Eight Sleep or M5Stack.
         </p>
-        <a href="https://github.com/sleepypod">
-          Made in the open <LinkArrow direction="external" />
-        </a>
+        <nav className="footer-links" aria-label="Community">
+          <a href="https://github.com/sleepypod">
+            Made in the open <LinkArrow direction="external" />
+          </a>
+          <a href="https://discord.gg/UMmv5R6MXa">
+            Join the Discord <LinkArrow direction="external" />
+          </a>
+        </nav>
       </footer>
     </div>
   )

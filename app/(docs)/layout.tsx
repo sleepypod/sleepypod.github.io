@@ -14,6 +14,7 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
             </span>
           }
           projectLink="https://github.com/sleepypod"
+          chatLink="https://discord.gg/UMmv5R6MXa"
         />
       }
       footer={
