@@ -230,7 +230,7 @@ for (const route of ['/', '/core/data-flow/']) {
 }
 
 test('Dial enclosure 3D model loads and renders', async ({ page }) => {
-  await page.goto('/dial/')
+  await page.goto('/dial/enclosure/')
   const viewer = page.locator('model-viewer')
   await viewer.scrollIntoViewIfNeeded()
   await expect
