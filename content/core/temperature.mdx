@@ -1,66 +1,75 @@
 ---
-title: 'Temperature and power'
+title: 'Temp'
+description: 'Change each side’s temperature and power, use holds and Resume, and read the Temp screen.'
 ---
 
-# Temperature and power
+# Temp
 
-Choose the correct bed side before changing its temperature or power. The target is the requested temperature; the bed reading is measured state, so they often differ while heating or cooling.
-
-## Choose your controls
-
-Select a style below to see the real interface. In the app, open **Settings → Appearance → Temperature control** and choose Dial, Slider, or Now · Night · Dawn. You can change it whenever you like. This is a browser preference; it does not change the other person's view or your saved temperatures.
-
-<ControlShowcase compact />
-
-## Now, Night, and Dawn
-
-The stepper separates an immediate adjustment from a recurring schedule edit:
-
-| Control   | What changes                                               | What to check                                               |
-| --------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
-| **Now**   | The selected side's current target, with a manual hold     | The hold duration and power state                           |
-| **Night** | The earlier setpoints in tonight's saved temperature curve | The displayed days: all days with the same curve are edited |
-| **Dawn**  | The final portion of that curve                            | The phase time range and matching days                      |
-
-Use minus or plus on **Now** for an immediate adjustment. Use **Night** or **Dawn** to shift that phase's setpoints together while preserving the curve's shape. The phase value summarizes its setpoints; it is not a separate hardware measurement. A one-point schedule has no Dawn phase.
-
-If tonight has no schedule, Night and Dawn preview a balanced template. The first adjustment saves the template to nights without an existing schedule. Review the resulting days in **Schedule**. Existing scheduled nights are preserved.
+**Temp** is the home screen. It shows both sides of the bed, and lets you change temperature and power right now. Choose the correct side before changing anything.
 
 <BrowserFrame
   src="/media/core-temperature.png"
-  alt="Core temperature controls with separate left and right sides"
-  caption="Real core interface with synthetic example temperatures and schedules."
+  alt="Temp screen with left and right side cards using the Now Night Dawn stepper, room readings, last night's summary, a weekday alarm, and the schedule and sleep timeline"
+  caption="Temp with the Now · Night · Dawn control. Real core UI with synthetic example data."
 />
+
+## Choose your controls
+
+Select a style below to see the real interface. In the app, open [Settings → Appearance](/core/settings/appearance/) and choose Dial, Slider, or Now · Night · Dawn. This is a preference for this browser only.
+
+<ControlShowcase compact />
+
+With **Dial** or **Slider**, drag to preview and let go to send. **Cooler** and **Warmer** (− and +) change it one degree at a time; quick presses are sent together. The range is 55–110°F. The word under the number says **COOLING**, **WARMING**, or **HOLDING**, and the bed's measured temperature is shown below. The target and the bed often differ while the bed is heating or cooling.
+
+## Now, Night, and Dawn
+
+The stepper separates a change for right now from a change to your nightly schedule:
+
+| Control   | What changes                                          | What to check                                             |
+| --------- | ----------------------------------------------------- | --------------------------------------------------------- |
+| **Now**   | The side's current target, with a manual hold         | The hold length and power                                 |
+| **Night** | The earlier part of tonight's saved temperature curve | The days shown: every day with the same curve changes too |
+| **Dawn**  | The last part of that curve                           | The time range and matching days                          |
+
+**Night** and **Dawn** shift that part of the curve together, keeping its shape. A one-point schedule has no Dawn.
+
+If the side has no schedule tonight, the stepper shows **Set up Night & Dawn** and suggested values from a balanced 10 PM–7 AM curve. Your first − or + saves that curve to every night without a schedule. Check the result in [Schedule](/core/schedules/).
 
 ## Manual holds and Resume
 
-**Hold after adjustment** sets the duration for your next manual change. The default is 30 minutes. Each accepted adjustment restarts that side's hold timer. The saved recurring schedule stays enabled and its clock continues advancing.
+Any change you make here starts a **manual hold**. While it lasts, your change wins over the schedule and Autopilot.
 
-Select **Resume** to end a hold early. When a hold ends, core chooses the target applicable now; it does not replay missed schedule points. If no source has a target, the temperature remains unchanged.
+- **Hold after adjustment** sets how long: 15 min, **30 min** (default), 1 hr, or 2 hr. Each change restarts the timer.
+- The line under the side's name shows who is in control: **On schedule**, **Autopilot**, **Run-once session**, **Manual hold · until 11:30 PM**, **Off**, or **Safety stop**.
+- **Resume** ends a hold early.
 
-Temperature ownership, from highest to lowest priority, is:
+When a hold ends, the side goes to whatever applies **now**. It does not replay schedule changes it missed. Your schedule stays switched on throughout. For the full rules, see [who controls the temperature](/core/autopilot-engine/#who-controls-the-temperature).
 
-1. Manual hold.
-2. Run-once session.
-3. Autopilot request.
-4. Recurring schedule.
+## Power
 
-Power-off and pump safety remain independent. A temperature schedule does not ordinarily switch a powered-off side back on. Explicit shutdown ends a manual hold; alarm vibration can still fire during one.
+- The round button on each side card turns that side on or off.
+- **All off** turns off every side that is on.
+- **Link sides** (on a computer) makes every change apply to both sides until you select **Sides linked** again. On a phone, use the link icon between the side buttons.
 
-## Display and power
+A temperature change does not turn an off side on. If a side says it is on but the bed is not changing temperature, check [System → Thermal](/core/system/thermal/) rather than changing the target again.
 
-**Settings → Appearance** selects the control style and temperature display. The stepper supports degrees, offset, and the −10…+10 level scale. A level step is approximately 2.75°F; API setpoints remain Fahrenheit. Display changes do not change the API's units.
+## The rest of the screen
 
-Use the selected side's power control to turn it off. If it reports powered but the bed is not responding, check **System → Thermal**, water level, and pump diagnostics rather than repeatedly adjusting the target.
+- **Autopilot chip**: shows **AUTOPILOT · N ACTIVE**, **DRY RUN**, or **HALTED** when you have rules. Select it to open [Autopilot](/core/autopilot/).
+- **Room**: room temperature, humidity, the bed's air temperature, and light level.
+- **Last night**: sleep length, bed and wake times, exits, and average heart rate, HRV, and breathing. Select it to open [Sleep](/core/biometrics/).
+- **Alarm**: the next alarm, with a switch to turn that alarm on or off. Select it to edit, or **Add** if there is none.
+- **Schedule and sleep** (on a computer): last night and tonight for each side, with the schedule, when the side was on, and when someone was in bed. Notes such as **bed empty while cooling** point out wasted heating or cooling.
+- **Tonight** (on a phone): tonight's window and the next change.
 
-See [schedules](/core/schedules/), [Autopilot](/core/autopilot/), and the [temperature controller contract](/developers/temperature-control/).
+## Banners
 
-<BrowserFrame
-  src="/media/core-appearance.png"
-  alt="Appearance settings with dial, slider, and Now Night Dawn controls"
-  caption="Real core UI in an isolated instance with synthetic example data."
-/>
+Banners appear at the top when something needs attention:
+
+- **Pump stall**: a side was turned off because its pump stalled. **Re-enable** turns it back on at its previous temperature. Dismissing leaves it off. See [pump protection](/core/settings/device/#pump-protection).
+- **Priming** and **Priming complete**.
+- **Alarm active**: **Snooze 5m** or **Stop**. While snoozed, **Cancel** stops the alarm.
 
 ---
 
-**Source reference:** [Stepper and phase controls](https://github.com/sleepypod/core/tree/17d5369e/src/components/TempScreen) · [Temperature ownership](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md)
+**Source reference:** [Temp screen](https://github.com/sleepypod/core/tree/4cc76838/src/components/TempScreen) · [Temperature control](https://github.com/sleepypod/core/blob/4cc76838/src/components/TempControl/TempControl.tsx) · [Temperature ownership](https://github.com/sleepypod/core/blob/4cc76838/docs/temperature-control.md)

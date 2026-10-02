@@ -1,0 +1,42 @@
+---
+title: 'HomeKit'
+description: 'Add the Pod to Apple Home, find the setup code, and reset pairing.'
+---
+
+import { Callout } from 'nextra/components'
+
+# HomeKit
+
+**Settings → HomeKit** adds the Pod to Apple Home. Pairing and control stay on your local network; no Apple servers are involved.
+
+<BrowserFrame
+  src="/media/core-settings-homekit.png"
+  alt="HomeKit settings with the bridge running, an eight-digit setup code, a pairing QR code, one paired home, and Reset HomeKit pairing"
+  caption="Settings → HomeKit with the bridge running. The code and QR are synthetic and belong to no accessory."
+/>
+
+## Pair with Apple Home
+
+1. Turn on **HomeKit bridge**. The status changes from **Starting** to **Running**.
+2. A **Setup code** and QR code appear.
+3. On your iPhone, open the **Home** app, choose **Add Accessory**, and scan the QR code or enter the eight-digit code.
+4. Assign the new accessories to a room.
+
+**Paired homes** shows how many Apple homes are paired. Until you pair, it says **None yet**.
+
+Core adds a thermostat, power switch, occupancy sensor, and snooze switch for each side, plus priming and room-temperature accessories for the Pod. See the [HomeKit reference](/core/integrations/#apple-home--homekit) for how each one behaves.
+
+## Reset pairing
+
+**Reset HomeKit pairing** appears once a home is paired. It gives the bridge a new identity, with a new code and QR.
+
+<Callout type="warning">
+  After a reset, the old bridge stays in the Home app and its tiles show **No Response**. Remove it
+  from Home yourself, then pair again with the new code.
+</Callout>
+
+Keep the setup code private. Anyone on your network with the code can pair while the bridge is waiting for a home.
+
+---
+
+**Source reference:** [HomeKit settings](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/HomeKitConfig.tsx) · [HomeKit API](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/homekit.ts)

@@ -25,21 +25,28 @@ The foundation of the system. Core runs on the Pod's embedded Linux and provides
 
 ## The web interface
 
-Try the [live demo](https://sleepypod.vercel.app) with sample data, or open `http://POD_IP:3000` in a browser on the same network. Choose a side before changing temperature or power. Desktop routes provide additional diagnostics; mobile layouts focus on everyday controls.
+Try the [live demo](https://sleepypod.vercel.app) with sample data, or open `http://POD_IP:3000` in a browser on the same network. Start with [Find your way around](/core/navigation/), which maps every screen in the app to its guide.
 
 <BrowserFrame
   src="/media/core-temperature.png"
   alt="Core temperature controls with separate left and right sides"
-  caption="Core web interface. Captured from the running application with example temperatures, schedules, and sleep data."
+  caption="Core web interface. Captured from the running application with synthetic temperatures, schedules, and sleep data."
 />
 
-## Everyday workflows
+## Guides
 
-- [Immediate temperature, manual holds, and Night/Dawn edits](/core/temperature/)
-- [Recurring schedules and alarms](/core/schedules/)
-- [Signal-driven Autopilot rules](/core/autopilot/)
-- [Settings, gestures, backups, and maintenance](/core/settings/)
-- [System pages and troubleshooting workflow](/core/system/)
+**Set up:** [open the Pod and get root](/core/root-access/), then [install and update Core](/core/installation/).
+
+**Use the app**, one guide per section:
+
+- [Temp](/core/temperature/): temperature, power, manual holds, and Resume.
+- [Autopilot](/core/autopilot/): rules, dry run, backtests, and diagnostics.
+- [Schedule](/core/schedules/): nightly curves and vibration alarms.
+- [Sleep](/core/biometrics/): nights, stages, vitals, and data export.
+- [System](/core/system/): the Dashboard and a page for each System tab.
+- [Settings](/core/settings/): a page for each Settings section, from [Appearance](/core/settings/appearance/) to [Gestures](/core/settings/gestures/) and [Updates](/core/settings/updates/).
+
+**How it works:** the [Autopilot engine](/core/autopilot-engine/), [how your data flows](/core/data-flow/), the [HomeKit and MQTT reference](/core/integrations/), and [MCP for agents](/core/mcp/). For deeper implementation details, see [Developers](/developers/).
 
 ## How the pieces connect
 
@@ -49,4 +56,4 @@ For implementation details, read the [architecture reference](/developers/archit
 
 ---
 
-**Source reference:** [Core overview](https://github.com/sleepypod/core/blob/2d445d7d82c93aa17ce0593584f9f09a8fc368a4/README.md)
+**Source reference:** [Core overview](https://github.com/sleepypod/core/blob/4cc76838/README.md)

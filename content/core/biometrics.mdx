@@ -1,50 +1,95 @@
 ---
-title: 'Sleep and biometrics'
+title: 'Sleep'
+description: 'Review nights, sleep stages, and vitals by night, week, or month, and export your data.'
 ---
 
-# Sleep and biometrics
+# Sleep
 
-Core processes the Pod's sensor data locally. Python sidecar processes extract vitals and sleep-session information and write them to `biometrics.db`; the app reads those results through the API.
+**Sleep** shows what the Pod measured while you slept. It has two views: **Nights** for sleep records and **Biometrics** for heart rate, HRV, and breathing. Everything is processed on the Pod; see [Follow your data](/core/data-flow/) for how.
 
-[Follow the visual data flow](/core/data-flow/) to see how sensor readings become measurements and night records.
+Choose whose data you see with **Left** / **Right** at the top. The switch is hidden while one side is in [Away mode](/core/settings/sides/#away-mode).
 
-## Find your data
+## Nights
 
-Open **Sleep → Nights** for night records and **Sleep → Biometrics** for the measurement view. Sensor and service troubleshooting now lives under **System → Sensors**, **Pipeline**, and **Health**. See the [system guide](/core/system/) when a night has missing measurements.
+Choose **Night**, **Week**, or **Month**, and move between weeks or months with ‹ and ›.
 
 <BrowserFrame
   src="/media/core-sleep.png"
-  alt="sleepypod Nights view with an example sleep record"
-  caption="Synthetic sleep measurements rendered by the real app. Stage estimates are computed by core’s classifier from the example vitals and movement."
+  alt="Nights view for one night with a quality ring of 98, the sleep stage bar and hypnogram, heart rate through the night, vitals tiles, summary, and this week's bars"
+  caption="Sleep → Nights, Night range. Stage estimates come from core’s classifier run on synthetic vitals and movement."
 />
 
-## What you will see
+### Night
 
-- **Heart rate, HRV, and breathing rate:** interval measurements derived from the piezo signals.
-- **Sleep records:** session boundaries, time in bed, exits, and presence intervals.
-- **Movement:** interval scores used to describe activity during the night.
-- **Environmental and hardware sensors:** temperature, light, flow, and water-level information where supported.
+- **The night card** shows a quality score, the date, and bed and wake times. Below it, the time spent **Awake**, in **REM**, **Light**, and **Deep** sleep, and a hypnogram of the stages through the night. With too little data, it says **Not enough vitals to classify stages for this night**.
+- **Heart rate through the night**, with minimum, average, and maximum.
+- **Sleeping HR**, **HRV**, and **Breathing** averages.
+- **Summary**: Bedtime, Wake, Asleep, and Bed exits.
+- **This week**: one bar per night. Select a bar to open that night.
 
-Sensor availability depends on the Pod generation, firmware, and active modules. Missing measurements should be treated as missing, not as a zero value.
+**Edit times** corrects a night's bedtime and wake time, or deletes the night. Deleting cannot be undone.
+
+### Week
+
+<BrowserFrame
+  src="/media/core-sleep-week.png"
+  alt="Week range with the sleep timeline bars, the selected night's stages, a movement card, week averages, and vitals by night"
+  caption="Sleep → Nights, Week range. Synthetic example data."
+/>
+
+A **Sleep timeline** of each night (select one to see its stages), a **Movement** card with restlessness, **Week averages**, and **Vitals by night**.
+
+### Month
+
+<BrowserFrame
+  src="/media/core-sleep-month.png"
+  alt="Month range with an hours-asleep calendar, the month summary, average by week, and the list of nights"
+  caption="Sleep → Nights, Month range. Synthetic example data."
+/>
+
+A calendar shaded by hours asleep (5 to 8 hours), the month's nights, average sleep and exits, an average for each week, and a list of nights.
+
+### Export your data
+
+**Export raw data**, at the bottom, shows how much data the Pod holds for the selected side and week, then lets you download:
+
+- CSV files for vitals, sleep sessions, and movement, or **Export all as CSV**.
+- **Export archive (.tar.gz)**: the raw sensor files plus a copy of the sleep database.
+- Individual raw sensor files, which you can also delete. The newest file cannot be deleted.
+
+## Biometrics
+
+**Sleep → Biometrics** shows vitals across a range: **Night**, **Week** (the last 7 days, default), or **Month** (the last 30 days).
 
 <BrowserFrame
   src="/media/core-biometrics.png"
-  alt="Biometrics view with a week of example heart-rate, HRV, and breathing measurements"
-  caption="Real core UI with deterministic synthetic measurements. These are illustrative examples, not personal sleep data."
+  alt="Biometrics view with a week of heart-rate, HRV, and breathing measurements"
+  caption="Sleep → Biometrics. Real core UI with deterministic synthetic measurements, not personal data."
 />
 
-## Give the sensors context
+- **Summary**: average heart rate, heart-rate range, average HRV, and average breathing.
+- **Vitals chart**: the readings over the range, with a band for the middle half. Empty stretches are removed. Select a session to zoom; **clear** zooms out.
+- **Sides**: whether each side is in bed, whether presence is available, movement, and level.
+- **Sessions**: one row per night. Select one to zoom the chart to it.
+- **Raw log**: every per-minute reading in a searchable table. **Raw data** opens the export described above.
 
-Confirm the correct side is selected and that the bed is occupied when checking live signals. Review sensor calibration and module health if values are absent or inconsistent. The [biometrics troubleshooting checklist](/troubleshooting/core/#biometrics-are-empty) follows the data from firmware to database.
+### When readings are missing
+
+The page warns you when something looks wrong:
+
+- If a side has read **occupied** for 2 hours with no movement and no vitals, it asks whether someone is really in bed. **No — recalibrate empty bed** recalibrates the presence sensor. **Yes — restart piezo processor** restarts the vitals service.
+- If someone is in bed but no vitals have arrived for 15 minutes, it suggests the processing may be stalled, with a **Health →** link to [System → Health](/core/system/health/).
+
+Missing readings are missing, not zero. Sensor availability depends on the Pod generation, firmware, and calibration; see [System → Calibration](/core/system/calibration/).
 
 ## Understand the limits
 
-The app also creates power-transition sleep records so a session can exist when sensor modules are not running. A record alone does not prove that all biometrics were captured. iOS performs its own on-device sleep analysis; estimates are useful for exploring trends and are not a clinical sleep study.
+The app also records a sleep session from power changes when sensor processing is not running, so a night can exist without vitals. Estimates are useful for trends; they are not a clinical sleep study. The iOS app does its own sleep analysis on your phone.
 
 ## Where data lives
 
-Configuration and runtime state are stored separately in `sleepypod.db`. Sensor-derived time series live in `biometrics.db`. Raw frames pass through a RAM-backed hot directory and may be archived to persistent storage. See [architecture](/developers/architecture/) for the pipeline and authoritative source references.
+Settings and state are in `sleepypod.db`. Sensor-derived measurements are in `biometrics.db`. Raw frames pass through an in-memory folder and may be archived to storage. See [architecture](/developers/architecture/).
 
 ---
 
-**Source reference:** [Biometrics and database contract](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [Data-flow diagnostics](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [On-device analysis](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)
+**Source reference:** [Sleep screen](https://github.com/sleepypod/core/tree/4cc76838/src/components/Sleep) · [Biometrics page](https://github.com/sleepypod/core/blob/4cc76838/src/components/biometrics/BiometricsPage.tsx) · [Debugging runbook](https://github.com/sleepypod/core/blob/4cc76838/docs/DEBUGGING.md) · [On-device analysis](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)

@@ -1,14 +1,17 @@
 ---
-title: 'Autopilot automations'
+title: 'Autopilot'
+description: 'Create rules that react to the bed and the Pod, try them in dry run, backtest them, and check why they fired.'
 ---
 
-# Autopilot automations
+import { Callout } from 'nextra/components'
 
-Autopilot reacts to signals and conditions on the Pod. A recurring schedule answers “at what time?”; an automation also answers “under which conditions?” Both keep running when the browser closes.
+# Autopilot
+
+A schedule answers “at what time?”. An Autopilot rule also answers “under which conditions?”. Rules run on the Pod, so they keep working when the browser is closed.
 
 ## Read a rule as a sentence
 
-Think of a rule as: **“When something happens, if these checks pass, then do this.”** Choose the bed side as well: an action for Left should not change Right.
+Every rule reads: **“When something happens, if these checks pass, then do this.”**
 
 | Part     | Plain-language meaning      | Example                                     |
 | -------- | --------------------------- | ------------------------------------------- |
@@ -29,115 +32,105 @@ flowchart TD
 
 </div>
 
-The **Tell me when water is low** template follows this pattern. A refill also changes the reading, but the IF check prevents a low-water notification when the tank is OK. In the referenced implementation, **Notify writes to the core service log**, with the action visible in rule activity; it does not send a phone push notification or email.
+A missing reading counts as **unknown**, never as zero or “all clear”, so a rule does not fire on missing data.
 
-The engine checks on a roughly one-minute tick; a change trigger is not an instant hardware interrupt. A trigger starts a check; it is not proof that an action happened. A missing reading is **unknown**, not zero or “all clear.” The engine can combine conditions using ALL, ANY, and NOT. ALL requires every check to pass; ANY needs at least one. An unknown value stays unknown when inverted with NOT.
+<Callout type="info">
+  In Core v3.0, rules can only act on the bed using **bed temperature**, **bed level**, and **water
+  low**. Rules that use room, body (movement, heart rate, HRV, breathing), or bed-pressure signals
+  work in **backtests only** for now. Templates are tagged **live** or **backtest only**. See [which
+  signals are live](/core/autopilot-engine/#which-signals-are-live).
+</Callout>
 
-## Two temperature examples
+## Automations
 
-The templates are starting points. Check the actual signal availability in **Autopilot → Diagnostics** and try a dry run before relying on a rule. A signal appearing in the editor or a recorded-night backtest does not guarantee a fresh live reading.
-
-### Follow the room overnight
-
-The **Hold room +3°F** template means: between **11 PM and 6 AM**, request a bed target **3°F above room temperature**, limited to the template's **60–85°F** range. These are example template values, not recommended temperatures for everyone.
-
-This is a **continuous policy**: it keeps asking for a target while its conditions remain true. Leaving the time window or losing a required condition withdraws the policy. Another available temperature source can then take over.
-
-<div className="docs-diagram">
-
-```mermaid
-flowchart TD
-  accTitle: Follow the room overnight as a continuous policy
-  accDescr: Each minute the engine checks whether the time is between 11 PM and 6 AM and a room reading is available. While both hold, it keeps requesting a bed target 3°F above room temperature, clamped to 60–85°F. When either stops holding, the request is withdrawn and another temperature source takes over.
-  W["WHEN: the engine ticks (about once a minute)"] --> I{"IF: between 11 PM and 6 AM, and room temperature is known?"}
-  I -->|Yes| T["THEN: request room + 3°F, clamped to 60–85°F"]
-  T --> K["Keep requesting on each tick while conditions hold"]
-  K --> W
-  I -->|No or unknown| S["Withdraw the request; another temperature source takes over"]
-```
-
-</div>
-
-### Make a temporary adjustment
-
-The **Cool when restless** template checks whether average movement over **10 minutes** exceeds **200**, then requests a target **2°F below the schedule/session baseline** for **20 minutes**. Its **30-minute cooldown** spaces out new activations. The movement threshold is an example signal value, not a clinical definition of restlessness.
-
-This is a **one-shot**: the target is calculated once. If the baseline is 76°F, the request is 74°F, subject to its configured limits. Repeated checks do not turn it into 72°F, then 70°F. Conditions becoming false do not cancel an already-active one-shot; its expiry, or disabling/editing the rule, ends it.
-
-<div className="docs-diagram">
-
-```mermaid
-flowchart TD
-  accTitle: Make a temporary adjustment as a one-shot
-  accDescr: When the 10-minute movement average exceeds 200 and the rule is not in cooldown, the engine computes one target 2°F below the schedule or session baseline and holds it for 20 minutes. Conditions turning false do not cancel it; it ends at expiry or when the rule is disabled or edited. A 30-minute cooldown then blocks new activations.
-  W["WHEN: 10-minute movement average is sampled"] --> I{"IF: average over 200, and not in cooldown?"}
-  I -->|Yes| T["THEN: compute baseline − 2°F once (76°F becomes 74°F)"]
-  T --> H["Hold that target for 20 minutes"]
-  H --> E["Ends at expiry, or when the rule is disabled or edited"]
-  E --> C["30-minute cooldown before the next activation"]
-  I -->|No or unknown| S["Do not fire; an active one-shot keeps running"]
-```
-
-</div>
-
-| Setting            | What it controls                                                                                           |
-| ------------------ | ---------------------------------------------------------------------------------------------------------- |
-| Temperature limits | The lowest and highest target the action may request.                                                      |
-| Hold / revert time | How long a one-shot request remains eligible to control the side.                                          |
-| Cooldown           | How long the rule waits before another activation; it is not the hold timer.                               |
-| Priority           | Which Autopilot request wins when several are active. Manual holds and run-once sessions still come first. |
-
-“Revert” means choose whichever source applies **now**. It does not restore an old temperature or replay missed schedule points.
-
-## Build and inspect a rule
-
-1. Open **Autopilot → Automations** and create a rule or start from a template.
-2. Choose its side, trigger, conditions, and actions. Check temperature bounds, priority, and cooldown.
-3. Start with a notification or dry run to inspect what the rule would do.
-4. Review the rule's run history and any backtest against a recorded night before enabling hardware actions.
-5. Use **Autopilot → Diagnostics** to inspect engine state and signals when results differ from expectations.
-
-The rule model is **WHEN / IF / THEN**: a trigger, a condition tree, and one or more actions. Conditions can combine time windows, live signals, and historical aggregates. Missing signals are not evidence that a condition is true.
+**Autopilot → Automations** is where you manage rules.
 
 <BrowserFrame
   src="/media/core-autopilot.png"
-  alt="Autopilot templates, temperature ownership timeline, and activity"
-  caption="Real core UI in an isolated instance with synthetic example data."
+  alt="Automations page with the Autopilot switch, who controls the bed tonight for each side, four rules with Off, Dry-run, and Active modes and backtest summaries, and the activity list"
+  caption="Autopilot → Automations. Real core UI with synthetic example rules."
 />
+
+- **Autopilot on / off** at the top is the master switch. When it is off, no rule is evaluated and a banner says so.
+- **Who controls the bed tonight** shows, for each side, who is in control now (Manual hold, Run once, Autopilot, Schedule, or Off) and what happens next. The timeline has a **SCHED** lane for the schedule and an **AUTO** lane for each rule's window: green when active, hatched amber in dry run.
+- **The rule list** shows each rule as a sentence, the side (**L**, **R**, or **L+R**), and a 5-night backtest summary. Set each rule's mode with **Off**, **Dry-run**, or **Active**. Select a rule to edit it.
+- **Activity** explains why the bed changed, or didn't, night by night. Filter by **All**, **Fired**, **Would fire**, or **Skipped**. Reasons include **outside window**, **condition not met**, **cooling down**, **manual hold**, **side is off**, **another source owns the side**, and **unavailable**. **Show more** loads earlier nights.
+
+With no rules yet, the page offers three templates:
+
+| Template                      | What it does                                                                                     | Runs          |
+| ----------------------------- | ------------------------------------------------------------------------------------------------ | ------------- |
+| **Hold room +3°F**            | Between 11 PM and 6 AM, keep the bed 3°F above room temperature, within 60–85°F                  | Backtest only |
+| **Cool when restless**        | If movement stays above 200 for 10 minutes, lower the bed 2°F for 20 minutes; 30-minute cooldown | Backtest only |
+| **Tell me when water is low** | When the water reading changes to low, write a notification                                      | Live          |
+
+The template values are examples, not recommendations. **Notify** writes to the Core service log and the rule's activity; it does not send a phone notification or email.
+
+## Build a rule
+
+Select **New automation**, a template, or an existing rule. Nothing is saved until you select **Save**.
+
+1. Name the rule by editing the title.
+2. Choose the **Side**: **L**, **R**, or **Both**, and the **Mode**: **Dry-run** (default) or **Active**. In dry run, Autopilot records what it would do but never touches the bed.
+3. **When** chooses what starts a check:
+   - **Aggregate**: average, max, min, sum, or count of a signal over the last N minutes, compared with a value.
+   - **Threshold**: a signal compared with a value.
+   - **On change**: whenever a signal changes.
+   - **Time of day**: between two whole hours.
+
+   For Aggregate and Threshold, the editor shows the signal's range over the last 5 nights so you can pick a threshold it actually reaches.
+
+4. **If** adds optional extra checks. All must pass. Add a **Time window** or a **Condition**.
+5. **Then** chooses the action:
+   - **Set temperature** **By amount** (raise or lower by N°F, optionally reverting after N minutes) or by **Expression**, such as `ambient + 3`, using `ambient`, `target`, and `current`.
+   - **Safety clamp**: the lowest and highest temperature the rule may ask for.
+   - **Set power**: On or Off.
+   - **Notify**: a message.
+   - **Cooldown**: minutes to wait before the rule can fire again (30 by default).
+6. Check **Reads as**, the sentence version of your rule, and the backtest, then **Save**.
+
+Signals you can use:
+
+| Group        | Signals                                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **Room**     | Ambient temp, Ambient humidity, Ambient light                                                                       |
+| **Bed**      | Current temp (level), Target temp (level), Bed surface temp, Surface temp spread, Surface temp gradient, Water temp |
+| **Body**     | Movement, Heart rate, HRV, Breathing rate                                                                           |
+| **Presence** | Bed pressure (peak), Bed pressure (avg), Pressure spread                                                            |
+| **System**   | Water low                                                                                                           |
+
+Rules using bed-pressure signals also show a **Bed pressure** panel with head, torso, and legs zones, live or replayed.
 
 ## Backtest before you trust it
 
-Every rule in the editor is replayed against **real recorded history** as you edit it. Pick one of the last five recorded nights and the backtest shows what the rule would have done that night, before it ever touches the bed. Nothing in the panel changes your Pod. It is a dry preview computed from the night's stored signals.
+Every rule is replayed against **recorded history** while you edit it. Pick one of the last five recorded nights and the backtest shows what the rule would have done. Nothing in the panel changes your Pod.
 
 <BrowserFrame
   src="/media/core-autopilot-backtest.png"
-  alt="The Cool when restless rule editor with its backtest chart: the movement trace, the 200 threshold, two fire markers, cooldown bands, and the resulting setpoint"
-  caption="The real rule editor replaying “Cool when restless” over a synthetic night. The backtest uses Core's own replay engine."
+  alt="The Cool when restless rule editor with its backtest chart: the movement trace, the 200 threshold, fire markers, cooldown bands, and the resulting setpoint"
+  caption="The rule editor replaying “Cool when restless” over a synthetic night, using Core's own replay engine."
 />
 
-The chart has two modes, matching the two kinds of rule:
+- **Edge** backtests (threshold rules) show the signal, the threshold, a red dot where the rule **would fire**, and a tick where cooldown **suppressed** it. The stats count both.
+- **Continuous** backtests (rules that track a signal) show the signal, the resulting setpoint, and where the safety clamp limited it.
 
-| Mode           | When it applies                                                                            | What you see                                                                                                                                                                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Edge**       | A threshold or windowed aggregate crossing fires a one-shot, such as _Cool when restless_. | The raw signal, its windowed average, the threshold, a red dot at each point the rule **would fire**, a tick where a fire was **suppressed** by cooldown, and the setpoint as a step line. The stats show would-fire count, suppressed count, and net effect. |
-| **Continuous** | The setpoint tracks a live signal inside a time window, such as _Hold room +3°F_.          | The tracked signal and the resulting setpoint on one temperature scale, the pre-clamp setpoint as a dashed ghost line, and the clamp band. The stats show clamp hits and the setpoint range.                                                                  |
+If a side has no recorded nights yet, the panel says so. A good backtest does not mean the rule can fire live; see the note above about live signals. For how replays work, see [how backtests replay](/core/autopilot-engine/#how-backtests-replay).
 
-A few things the replay makes explicit:
+## Diagnostics
 
-- **Cooldown is not the hold timer.** In the capture above the rule fires twice and is suppressed five times. Each suppression is a tick where the conditions held but the 30-minute cooldown had not elapsed.
-- **Edge-mode setpoints are relative to a nominal baseline.** Per-side target history is not stored, so the step line shows the action's delta applied to the midpoint of the safety clamp, not the exact temperature the bed was at.
-- **The threshold range helps you aim.** Under the trigger, the editor prints the compared value's recorded range over the last five nights, so you do not set a threshold the signal never reaches.
-- **The list shows a five-night summary** for every saved rule: how many times it would have fired, and for threshold rules the peak value against the threshold. Templates are marked **live** or **backtest only** depending on whether their signals are wired on your Pod.
+**Autopilot → Diagnostics** shows what each rule has actually been doing.
 
-If a side has no recorded nights yet, the panel says so instead of drawing a chart. Backtests replay the full recorded series, which can include signals that are not yet available live; check **Autopilot → Diagnostics** before relying on one.
+<BrowserFrame
+  src="/media/core-autopilot-diagnostics.png"
+  alt="Autopilot Diagnostics with the running switch, a Hold room rule card showing last evaluated, condition, fires today, the 3-hour evaluation strip, and the run log"
+  caption="Autopilot → Diagnostics. Synthetic example evaluations."
+/>
 
-## Understand temperature behavior
-
-Manual holds and run-once sessions outrank Autopilot. Among Autopilot requests, higher rule priority wins, then the newest activation. Recurring schedules supply the fallback.
-
-A continuous policy owns a target while its conditions remain valid. False or unknown conditions withdraw it, and its lease expires if the engine stops refreshing it. A one-shot resolves its target once and holds it for 30 minutes by default; repeated engine ticks do not keep adding its delta or extending its lifetime.
-
-Relative temperature actions use the schedule/session baseline, rather than their own previous output. Conditions still inspect live observations. This prevents a “lower by two degrees” expression from repeatedly lowering itself every tick.
+- **Autopilot running** or **Autopilot halted**: the master switch. While halted, no rule commands hardware.
+- One card per rule, with its **Mode** (**Off**, **Dry-run**, **Live**) and:
+  - **Last evaluated**, the **Condition** with its live value, **Would have fired today**, and **Fired today** (with how many commands were actually sent).
+  - **Evaluations**: one tick per minute for the last 3 hours, coloured skipped, would fire, fired, cooldown, or no evaluation logged.
+  - **Run log**: today's results with repeats grouped. Filter by **Would fire**, **Fired**, **Skipped**, or **Missing**.
 
 ## Why did nothing change?
 
@@ -158,12 +151,14 @@ flowchart TD
 
 Read the activity reason before changing the rule. **Outside its window**, **signal unavailable**, **cooling down**, and **another source owns the side** explain different situations. A temperature request alone does not turn an off side back on. Turning power on is a separate action.
 
-## Stop or troubleshoot a rule
+## Stop a rule
 
-Disable the rule or use the global kill-switch to revoke its temperature requests. Editing or deleting a rule also revokes its old requests. Check the run log for fired, skipped, clamped, dry-run, and error outcomes. If another owner wins, inspect the [manual hold and Resume controls](/core/temperature/#manual-holds-and-resume).
+Set the rule to **Off**, or turn off the master switch to stop every rule at once. Turning a rule off, editing it, or deleting it withdraws its temperature requests. If another source wins, check the [manual hold and Resume controls](/core/temperature/#manual-holds-and-resume).
 
-Temperature clamping, cooldowns, action-rate limits, and pump protection still apply. A successful rule evaluation does not prove the hardware is circulating water; inspect **System → Thermal** for delivery evidence.
+Safety clamps, cooldowns, and pump protection still apply to every rule. A rule firing does not prove the water is circulating; check [System → Thermal](/core/system/thermal/).
+
+For how rules evaluate and who controls the temperature, see the [Autopilot engine](/core/autopilot-engine/).
 
 ---
 
-**Source reference:** [Rule templates and builder](https://github.com/sleepypod/core/blob/a1ecf7ea02826c8381b686a3ac7f30024dd24633/src/components/Autopilot/builderModel.ts) · [Engine and notification wiring](https://github.com/sleepypod/core/blob/a1ecf7ea02826c8381b686a3ac7f30024dd24633/src/automation/instance.ts) · [Autopilot design](https://github.com/sleepypod/core/blob/17d5369e/docs/adr/0023-autopilot-reactive-automations.md) · [Current ownership and request lifetimes](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md) · [Autopilot interface](https://github.com/sleepypod/core/tree/17d5369e/src/components/Autopilot)
+**Source reference:** [Autopilot interface](https://github.com/sleepypod/core/tree/4cc76838/src/components/Autopilot) · [Rule builder and templates](https://github.com/sleepypod/core/blob/4cc76838/src/components/Autopilot/builderModel.ts) · [Notification wiring](https://github.com/sleepypod/core/blob/4cc76838/src/automation/instance.ts) · [Autopilot design](https://github.com/sleepypod/core/blob/4cc76838/docs/adr/0023-autopilot-reactive-automations.md)

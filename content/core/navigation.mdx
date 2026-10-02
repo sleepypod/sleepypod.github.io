@@ -1,0 +1,81 @@
+---
+title: 'Find your way around'
+description: 'The six sections of the Core web app, where each screen lives, and which guide covers it.'
+---
+
+# Find your way around
+
+Open `http://POD_IP:3000` in a browser on the same network as the Pod, or try the [live demo](https://sleepypod.vercel.app). The app has six sections. They are the same on a phone, tablet, and computer.
+
+| Section       | What it is for                                               | Guide                         |
+| ------------- | ------------------------------------------------------------ | ----------------------------- |
+| **Temp**      | Change temperature and power right now                       | [Temp](/core/temperature/)    |
+| **Autopilot** | Rules that react to the room, your body, or the Pod          | [Autopilot](/core/autopilot/) |
+| **Schedule**  | Nightly temperature curves and vibration alarms              | [Schedule](/core/schedules/)  |
+| **Sleep**     | Night records, sleep stages, and vitals                      | [Sleep](/core/biometrics/)    |
+| **System**    | How the Pod is doing: health, sensors, logs, and maintenance | [System](/core/system/)       |
+| **Settings**  | Things you configure once and rarely change                  | [Settings](/core/settings/)   |
+
+**Settings** is for things you change. **System** is for checking how the Pod is doing. If you are looking for a switch, start in Settings. If something is not working, start in System.
+
+## On a computer
+
+At 900 pixels wide and above, a sidebar lists the six sections. Autopilot, Sleep, System, and Settings expand to show their pages when you open them.
+
+- **Build chip.** Next to the logo. A release shows its version, for example `v3.0.0`. Any other build shows an amber **DEV** chip. Select it to see the version, host, branch, and commit. Include these when you report a problem.
+- **Docs.** Opens this site.
+- **Health row.** At the bottom of the sidebar, a dot and summary such as **Pod 5 healthy** or **Pod 5 2 issues**, followed by the current issues. Select it to open [System → Dashboard](/core/system/).
+
+## On a phone
+
+A tab bar at the bottom replaces the sidebar. The Schedule tab shows a green dot while a schedule is active, and the System tab shows a green or amber health dot. Settings opens as a list; tap a row to open that section, and **‹ Settings** to go back.
+
+On touch screens you can swipe left or right to move between Temp, Schedule, Sleep, System, and Settings. Swiping skips Autopilot; tap its tab instead.
+
+## Every screen and its guide
+
+Each screen has its own address, so you can bookmark or share it. Replace `POD_IP` with your Pod's address. Older addresses still work and lead to the current screen.
+
+| App address                             | Guide                                                     |
+| --------------------------------------- | --------------------------------------------------------- |
+| `/en`                                   | [Temp](/core/temperature/)                                |
+| `/en/autopilot`                         | [Autopilot → Automations](/core/autopilot/#automations)   |
+| `/en/autopilot?view=diagnostics`        | [Autopilot → Diagnostics](/core/autopilot/#diagnostics)   |
+| `/en/autopilot/new`, `/en/autopilot/ID` | [Autopilot → Build a rule](/core/autopilot/#build-a-rule) |
+| `/en/schedule`                          | [Schedule](/core/schedules/)                              |
+| `/en/sleep`                             | [Sleep → Nights](/core/biometrics/#nights)                |
+| `/en/sleep?view=biometrics`             | [Sleep → Biometrics](/core/biometrics/#biometrics)        |
+| `/en/system`                            | [System → Dashboard](/core/system/)                       |
+| `/en/system?tab=calibration`            | [System → Calibration](/core/system/calibration/)         |
+| `/en/system?tab=databases`              | [System → Databases](/core/system/databases/)             |
+| `/en/system?tab=hardware`               | [System → Hardware](/core/system/hardware/)               |
+| `/en/system?tab=health`                 | [System → Health](/core/system/health/)                   |
+| `/en/system?tab=logs`                   | [System → Logs](/core/system/logs/)                       |
+| `/en/system?tab=scheduler`              | [System → Scheduler](/core/system/scheduler/)             |
+| `/en/system?tab=sensors`                | [System → Sensors](/core/system/sensors/)                 |
+| `/en/system?tab=storage`                | [System → Storage](/core/system/storage/)                 |
+| `/en/system?tab=thermal`                | [System → Thermal](/core/system/thermal/)                 |
+| `/en/settings?section=appearance`       | [Settings → Appearance](/core/settings/appearance/)       |
+| `/en/settings?section=backup`           | [Settings → Backup](/core/settings/backup/)               |
+| `/en/settings?section=device`           | [Settings → Device](/core/settings/device/)               |
+| `/en/settings?section=gestures`         | [Settings → Gestures](/core/settings/gestures/)           |
+| `/en/settings?section=homekit`          | [Settings → HomeKit](/core/settings/homekit/)             |
+| `/en/settings?section=mqtt`             | [Settings → MQTT](/core/settings/mqtt/)                   |
+| `/en/settings?section=network`          | [Settings → Network](/core/settings/network/)             |
+| `/en/settings?section=sides`            | [Settings → Sides](/core/settings/sides/)                 |
+| `/en/settings?section=updates`          | [Settings → Updates](/core/settings/updates/)             |
+
+The `/en` part is the language. The app also accepts `/es`, and it picks a language from your browser when the address has none.
+
+| Older address                   | Opens                     |
+| ------------------------------- | ------------------------- |
+| `/data`                         | Sleep                     |
+| `/sensors`, `/debug`, `/status` | System                    |
+| `/en/system?tab=pipeline`       | System → Health           |
+| `/en/system?tab=biometrics`     | Sleep → Biometrics        |
+| `/en/settings?section=status`   | System → Dashboard        |
+| `/en/settings?tab=ID`           | The same as `?section=ID` |
+
+---
+
+**Source reference:** [Navigation](https://github.com/sleepypod/core/blob/4cc76838/src/components/AppShell/navItems.ts) · [Settings sections](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/sections.ts) · [System tabs](https://github.com/sleepypod/core/blob/4cc76838/src/components/System/systemTabs.ts) · [Swipe navigation](https://github.com/sleepypod/core/blob/4cc76838/src/hooks/useSwipeNavigation.ts)

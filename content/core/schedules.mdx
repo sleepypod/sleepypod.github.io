@@ -1,52 +1,90 @@
 ---
-title: 'Schedules and alarms'
+title: 'Schedule'
+description: 'Build nightly temperature curves, set vibration alarms, and check what runs tonight.'
 ---
 
-# Schedules and alarms
+# Schedule
 
-Core runs scheduled jobs on the Pod. Closing the web app or iOS app does not stop them.
-
-## Build a nightly routine
-
-1. Open **Schedule** and choose Left, Right, or Both.
-2. Select **New curve** (or the edit control on an existing curve).
-3. Choose its days, bedtime, wake time, and temperature limits.
-4. Start with Hot Sleeper, Balanced, or Cold Sleeper, then review the individual setpoints. Presets are starting points, not measured recommendations.
-5. Save the curve and review any conflicts with existing days. Edits remain local until Save.
-6. Use **Add alarm** for a vibration alarm and check its side and days separately.
-
-The curve editor groups a routine across selected days. Review its start and end behavior in the resulting card. For detailed job timing, use **System → Scheduler**. The Schedule switch enables or disables the selected side's recurring schedule; a manual temperature hold does not change that switch.
+**Schedule** holds your nightly temperature curves and vibration alarms. They run on the Pod, so closing the app does not stop them.
 
 <BrowserFrame
   src="/media/core-schedule.png"
-  alt="Recurring temperature curve in the core Schedule page"
-  caption="Real core UI in an isolated instance with synthetic example data."
+  alt="Schedule page for the left side with an every-day curve from 10 PM to 7 AM, last night's bed temperature, the phase strip, and a weekday 6:45 AM alarm"
+  caption="Schedule for the left side. Real core UI with synthetic example data."
 />
 
-## Check the timezone
+## Read the page
 
-The scheduler uses the device timezone. Verify that setting when events fire at the wrong local time. The Pod's clock can reset after a power cycle; Core waits for a valid system clock before starting scheduled jobs.
+- **Left / Right / Both** at the top chooses whose schedule you see.
+- The **Schedule** switch turns every temperature, power, and alarm schedule for that side on or off. A manual change on the [Temp](/core/temperature/) screen does not change this switch.
+- The curve that runs today is shown large, marked **ACTIVE**, with last night's bed temperature for comparison. The strip under it reads like a plan: **Power on**, **Cool-down** or **Warm-up**, **Hold · 4 h**, **Wake ramp**, **Power off**.
+- Other curves are listed below it. A curve with no active points is shown dashed as **Schedule paused**.
+- **Alarms** are on the right. The footer says whether the scheduler is **in sync** and how many jobs it has.
+
+**Both** shows one night at a time for both people. Choose a day with the Sun–Sat buttons; each person has a lane and a phase strip, and their curves are listed below.
+
+## Build a nightly curve
+
+1. Choose **Left** or **Right**, then **New curve**, or the pencil on an existing curve. The first time, select **Create sleep curve**.
+2. **Days**: choose which days the curve runs.
+3. **Times**: set **Bedtime** and **Wake up**. Changing them stretches the existing points to fit.
+4. **Range**: set **Coolest** and **Warmest**, between 55 and 110°F and at least 2°F apart.
+5. **Preset**: start from **Hot Sleeper**, **Balanced**, or **Cold Sleeper**, or **Custom AI curve** (below). Presets are starting points, not recommendations.
+6. Adjust points: drag them on the chart, change a temperature with − and +, select a time to edit it, or **Add set point**. The first point powers the side on and the last one powers it off.
+7. Select **Save curve**.
 
 <BrowserFrame
-  src="/media/core-scheduler.png"
-  alt="sleepypod Scheduler view with upcoming temperature jobs for both sides"
-  caption="Check the registered jobs and upcoming runs after saving a routine. Synthetic example schedule."
+  src="/media/core-schedule-curve-editor.png"
+  alt="Edit curve page with days, bedtime and wake up times, coolest and warmest range, presets, the curve chart, and four set points"
+  caption="Editing an every-day curve. Nothing is saved until Save curve. Synthetic example data."
 />
+
+Nothing changes until you save. If some of the days you chose already belong to another curve, you are asked to **Move & save** them to this one.
+
+To delete a curve, select its bin icon and confirm. The Pod will not change temperature on those days until you create a new curve.
+
+### Custom AI curve
+
+**Custom AI curve** helps you write a curve with an AI assistant you already use:
+
+1. **Describe** how you sleep, for example "I run hot, bed at 11pm, wake at 6:30". You can start from an example or a saved description.
+2. **Review**: copy the prompt it writes and paste it into ChatGPT, Claude, or Gemini.
+3. **Import**: paste the assistant's JSON reply back.
+4. **Preview**: check the curve and the reasoning, edit points, then **Use curve**.
+
+Using a curve only fills in the editor. Nothing is saved until **Save curve**. The Pod does not contact any AI service itself.
 
 ## Vibration alarms
 
-Alarm configuration includes duration, intensity, and pattern. Hardware capability differs: the Core README notes that the Pod 5 J55 cover MCU clamps intensity and pattern even though the API accepts them. A saved value does not guarantee that hardware can reproduce it.
+<BrowserFrame
+  src="/media/core-schedule-alarm-editor.png"
+  alt="Edit alarm dialog with a 6:45 AM wake time, left side, weekdays, rise pattern, 100% intensity, 30-second duration, and 82° bed temperature at wake"
+  caption="Editing a weekday alarm. Synthetic example data."
+/>
+
+1. Select **Add alarm**, or select an existing alarm.
+2. Set **Wake at**, and choose **Left**, **Right**, or **Both**.
+3. Choose the days, or a quick pick: **Weekdays**, **Weekends**, or **Every day**.
+4. Under **Vibration**, choose a **Pattern** (Rise or Double), **Intensity** (1–100%), and **Duration** (10–180 seconds, 30 by default).
+5. Set **Bed temperature at wake**.
+6. Select **Test** to feel it now, then **Save alarm**.
+
+Pod 5 covers ignore pattern and intensity; the duration is what you feel. A saved value does not mean the hardware can reproduce it. The ▶ button on an alarm card fires it right away.
+
+While an alarm rings, the Temp screen offers **Snooze 5m** and **Stop**. You can also set [cover taps](/core/settings/gestures/) to snooze or stop it.
 
 ## Temporary changes
 
-A manual adjustment creates a hold, defaulting to 30 minutes. Schedule and run-once clocks continue during the hold; Resume returns to the point that applies now. A run-once session outranks recurring schedules and Autopilot but remains below a manual hold. See [temperature ownership](/core/temperature/#manual-holds-and-resume).
+A change on the Temp screen starts a manual hold; the schedule keeps running underneath and takes over when the hold ends. On the Temp screen, **Night** and **Dawn** edit the saved curve for every day that shares tonight's curve. Use this page to change individual days or points. See [Temp](/core/temperature/#manual-holds-and-resume).
 
-On the Temp screen, Night and Dawn edits shift saved phase setpoints across every day matching tonight's curve. Use the Schedule editor when you want different days or individual point changes.
+## Check the timezone
+
+Schedules run in the Pod's timezone. If things happen at the wrong hour, check **Timezone** in [Device](/core/settings/device/#pod). To see every job and its next run, use [System → Scheduler](/core/system/scheduler/).
 
 ## iOS curve editor
 
-The iOS companion provides per-phase temperature controls, day and side selection, and Cool, Balanced, and Warm presets. See [using the iOS app](/ios/using-the-app/).
+The iOS app has its own curve editor with per-phase controls, day and side selection, and Cool, Balanced, and Warm presets. See [using the iOS app](/ios/using-the-app/).
 
 ---
 
-**Source reference:** [Current curve editor](https://github.com/sleepypod/core/blob/17d5369e/src/components/Schedule/CurveEditor.tsx) · [Ownership contract](https://github.com/sleepypod/core/blob/17d5369e/docs/temperature-control.md) · [Scheduler and alarms](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/README.md) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/hardware/alarms.md) · [iOS scheduling](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)
+**Source reference:** [Schedule screen](https://github.com/sleepypod/core/tree/4cc76838/src/components/Schedule) · [Curve editor](https://github.com/sleepypod/core/blob/4cc76838/src/components/Schedule/CurveEditor.tsx) · [Alarm editor](https://github.com/sleepypod/core/blob/4cc76838/src/components/Schedule/AlarmEditor.tsx) · [AI curve wizard](https://github.com/sleepypod/core/blob/4cc76838/src/components/Schedule/AICurveWizard.tsx) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/4cc76838/docs/hardware/alarms.md)

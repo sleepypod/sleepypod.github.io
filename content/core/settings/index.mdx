@@ -1,0 +1,37 @@
+---
+title: 'Settings'
+description: 'Everything you configure in the Core web app, section by section.'
+---
+
+# Settings
+
+Settings holds things you configure. To check how the Pod is doing, use [System](/core/system/) instead.
+
+On a computer, the Settings sections are listed under **Settings** in the sidebar, and Appearance opens first. On a phone, Settings opens as a list. It starts with quick Appearance controls, then groups the sections under **POD**, **SYSTEM**, and **HELP**. Tap a row to open it.
+
+| Section                                  | What it controls                                           | Saved for                 |
+| ---------------------------------------- | ---------------------------------------------------------- | ------------------------- |
+| [Appearance](/core/settings/appearance/) | Temperature control style, number format, theme, and units | This browser (units: Pod) |
+| [Backup](/core/settings/backup/)         | Nightly archive copy to a computer you control             | Pod                       |
+| [Device](/core/settings/device/)         | Timezone, power cap, pump protection, maintenance, LED     | Pod                       |
+| [Gestures](/core/settings/gestures/)     | What double, triple, and quad taps on the cover do         | Each side                 |
+| [HomeKit](/core/settings/homekit/)       | The Apple Home bridge                                      | Pod                       |
+| [MQTT](/core/settings/mqtt/)             | The broker connection used by Home Assistant               | Pod                       |
+| [Network](/core/settings/network/)       | Whether the Pod can reach the internet                     | Pod                       |
+| [Sides](/core/settings/sides/)           | Names, Away mode, Auto-off, and Always on                  | Each side                 |
+| [Updates](/core/settings/updates/)       | Installed software, update channel, and disk use           | Pod                       |
+
+**Gestures** and **Sides** are per person. Choose **Left** or **Right** with the switch at the top before making changes. The switch shows each side's name once you set one.
+
+## Backups and maintenance
+
+There are two kinds of backup:
+
+- **[Settings → Backup](/core/settings/backup/)** copies sensor archives and a sleep-data database to a computer you control every night.
+- **[System → Databases → Download backup](/core/system/databases/)** downloads both databases right now, including your settings and schedules.
+
+To free up disk space, use [System → Storage](/core/system/storage/). To update Core, use [Settings → Updates](/core/settings/updates/).
+
+---
+
+**Source reference:** [Settings screen](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/SettingsScreen.tsx) · [Sections](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/sections.ts)

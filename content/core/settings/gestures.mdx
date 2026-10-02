@@ -1,0 +1,45 @@
+---
+title: 'Gestures'
+description: 'Choose what double, triple, and quad taps on the cover do, including while an alarm is ringing.'
+---
+
+# Gestures
+
+**Settings → Gestures** sets what happens when you tap the top of the cover on your side. Each side has its own gestures. Choose **Left** or **Right** at the top of the page first.
+
+<BrowserFrame
+  src="/media/core-gestures.png"
+  alt="Gesture settings for the left side: double tap Temperature −2°, triple tap Temperature +2°, quad tap Power on or off, and the same taps while an alarm is ringing"
+  caption="Settings → Gestures for the left side. Synthetic example gestures."
+/>
+
+## The two cards
+
+There are three taps: **Double tap**, **Triple tap**, and **Quad tap**. Each tap does one thing. The two cards show what that thing is in two situations:
+
+- **Tap gestures** shows what each tap does normally: **Temperature +N°** or **−N°**, **Power on / off**, **Nothing**, or **Not set**.
+- **While an alarm is ringing** shows what each tap does while an alarm is going off: **Snooze N min**, **Stop alarm**, or **Temperature ±N°**.
+
+In the example above, a quad tap turns the left side on or off, but if an alarm is ringing it snoozes the alarm for 5 minutes instead. A temperature gesture does the same thing whether or not an alarm is ringing.
+
+## Set a gesture
+
+1. Select the tap you want to change, in either card.
+2. Choose an action:
+   - **Temperature**: choose **Warmer** or **Cooler**, and an **Amount** from 1 to 10 degrees. The default is 2 degrees warmer.
+   - **Alarm & power**: choose what happens **While ringing**, either **Snooze** or **Stop alarm**. For Snooze, choose **Snooze for**, 1 to 10 minutes; the default is 5. Then choose **When no alarm**: **Nothing**, or **Power on / off**.
+3. Select **Save**. To clear a gesture, open it and select **Remove**.
+
+A temperature gesture starts a manual hold, like any other temperature change. See [Temp](/core/temperature/#manual-holds-and-resume).
+
+## Check it on the bed
+
+Saving a gesture does not prove the cover detects it. Try each tap on the correct side and check that the right thing happens.
+
+Taps are ignored on a side that [pump stall protection](/core/settings/device/#pump-protection) has turned off, so a stalled pump cannot be restarted from the cover. If a tap does nothing, check the Temp screen for a stall banner, then look in [System → Logs](/core/system/logs/).
+
+The cover's firmware also makes its own small adjustment when you tap. Core replaces it with the amount you set here, so a tap moves exactly that amount.
+
+---
+
+**Source reference:** [Gesture settings](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/TapGestureConfig.tsx) · [Gesture actions](https://github.com/sleepypod/core/blob/4cc76838/src/hardware/gestureActionHandler.ts) · [Gesture schema](https://github.com/sleepypod/core/blob/4cc76838/src/db/schema.ts)
