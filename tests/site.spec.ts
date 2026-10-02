@@ -71,7 +71,7 @@ test('search finds an indexed product guide', async ({ page }) => {
   await expect(page.getByRole('option').first()).toBeVisible({ timeout: 15000 })
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
-  await expect(page).toHaveURL(/core\/integrations/)
+  await expect(page).toHaveURL(/core\/(integrations|settings\/homekit)/)
 })
 test('videos decode and play to the end', async ({ page }) => {
   for (const route of ['/dial/', '/dial/controls/']) {
@@ -181,7 +181,8 @@ for (const route of ['/', '/core/temperature/']) {
 
 for (const [route, count] of [
   ['/core/data-flow/', 1],
-  ['/core/autopilot/', 4],
+  ['/core/autopilot/', 2],
+  ['/core/autopilot-engine/', 2],
   ['/developers/architecture/', 2],
   ['/developers/temperature-control/', 1],
 ] as const) {

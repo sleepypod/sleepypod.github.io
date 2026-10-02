@@ -10,6 +10,14 @@
       "output": "core-schedule.png"
     },
     {
+      "path": "/en/schedule",
+      "output": "core-schedule-curve-editor.png"
+    },
+    {
+      "path": "/en/schedule",
+      "output": "core-schedule-alarm-editor.png"
+    },
+    {
       "path": "/en/settings?section=appearance",
       "output": "core-appearance.png"
     },
@@ -22,32 +30,96 @@
       "output": "core-autopilot-backtest.png"
     },
     {
+      "path": "/en/autopilot?view=diagnostics",
+      "output": "core-autopilot-diagnostics.png"
+    },
+    {
       "path": "/en/system",
       "output": "core-system.png"
+    },
+    {
+      "path": "/en/system?tab=calibration",
+      "output": "core-system-calibration.png"
+    },
+    {
+      "path": "/en/system?tab=databases",
+      "output": "core-system-databases.png"
+    },
+    {
+      "path": "/en/system?tab=hardware",
+      "output": "core-system-hardware.png"
     },
     {
       "path": "/en/system?tab=health",
       "output": "core-health.png"
     },
     {
+      "path": "/en/system?tab=logs",
+      "output": "core-system-logs.png"
+    },
+    {
       "path": "/en/system?tab=scheduler",
       "output": "core-scheduler.png"
+    },
+    {
+      "path": "/en/system?tab=sensors",
+      "output": "core-system-sensors.png"
+    },
+    {
+      "path": "/en/system?tab=storage",
+      "output": "core-system-storage.png"
+    },
+    {
+      "path": "/en/system?tab=thermal",
+      "output": "core-system-thermal.png"
     },
     {
       "path": "/en/sleep",
       "output": "core-sleep.png"
     },
     {
+      "path": "/en/sleep",
+      "output": "core-sleep-week.png"
+    },
+    {
+      "path": "/en/sleep",
+      "output": "core-sleep-month.png"
+    },
+    {
       "path": "/en/sleep?view=biometrics",
       "output": "core-biometrics.png"
+    },
+    {
+      "path": "/en/settings?section=backup",
+      "output": "core-backup.png"
+    },
+    {
+      "path": "/en/settings?section=device",
+      "output": "core-settings-device.png"
     },
     {
       "path": "/en/settings?section=gestures",
       "output": "core-gestures.png"
     },
     {
-      "path": "/en/settings?section=backup",
-      "output": "core-backup.png"
+      "path": "/en/settings?section=homekit",
+      "output": "core-settings-homekit.png"
+    },
+    {
+      "path": "/en/settings?section=mqtt",
+      "output": "core-settings-mqtt.png"
+    },
+    {
+      "path": "/en/settings?section=network",
+      "output": "core-settings-network.png"
+    },
+    {
+      "path": "/en/settings?section=sides",
+      "output": "core-settings-sides.png"
+    },
+    {
+      "path": "/en/settings?section=updates",
+      "output": "core-settings-updates.png"
     }
   ],
   "preferences": {
@@ -59,7 +131,7 @@
     "height": 1000
   },
   "deviceScaleFactor": 2,
-  "sourceCommit": "e4951f787fd6128d5cf1bb1723564e32de536be6",
-  "capturedAt": "2026-10-01T04:52:39.896Z",
+  "sourceCommit": "4cc76838105c1b08af453e28255463c5588be33c",
+  "capturedAt": "2026-10-02T19:58:29.194Z",
   "method": "Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures"
 }

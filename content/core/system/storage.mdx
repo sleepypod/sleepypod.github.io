@@ -1,0 +1,41 @@
+---
+title: 'Storage'
+description: 'See what uses the Pod disk and safely free up leftover files.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Storage
+
+**System → Storage** shows what is using the Pod's storage, `/persistent`, and lets you delete leftover files.
+
+<BrowserFrame
+  src="/media/core-system-storage.png"
+  alt="Storage page with a usage bar split into raw sensor archive, app, databases, swap, reclaimable leftovers, and other, and a Reclaimable list with Free up"
+  caption="System → Storage with synthetic disk usage and two leftover items."
+/>
+
+## What uses space
+
+The bar splits used space into **Raw sensor archive**, **sleepypod app**, **Databases**, **Swap**, **Reclaimable leftovers**, and **Other**. The line under it says how many days of raw sensor history are kept.
+
+The Pod keeps `/persistent` under a limit (80%, shown by the marker on the bar) by deleting the oldest raw archives. So every leftover file costs you raw history.
+
+## Free up space
+
+**Reclaimable** lists files Core left behind, such as a previous release kept after an update or leftover update files.
+
+1. Review the list.
+2. To also remove older database backups, turn on **Include N old database backups**. The newest backup of each database is always kept.
+3. Select **Free up** and confirm with **Delete**.
+
+<Callout type="warning">
+  Deleted files cannot be recovered. The running app, live databases, raw archive, swap, and HomeKit
+  pairing are never touched.
+</Callout>
+
+Over SSH, `sp-storage-cleanup --dry-run --json` shows the same list without deleting anything. If the page says the cleanup tool is not installed, [update Core](/core/settings/updates/).
+
+---
+
+**Source reference:** [Storage tab](https://github.com/sleepypod/core/blob/4cc76838/src/components/System/StorageTab.tsx) · [Storage report](https://github.com/sleepypod/core/blob/4cc76838/src/lib/podStorage.ts) · [Operations tools](https://github.com/sleepypod/core/blob/4cc76838/scripts/README.md)

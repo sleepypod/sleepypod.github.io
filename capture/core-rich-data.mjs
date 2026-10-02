@@ -35,30 +35,147 @@ const ruleFor = (rule) =>
     (r) => r.trigger.kind === rule.trigger.kind && r.actions[0]?.kind === rule.actions[0]?.kind,
   )
 export function richData(name, input) {
-  if (name === 'calibration.getStatus')
+  if (name === 'calibration.getStatus') {
+    // Baselines sit under the synthetic stream frames, so both sides read occupied.
+    const side = input?.side || 'left'
+    const parameters = {
+      piezo: { baseline_mean_range: 18, presence_threshold: 30 },
+      capacitance: {
+        format: 'capSense2',
+        channels: Object.fromEntries(['A', 'B', 'C'].map((ch) => [ch, { mean: 1.1, std: 0.02 }])),
+        threshold: 0.6,
+        ref: { mean: 1.16 },
+      },
+      temperature: {
+        ambient_mean: 2390,
+        offsets: Object.fromEntries(
+          ['outer', 'center', 'inner'].map((zone, i) => [
+            `${side}_${zone}_temp`,
+            (side === 'left' ? -60 : -170) + i * 10,
+          ]),
+        ),
+      },
+    }
     return Object.fromEntries(
-      ['piezo', 'capacitance', 'temperature'].map((type) => [
+      ['piezo', 'capacitance', 'temperature'].map((type, i) => [
         type,
-        { status: 'completed', qualityScore: 0.94, completedAt: new Date(now - 86400000) },
+        {
+          id: i + 1,
+          side,
+          sensorType: type,
+          status: 'completed',
+          qualityScore: [0.94, 0.91, 0.97][i],
+          samplesUsed: [1800, 1200, 600][i],
+          createdAt: new Date(now - 86400000),
+          expiresAt: new Date(now + 6 * 86400000),
+          errorMessage: null,
+          parameters: parameters[type],
+        },
       ]),
     )
+  }
   if (name === 'system.wifiStatus')
     return { connected: true, ssid: 'Demo home', signal: 92, ipAddress: '192.0.2.10' }
   if (name === 'system.internetStatus') return { blocked: true }
   if (name === 'system.getVersion')
-    return { branch: 'dev', commitHash: 'e4951f787fd6128d5cf1bb1723564e32de536be6', version: null }
+    return {
+      branch: 'main',
+      commitHash: '4cc76838105c1b08af453e28255463c5588be33c',
+      commitTitle: 'feat!: v3.0',
+      buildDate: '2026-09-30T23:35:15-07:00',
+      version: 'v3.0.0',
+    }
   if (name === 'system.getLogSources')
     return {
-      sources: ['Core', 'Piezo Processor', 'Sleep Detector', 'Environment Monitor'].map((name) => ({
-        name,
-        unit: name.toLowerCase().replaceAll(' ', '-') + '.service',
-        active: true,
-      })),
+      sources: [
+        ['sleepypod.service', 'Core'],
+        ['sleepypod-piezo-processor.service', 'Piezo Processor'],
+        ['sleepypod-sleep-detector.service', 'Sleep Detector'],
+        ['sleepypod-environment-monitor.service', 'Environment Monitor'],
+      ].map(([unit, name]) => ({ unit, name, active: true })),
     }
+  if (name === 'system.getLogs') {
+    // short-iso in the Pod's local time (fixture night is PDT, UTC−7).
+    const stamp = (min) =>
+      new Date(now - min * 60000 - 7 * 3600000).toISOString().replace('.000Z', '-0700')
+    const lines = [
+      [38, 'info', '[startup] migrations-ready: 12ms'],
+      [37, 'info', '[scheduler] loaded 8 jobs (timezone America/Los_Angeles)'],
+      [36, 'info', '[dac] connected to dac.sock'],
+      [35, 'info', '[automation] engine started · 4 rules (1 dry-run)'],
+      [30, 'info', '[homekit] bridge running · 1 paired controller'],
+      [29, 'info', '[mqtt] connected to mqtt://broker.lan:1883'],
+      [24, 'info', '[scheduler] fired left-23:15 → 74°F'],
+      [24, 'info', '[scheduler] fired right-23:15 → 72°F'],
+      [12, 'warn', '[sensors] warning: piezo frame gap 2.1 s (recovered)'],
+      [6, 'info', '[automation] Hold room +3°F requested 78°F on left'],
+      [2, 'info', '[archive-push] next run 03:30'],
+    ].map(([min, level, msg]) => `${stamp(min)} demo-pod sleepypod[812]: ${msg}`)
+    return { lines, nextCursor: null }
+  }
   if (name === 'system.getStorageBreakdown')
     return {
-      emmc: { totalBytes: 8000000000, usedBytes: 2240000000, usedPercent: 28 },
-      categories: [],
+      emmc: {
+        totalBytes: 8000000000,
+        usedBytes: 2240000000,
+        availableBytes: 5760000000,
+        usedPercent: 28,
+      },
+      biometricsTmpfs: {
+        totalBytes: 268435456,
+        usedBytes: 41943040,
+        availableBytes: 226492416,
+        usedPercent: 16,
+      },
+      biometricsArchive: { usedBytes: 1342177280, fileCount: 214 },
+    }
+  if (name === 'system.getStorage')
+    return {
+      persistent: {
+        totalBytes: 8000000000,
+        usedBytes: 2240000000,
+        availableBytes: 5760000000,
+        usedPercent: 28,
+      },
+      prunerTargetPercent: 80,
+      segments: [
+        { key: 'rawArchive', bytes: 1342177280 },
+        { key: 'app', bytes: 419430400 },
+        { key: 'database', bytes: 62914560 },
+        { key: 'swap', bytes: 268435456 },
+        { key: 'reclaimable', bytes: 94371840 },
+        { key: 'other', bytes: 52670464 },
+      ],
+      rawHistory: {
+        fileCount: 214,
+        oldest: new Date(now - 30 * 86400000).toISOString(),
+        newest: new Date(now - 60000).toISOString(),
+        days: 30,
+      },
+      reclaimable: {
+        available: true,
+        totalBytes: 94371840,
+        items: [
+          {
+            path: '/persistent/sleepypod-releases/previous',
+            bytes: 62914560,
+            reason: 'Previous release kept after update',
+            kind: 'release',
+          },
+          {
+            path: '/persistent/tmp/update-staging',
+            bytes: 20971520,
+            reason: 'Leftover update staging files',
+            kind: 'temp',
+          },
+          {
+            path: '/persistent/sleepypod-data/backups/sleepypod-2026-09-01.db',
+            bytes: 10485760,
+            reason: 'Older database backup',
+            kind: 'backup',
+          },
+        ],
+      },
     }
   if (name === 'health.performance')
     return {
@@ -99,8 +216,8 @@ export function richData(name, input) {
       },
       scheduler: {
         enabled: true,
-        jobCount: 8,
-        drift: { dbScheduleCount: 8, schedulerJobCount: 8, drifted: false },
+        jobCount: 9,
+        drift: { dbScheduleCount: 9, schedulerJobCount: 9, drifted: false },
       },
       iptables: { ok: true, missing: [] },
     }
@@ -181,6 +298,123 @@ export function richData(name, input) {
         sampleCount: 5,
       }))
   if (name === 'biometrics.getSleepStages') return fixture.stages[input?.sleepRecordId || 1]
+  if (name === 'environment.getBedTemp') {
+    const hours = input?.startDate ? (now - +input.startDate) / 3600000 : 6
+    const count = Math.min(360, Math.round(hours * 12))
+    const toUnit = (f) => (input?.unit === 'C' ? ((f - 32) * 5) / 9 : f)
+    return Array.from({ length: count }, (_, i) => {
+      const t = now - (count - 1 - i) * ((hours * 3600000) / count)
+      const m = t / 60000
+      return {
+        id: i + 1,
+        timestamp: new Date(t),
+        ambientTemp: toUnit(75 + Math.sin(m / 90) * 0.6),
+        mcuTemp: toUnit(86),
+        humidity: 45 + Math.sin(m / 70) * 2,
+        leftOuterTemp: toUnit(73.6 + Math.sin(m / 48)),
+        leftCenterTemp: toUnit(74 + Math.sin(m / 48)),
+        leftInnerTemp: toUnit(73.8 + Math.sin(m / 48)),
+        rightOuterTemp: toUnit(71.6 + Math.sin(m / 52)),
+        rightCenterTemp: toUnit(72 + Math.sin(m / 52)),
+        rightInnerTemp: toUnit(71.8 + Math.sin(m / 52)),
+      }
+    }).reverse()
+  }
+  if (name === 'environment.getSummary')
+    return {
+      bedTemp: {
+        avgAmbientTemp: 75,
+        minAmbientTemp: 74.4,
+        maxAmbientTemp: 75.6,
+        avgHumidity: 45,
+        avgLeftCenterTemp: 74,
+        avgRightCenterTemp: 72,
+        recordCount: 288,
+      },
+      freezerTemp: {
+        avgAmbientTemp: 75,
+        avgHeatsinkTemp: 86,
+        avgLeftWaterTemp: 76,
+        avgRightWaterTemp: 70,
+        recordCount: 288,
+      },
+    }
+  if (name === 'waterLevel.getLatest')
+    return { id: 1, timestamp: new Date(now - 60000), level: 'ok' }
+  if (name === 'waterLevel.getFlowReadings') {
+    const hours = input?.hours || 24
+    const count = Math.min(288, hours * 12)
+    return Array.from({ length: count }, (_, i) => {
+      const t = now - (count - 1 - i) * ((hours * 3600000) / count)
+      return {
+        id: i + 1,
+        timestamp: new Date(t),
+        leftFlowrateCd: Math.round(120 + Math.sin(t / 900000) * 6),
+        rightFlowrateCd: Math.round(118 + Math.sin(t / 1100000) * 6),
+        leftPumpRpm: 2200,
+        rightPumpRpm: 2200,
+      }
+    })
+  }
+  if (name === 'automations.diagnostics') {
+    const since = now - 3 * 3600000
+    const minutes = Array.from({ length: 180 }, (_, i) => since + (i + 1) * 60000)
+    // Fixture night is America/Los_Angeles regardless of the capture host's timezone.
+    const laHour = new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      hourCycle: 'h23',
+      timeZone: 'America/Los_Angeles',
+    })
+    const inWindow = (t) => Number(laHour.format(t)) >= 23
+    const restless = (t) => t >= now - 40 * 60000 && t <= now - 22 * 60000
+    const runsFor = (rule) => {
+      if (rule.id === 3)
+        return [
+          {
+            t: new Date(now - 95 * 60000),
+            outcome: 'skipped',
+            reason: 'condition-false',
+            sent: false,
+          },
+        ]
+      return minutes
+        .map((t, i) => {
+          if (rule.id === 4) {
+            if (!restless(t))
+              return { t, outcome: 'skipped', reason: 'condition-false', sent: false }
+            const first = t === minutes.find(restless)
+            return first
+              ? { t, outcome: 'fired', reason: null, sent: true }
+              : { t, outcome: 'skipped', reason: 'cooldown', sent: false }
+          }
+          if (!inWindow(t)) return { t, outcome: 'skipped', reason: 'condition-false', sent: false }
+          return rule.dryRun
+            ? { t, outcome: 'dry_run', reason: null, sent: false }
+            : { t, outcome: 'fired', reason: null, sent: i % 5 === 0 }
+        })
+        .map((r) => ({ ...r, t: new Date(r.t) }))
+    }
+    const signals = {
+      1: { 'ambient.temperature': 75 },
+      2: { 'ambient.temperature': 75 },
+      3: { 'water.low': 0 },
+      4: { 'left.movement': 64 },
+    }
+    const startOfDay = new Date(`${capturedTime.slice(0, 10)}T00:00:00${capturedTime.slice(19)}`)
+    return {
+      now: new Date(now),
+      since: new Date(Math.min(+startOfDay, since)),
+      startOfDay,
+      globalEnabled: true,
+      rules: fixture.rules.map((r) => ({
+        ...r,
+        createdAt: new Date(r.createdAt),
+        updatedAt: new Date(r.updatedAt),
+        runs: runsFor(r),
+        signals: signals[r.id] || {},
+      })),
+    }
+  }
   if (name === 'automations.list')
     return fixture.rules.map((r) => ({
       ...r,

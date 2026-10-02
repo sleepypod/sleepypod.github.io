@@ -1,0 +1,32 @@
+---
+title: 'Hardware'
+description: 'Test the cover vibration on one side.'
+---
+
+# Hardware
+
+**System → Hardware** tests the cover's vibration motor, so you can check alarms will be felt.
+
+<BrowserFrame
+  src="/media/core-system-hardware.png"
+  alt="Test vibration card with Left and Right, Quick, Standard, Long, and Custom patterns, a Play button, and a 10-second preview track"
+  caption="System → Hardware with the Quick pattern selected. Synthetic example data."
+/>
+
+## Test vibration
+
+1. Choose **Left** or **Right**.
+2. Choose a pattern:
+   - **Quick**: a 10-second brief buzz.
+   - **Standard**: 30 seconds, like the default alarm.
+   - **Long**: a 60-second extended ramp.
+   - **Custom**: choose a **Duration** from 1 to 60 seconds.
+3. Select **Play**. The cover vibrates on that side. **Stop** ends it early.
+
+This sends a real command to the Pod. Warn anyone in bed first.
+
+The test always runs at full intensity. Pod 5 covers ignore alarm intensity and pattern anyway; the duration is what you feel. See [alarms](/core/schedules/#vibration-alarms).
+
+---
+
+**Source reference:** [Vibration test card](https://github.com/sleepypod/core/blob/4cc76838/src/components/diagnostics/HapticsTestCard.tsx)

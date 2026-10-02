@@ -1,0 +1,31 @@
+---
+title: 'Network'
+description: 'Choose whether the Pod can reach the internet or stays on your local network only.'
+---
+
+# Network
+
+**Settings → Network** controls whether the Pod can reach the internet. **Local only** blocks internet traffic with firewall rules and keeps local traffic working, so the app, the iOS app, the Dial, HomeKit, MQTT, and backups on your network continue to work.
+
+<BrowserFrame
+  src="/media/core-settings-network.png"
+  alt="Network settings with the Internet card and the Internet access switch set to local only"
+  caption="Settings → Network with internet access blocked. Synthetic example data."
+/>
+
+## Change internet access
+
+1. Select the **Internet access** switch.
+2. The card asks **Allow internet access?** or **Block internet access?**. Select **Confirm**.
+
+The row shows **local only** when internet access is blocked and **allowed** when it is not.
+
+## When the Pod needs the internet
+
+Updates download new code, so they need internet access. If access is blocked, [Updates](/core/settings/updates/) offers to allow it temporarily and blocks it again when the update finishes.
+
+Core is built for a trusted home network. Its local controls do not require a password. Never forward the Pod's ports to the internet. The [System dashboard](/core/system/) shows whether the firewall rules are **In place**.
+
+---
+
+**Source reference:** [Internet card](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/InternetToggleCard.tsx) · [Internet access API](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/system.ts)

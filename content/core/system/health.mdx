@@ -1,0 +1,52 @@
+---
+title: 'Health'
+description: 'Follow sensor data from the bed through each service to the app, and find when it stopped.'
+---
+
+# Health
+
+**System → Health** follows sensor data from the bed, through the Pod's services, to what you see in the app. Use it when a night is missing vitals or a reading looks stale.
+
+<BrowserFrame
+  src="/media/core-health.png"
+  alt="Health page with the verdict, the Data path map from sensors to outputs, the last 24 hours history, and one resolved incident"
+  caption="System → Health with healthy synthetic readings and one resolved example incident."
+/>
+
+## Verdict
+
+The line at the top sums things up, for example **Data is flowing from the sensors to every output.** When something is wrong it names the problem and offers a fix: a link to the right page, **Logs** and **Restart** for a stopped service, or the empty-bed question described on the [Dashboard](/core/system/#attention-card). **Restart** restarts that service on the Pod.
+
+## Data path
+
+The map has five stages, from left to right:
+
+| Stage        | Nodes                                                             |
+| ------------ | ----------------------------------------------------------------- |
+| **Sensors**  | Piezo, Capacitance, Temperature                                   |
+| **Hardware** | Frame source (RAW files or live stream), DAC socket               |
+| **Services** | Piezo processor, Sleep detector, Environment monitor, DAC monitor |
+| **Core**     | Database, Scheduler                                               |
+| **Outputs**  | Vitals, Sleep sessions, Bed temperature, Live stream              |
+
+Moving dots show data that arrived recently. Each node shows how long ago it last produced something. Select a node to see details, and **Logs** to open [Logs](/core/system/logs/) for that service. **Live stream** shows the stream's sensors and a **Raw frames** view.
+
+A service can be running and still have stale output, so read the age, not just the dot. [Watch the animated walkthrough](/core/data-flow/#see-the-real-system-at-work).
+
+## Last 24 hours and incidents
+
+Each check is sampled once a minute. The strips show when it was **flowing**, **idle**, **stalled**, **down**, or **not recorded**. **Show all N checks** expands the list. **Incidents** lists each interruption with its time and length.
+
+## Trace missing sleep data
+
+1. In the **Data path**, check **Frame source**: it says whether this firmware writes RAW files or streams frames. A RAW archive is not needed on streaming firmware.
+2. Check [Sensors](/core/system/sensors/) for fresh readings.
+3. Check the **Piezo processor** and **Sleep detector** nodes, and the incidents list, for when output stopped.
+4. Check [Databases](/core/system/databases/) and [Logs](/core/system/logs/) for write errors.
+5. Return to [Sleep → Biometrics](/core/biometrics/#biometrics) for that side and night.
+
+See the [sensor pipeline reference](/developers/sensor-pipeline/) and [troubleshooting](/troubleshooting/core/#biometrics-are-empty) for command-line checks.
+
+---
+
+**Source reference:** [Health panel](https://github.com/sleepypod/core/blob/4cc76838/src/components/diagnostics/HealthPanel.tsx) · [Data path model](https://github.com/sleepypod/core/blob/4cc76838/src/lib/dataPath.ts) · [Debugging runbook](https://github.com/sleepypod/core/blob/4cc76838/docs/DEBUGGING.md)

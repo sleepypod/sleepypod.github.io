@@ -1,0 +1,74 @@
+---
+title: 'System'
+description: 'Check how the Pod is doing: the Dashboard and every System page.'
+---
+
+# System
+
+**System** shows how the Pod is doing. It opens on the **Dashboard**. Configuration lives in [Settings](/core/settings/); sleep records live in [Sleep](/core/biometrics/).
+
+<BrowserFrame
+  src="/media/core-system.png"
+  alt="System Dashboard with all 14 checks passing, build, Wi-Fi, internet, firewall, disk, and uptime, tonight's schedule for both sides, and side summary cards"
+  caption="System → Dashboard on a healthy Pod. Synthetic example data with no physical Pod connected."
+/>
+
+## The System pages
+
+| Page                                     | Use it to                                                       | Changes anything?       |
+| ---------------------------------------- | --------------------------------------------------------------- | ----------------------- |
+| **Dashboard** (this page)                | See overall health, tonight's plan, and anything needing action | Only buttons you select |
+| [Calibration](/core/system/calibration/) | Check and redo sensor calibration                               | Calibrate buttons       |
+| [Databases](/core/system/databases/)     | Check database health and download a full backup                | No                      |
+| [Hardware](/core/system/hardware/)       | Test the cover's vibration                                      | Vibrates the cover      |
+| [Health](/core/system/health/)           | Follow sensor data through every service                        | Restart buttons         |
+| [Logs](/core/system/logs/)               | Read service and firmware messages                              | No                      |
+| [Scheduler](/core/system/scheduler/)     | See every scheduled job and when it runs next                   | No                      |
+| [Sensors](/core/system/sensors/)         | Watch live sensor readings                                      | No                      |
+| [Storage](/core/system/storage/)         | See disk use and free up space                                  | Deletes leftover files  |
+| [Thermal](/core/system/thermal/)         | Compare targets with water temperature and pump speed           | No                      |
+
+### The live stream bar
+
+Every System page has a bar at the top right, for example **LIVE · 9 fps · 5 sensors · sensor age 0.0s**. It shows whether this browser is receiving live sensor data from the Pod. Other states are CONNECTING, RECONNECTING, OFFLINE, STALE, WAITING, and PAUSED. **Stop** and **Start** pause the stream in this browser only; they do not affect the Pod. On a phone, pull down to reconnect.
+
+## Dashboard
+
+### Status line
+
+A ring shows how many checks pass, with **Pod 5 is healthy** when they all do. If some fail, it says **N of M checks passing** and lists the failing checks, such as Scheduler, DAC socket, Wi-Fi, or a sensor service. Next to it:
+
+- **Build**: installed branch and commit.
+- **Wi-Fi**: network name and signal.
+- **Internet**: **Blocked** or **Allowed**. See [Network](/core/settings/network/).
+- **Firewall**: **In place**, or **Missing** if the firewall rules are gone.
+- **Disk** and **Uptime**.
+
+### Attention card
+
+This card appears only when something needs you:
+
+- **Pump-stall protection is off**: select **Turn on**, or **Settings** to open [Device](/core/settings/device/#pump-protection).
+- **Water level is low**: refill the tank.
+- **No prime recorded yet**, or none **in the last 7 days**: select **Start prime** to prime the Pod now. Priming runs the pumps; do it when nobody is in bed.
+- **A side reads occupied but nothing has moved**: answer the question. **No — recalibrate empty bed** recalibrates that side's presence sensor. **Yes — restart piezo processor** restarts the vitals service.
+
+### Pump alerts
+
+Lists pump problems such as stalls, no flow, or a clog. Select ✕ on a row, or **Dismiss all**, once you have dealt with it. An alert that is not resolved blocks its side again the next time Core restarts.
+
+### Tonight
+
+A timeline of tonight's schedule for each side, with the bed temperature so far, and a **Pod** lane for maintenance jobs. The header shows the next change, for example **next: Left → 70°F at 3:00 AM**, and whether the scheduler is **in sync**. **Scheduler →** opens the [Scheduler](/core/system/scheduler/).
+
+### Side cards
+
+One card per side with the current target, **Bed**, **Water**, and **Pump rpm**, and a 12-hour trend. Select a card to open [Thermal](/core/system/thermal/).
+
+## Report a problem
+
+Include the build (from the status line or the sidebar's build chip), Pod generation, affected side, local time and timezone, what you expected, what happened, and recent [logs](/core/system/logs/). Over SSH, `sp-status` reports the firmware and processing pipeline, and `sp-bundle-logs` makes a diagnostic archive with personal details removed by default. Check the archive before you share it.
+
+---
+
+**Source reference:** [System screen](https://github.com/sleepypod/core/blob/4cc76838/src/components/System/SystemScreen.tsx) · [Dashboard](https://github.com/sleepypod/core/blob/4cc76838/src/components/diagnostics/DashboardPanel.tsx) · [Debugging runbook](https://github.com/sleepypod/core/blob/4cc76838/docs/DEBUGGING.md) · [Support tools](https://github.com/sleepypod/core/blob/4cc76838/scripts/README.md)

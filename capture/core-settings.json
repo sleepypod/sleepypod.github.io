@@ -1,0 +1,93 @@
+{
+  "note": "Synthetic settings for docs captures. The HomeKit code and QR belong to no accessory.",
+  "homekit": {
+    "enabled": true,
+    "running": true,
+    "transitioning": false,
+    "pincode": "48215937",
+    "setupId": "DEMO",
+    "setupURI": "X-HM://0071W2Z8ZDEMO",
+    "qrDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAABsCAYAAACPZlfNAAAAAklEQVR4AewaftIAAAM+SURBVO3BQW5jORTAQFLw/a/MyfIhCwUfdmciQFX2hesYi+soi+soi+soL75R+U0V71DZqdhR2amYVH5TxbS4jrK4jrK4jvLiBxWfpLKjMlVMKlPFEyo7FU9UfJLKzuI6yuI6yuI6youHVJ6o+KSKSeUvUXmi4onFdZTFdZTFdZQXf0zFpDJVTBWTylTxhMpU8ZcsrqMsrqMsrqO8+OMqJpWpYkdlqtip+MsW11EW11EW11FePFTxl6hMFTsqU8UnVfxLi+soi+soi+soL36g8ptUpoqdikllqnhCZarYUflNi+soi+soi+so9oU/TOWJikllp+Iki+soi+soi+soL36g8kTFpLJT8Y6KT1KZKj5JZadiZ3EdZXEdZXEdxb7wgMo7Kp5Q2al4h8oTFZPKTsUnLa6jLK6jLK6jvPhGZadiUpkqJpVJZadiqphUdlSmikllp+KTVJ6o2FlcR1lcR1lcR3nxTcWkMqlMFU9UTCqTyiep/KaKSWWq2FGZKqbFdZTFdZTFdZQXD1VMKlPFVDGpTBU7KjsqOxXvUJkqpopJZaqYVN6xuI6yuI6yuI7y4iGVqWJSmSqmikllqpgqTlLxLy2uoyyuoyyuo7x4qOIdKlPFjspOxRMqU8Wk8kkqT1TsLK6jLK6jLK6jvPhGZaqYVN5R8Y6KSWWqeELlCZWpYlKZKiaVdyyuoyyuoyyuo7z4puKJih2VJyqeqNhR+ZdUdlR2KiaVqWJaXEdZXEdZXEexL/whKp9UMalMFZPKVPGEyk7FpDJV7Cyuoyyuoyyuo7z4RuU3VUwVT6g8UfEOlanik1SmimlxHWVxHWVxHeXFDyo+SWVHZaqYVHYqJpVPqvg/La6jLK6jLK6jvHhI5YmKJyomlSdUpoodlR2Vf6liUtlZXEdZXEdZXEd58ceoTBU7KjsqU8VUMalMFe9QmVSmiicW11EW11EW11Fe/HEqU8UTFTsqU8WkslMxqUwVOypTxc7iOsriOsriOsqLhyp+U8WkslMxqXxSxTtUpopJZaqYFtdRFtdRFtdRXvxA5TdVPFGxUzGpTBVPqOxUTCpTxTsW11EW11EW11HsC9cxFtdRFtdRFtdR/gPQHYvasv0YTgAAAABJRU5ErkJggg==",
+    "pairedControllers": ["demo-home-controller"]
+  },
+  "mqtt": {
+    "settings": {
+      "enabled": true,
+      "url": "mqtt://broker.lan:1883",
+      "username": "sleepypod",
+      "passwordIsSet": true,
+      "topicPrefix": "sleepypod",
+      "haDiscovery": true,
+      "tlsEnabled": false,
+      "sources": {
+        "enabled": "db",
+        "url": "db",
+        "username": "db",
+        "password": "db",
+        "topicPrefix": "default",
+        "haDiscovery": "db",
+        "tlsEnabled": "default"
+      }
+    },
+    "status": {
+      "runState": "connected",
+      "connected": true,
+      "lastError": null,
+      "deviceId": "demo-pod",
+      "topicPrefix": "sleepypod",
+      "messagesPublished": 1842,
+      "lastPublishAt": "2026-10-01T06:39:30.000Z"
+    }
+  },
+  "archivePush": {
+    "config": {
+      "enabled": true,
+      "host": "nas.lan",
+      "remoteUser": "sleepypod",
+      "remotePath": "/volume1/sleepypod-archive",
+      "port": 22,
+      "identity": "/etc/sleepypod/archive-push.id_ed25519",
+      "include": ["raw", "db"]
+    },
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDemoKeyForDocsCaptureOnlyNotARealIdentity0000 sleepypod@demo-pod"
+  },
+  "gestures": {
+    "left": [
+      {
+        "tapType": "doubleTap",
+        "actionType": "temperature",
+        "temperatureChange": "decrement",
+        "temperatureAmount": 2
+      },
+      {
+        "tapType": "tripleTap",
+        "actionType": "temperature",
+        "temperatureChange": "increment",
+        "temperatureAmount": 2
+      },
+      {
+        "tapType": "quadTap",
+        "actionType": "alarm",
+        "alarmBehavior": "snooze",
+        "alarmSnoozeDuration": 300,
+        "alarmInactiveBehavior": "power"
+      }
+    ],
+    "right": [
+      {
+        "tapType": "doubleTap",
+        "actionType": "alarm",
+        "alarmBehavior": "snooze",
+        "alarmSnoozeDuration": 540,
+        "alarmInactiveBehavior": "none"
+      },
+      {
+        "tapType": "tripleTap",
+        "actionType": "alarm",
+        "alarmBehavior": "dismiss",
+        "alarmSnoozeDuration": null,
+        "alarmInactiveBehavior": "power"
+      }
+    ]
+  }
+}

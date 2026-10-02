@@ -1,0 +1,52 @@
+---
+title: 'Updates'
+description: 'See the installed version, choose an update channel, update Core, and check disk use.'
+---
+
+# Updates
+
+**Settings → Updates** shows which version of Core is installed, lets you update it, and summarizes disk use.
+
+<BrowserFrame
+  src="/media/core-settings-updates.png"
+  alt="Updates settings with the Software card showing branch main and a commit, the update channel, Check for updates, and the Disk card"
+  caption="Settings → Updates. Synthetic example data."
+/>
+
+## Software
+
+The **Software** card shows the installed **Branch**, **Commit**, **Built** date, and commit **Title**. Include these when you report a problem.
+
+**Update channel** chooses where updates come from:
+
+- **main**: tested releases. Choose this unless you are helping test.
+- **dev**: the newest changes, which may be less stable.
+
+## Update Core
+
+1. Select **Check for updates**, or choose a different channel.
+2. Read the confirmation. The Pod downloads the latest code for the channel, rebuilds, and restarts, so it is briefly unavailable.
+3. Select **Confirm update**.
+4. If internet access is blocked in [Network](/core/settings/network/), select **Allow & update**. Access is blocked again when the update finishes.
+5. Wait. The card shows **Updating…** and then **Reconnecting…** for up to about 3 minutes, then **Installed**.
+
+If the Pod is on a branch other than main or dev, you are asked to choose a channel first.
+
+If the card says **Service did not come back after update**, check the Pod directly; see [troubleshooting](/troubleshooting/core/). **Retry update** tries again.
+
+After an update, check the new commit here, then look at the [System dashboard](/core/system/) for health, and at [Sensors](/core/system/sensors/) for fresh data. For SSH updates and recovery, see [Install and update](/core/installation/).
+
+## Disk
+
+The **Disk** card shows how full the Pod's storage is:
+
+- **Biometrics archive**: compressed sensor sessions.
+- **System & data**: everything else on `/persistent`, including Core and its databases.
+- **Free**: space left.
+- **RAW workspace**: the in-memory area where new sensor files are written before archiving.
+
+To see what is using space and free some up, use [System → Storage](/core/system/storage/).
+
+---
+
+**Source reference:** [Update card](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/UpdateCard.tsx) · [Disk card](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/SystemInfoCard.tsx)

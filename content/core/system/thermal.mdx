@@ -1,0 +1,43 @@
+---
+title: 'Thermal'
+description: 'Check whether each side is actually heating or cooling: targets, water temperature, and pump speed.'
+---
+
+# Thermal
+
+**System → Thermal** shows whether the Pod is actually delivering the temperature you asked for. Use it when a side does not feel right. Nothing here changes the Pod.
+
+<BrowserFrame
+  src="/media/core-system-thermal.png"
+  alt="Thermal page with 12-hour charts for bed and target, water, surface, pump rpm, and hub temperatures, and per-side cards"
+  caption="System → Thermal over 12 hours. Synthetic example data."
+/>
+
+## Read the charts
+
+Choose a range: **Live**, **1 h**, **12 h** (default), **24 h**, or **7 d**. Hover to read exact values.
+
+- **Bed and target**: the bed temperature for each side, with its target as a dashed line.
+- **Water**: the water temperature leaving each side's heat pump.
+- **Surface**: the cover's surface sensors.
+- **Pump rpm**: how fast each side's pump spins.
+- **Hub**: heatsink and room temperature inside the Pod.
+
+Marks show when a side was turned on. The line at the top shows the current heatsink and hub temperature.
+
+## Side cards
+
+Each side shows **Target**, **Bed**, **Pump · rpm**, **Water**, **Surface**, and how fresh the flow reading is, with **WARMING**, **COOLING**, or **HOLDING**. Badges flag **GUARD BLOCKED** (pump protection turned the side off) and **ALARM VIBRATING**.
+
+## A side is not heating or cooling
+
+1. Check the target is what you expect, and the side is on.
+2. Compare **Water** with **Bed**. Water should be warmer than the bed when warming and cooler when cooling.
+3. Check **Pump rpm**. A pump near zero is not circulating. Missing pump data is not the same as zero; some firmware does not report it.
+4. Check the water level on the [Dashboard](/core/system/#attention-card), and **Pump alerts**.
+
+If **Pump-stall protection off** is shown, consider turning it on in [Device](/core/settings/device/#pump-protection).
+
+---
+
+**Source reference:** [Thermal chart](https://github.com/sleepypod/core/blob/4cc76838/src/components/diagnostics/ThermalHistoryChart.tsx) · [Thermal history](https://github.com/sleepypod/core/blob/4cc76838/src/lib/thermalHistory.ts)
