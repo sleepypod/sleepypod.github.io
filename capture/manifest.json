@@ -456,6 +456,15 @@
       "bytes": 351937,
       "width": 2880,
       "height": 2000
+    },
+    {
+      "repository": "sleepypod-mt-rotary-dial",
+      "commit": "ebcaba1f5715ff9d7db495d8d07a205c59750682",
+      "source": "hardware/enclosure-base.3mf",
+      "output": "dial-enclosure.glb",
+      "method": "scripts/import-enclosure.mjs converts the 3MF meshes to glTF without redrawing geometry",
+      "sha256": "82554d3a7c766ea25c6aa0dbc669c86c1b09763db37b7642e5e548f6b9a26e2b",
+      "bytes": 364524
     }
   ]
 }

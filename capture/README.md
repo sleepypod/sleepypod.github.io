@@ -11,6 +11,8 @@ PRODUCT_ROOT=/path/to/sleepypod pnpm media:import
 pnpm media:verify
 ```
 
+The Dial enclosure model is derived rather than copied: `pnpm media:enclosure` reads the pinned `hardware/enclosure-base.3mf` from the Dial repository (resolving Git LFS), converts both part meshes to a single glTF binary without redrawing geometry, and records the result in `manifest.json`. `media:import` skips entries whose method starts with `scripts/`.
+
 Expected sibling checkout names: `sleepypod-ios`, `sleepypod-mt-rotary-dial`, and `sleepypod-core`. Override `PRODUCT_ROOT` explicitly outside the default site worktree layout.
 
 ## Core: isolated capture instance
