@@ -36,9 +36,10 @@ A missing reading counts as **unknown**, never as zero or “all clear”, so a 
 
 <Callout type="info">
   In Core v3.0, rules can only act on the bed using **bed temperature**, **bed level**, and **water
-  low**. Rules that use room, body (movement, heart rate, HRV, breathing), or bed-pressure signals
-  work in **backtests only** for now. Templates are tagged **live** or **backtest only**. See [which
-  signals are live](/core/autopilot-engine/#which-signals-are-live).
+  low**. Rules that use room signals, the bed surface or water temperatures, body signals (movement,
+  heart rate, HRV, breathing), or bed-pressure signals work in **backtests only** for now. Templates
+  are tagged **live** or **backtest only**. See [which signals are
+  live](/core/autopilot-engine/#which-signals-are-live).
 </Callout>
 
 ## Automations
@@ -91,13 +92,13 @@ Select **New automation**, a template, or an existing rule. Nothing is saved unt
 
 Signals you can use:
 
-| Group        | Signals                                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| **Room**     | Ambient temp, Ambient humidity, Ambient light                                                                       |
-| **Bed**      | Current temp (level), Target temp (level), Bed surface temp, Surface temp spread, Surface temp gradient, Water temp |
-| **Body**     | Movement, Heart rate, HRV, Breathing rate                                                                           |
-| **Presence** | Bed pressure (peak), Bed pressure (avg), Pressure spread                                                            |
-| **System**   | Water low                                                                                                           |
+| Group        | Signals                                                                                                                                               |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Room**     | Ambient temp, Ambient humidity, Ambient light                                                                                                         |
+| **Bed**      | Current temp (level) and Target temp (level) are live. Bed surface temp, Surface temp spread, Surface temp gradient, and Water temp are backtest only |
+| **Body**     | Movement, Heart rate, HRV, Breathing rate                                                                                                             |
+| **Presence** | Bed pressure (peak), Bed pressure (avg), Pressure spread                                                                                              |
+| **System**   | Water low                                                                                                                                             |
 
 Rules using bed-pressure signals also show a **Bed pressure** panel with head, torso, and legs zones, live or replayed.
 

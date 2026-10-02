@@ -25,11 +25,11 @@ With **Dial** or **Slider**, drag to preview and let go to send. **Cooler** and 
 
 The stepper separates a change for right now from a change to your nightly schedule:
 
-| Control   | What changes                                          | What to check                                             |
-| --------- | ----------------------------------------------------- | --------------------------------------------------------- |
-| **Now**   | The side's current target, with a manual hold         | The hold length and power                                 |
-| **Night** | The earlier part of tonight's saved temperature curve | The days shown: every day with the same curve changes too |
-| **Dawn**  | The last part of that curve                           | The time range and matching days                          |
+| Control   | What changes                                         | What to check                                             |
+| --------- | ---------------------------------------------------- | --------------------------------------------------------- |
+| **Now**   | The side's current target, with a manual hold        | The hold length and power                                 |
+| **Night** | Saves an edit to the earlier part of tonight's curve | The days shown: every day with the same curve changes too |
+| **Dawn**  | Saves an edit to the last part of that curve         | The time range and matching days                          |
 
 **Night** and **Dawn** shift that part of the curve together, keeping its shape. A one-point schedule has no Dawn.
 
@@ -37,7 +37,9 @@ If the side has no schedule tonight, the stepper shows **Set up Night & Dawn** a
 
 ## Manual holds and Resume
 
-Any change you make here starts a **manual hold**. While it lasts, your change wins over the schedule and Autopilot.
+Changing **Now**, the Dial, the Slider, or Cooler and Warmer starts a **manual hold**: a temporary change that wins over the schedule and Autopilot while it lasts.
+
+Changing **Night** or **Dawn** is different. It saves a permanent edit to your schedule, for every day that shares tonight's curve, and does not start a hold. Undo it with the opposite change, or in [Schedule](/core/schedules/).
 
 - **Hold after adjustment** sets how long: 15 min, **30 min** (default), 1 hr, or 2 hr. Each change restarts the timer.
 - The line under the side's name shows who is in control: **On schedule**, **Autopilot**, **Run-once session**, **Manual hold · until 11:30 PM**, **Off**, or **Safety stop**.

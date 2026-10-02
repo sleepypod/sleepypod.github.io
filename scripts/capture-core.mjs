@@ -8,6 +8,7 @@ if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname))
 await mkdir('.capture', { recursive: true })
 // Comma-separated outputs to recapture while reviewing; skips the Health video.
 const only = process.env.CAPTURE_ONLY
+const wanted = (output) => !only || only.split(',').includes(output)
 const browser = await chromium.launch()
 let clockStarted = Date.now()
 try {
@@ -154,9 +155,11 @@ try {
   await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })
   await page.evaluate(() => document.fonts.ready)
   await page.getByRole('tab', { name: /Now$/ }).first().waitFor()
-  await page.screenshot({ path: '.capture/core-temperature.png' })
+  if (wanted('core-temperature.png'))
+    await page.screenshot({ path: '.capture/core-temperature.png' })
   const controls = []
   for (const control of ['dial', 'slider', 'stepper']) {
+    if (!wanted(`core-control-${control}.png`)) continue
     await page.evaluate((value) => {
       localStorage.setItem('sleepypod-pref-control', value)
       window.dispatchEvent(new Event('sleepypod-prefs-change'))
@@ -172,20 +175,22 @@ try {
       element: 'Left (left)',
     })
   }
-  await writeFile(
-    '.capture/core-controls.json',
-    JSON.stringify(
-      {
-        sourceCommit: process.env.CORE_SOURCE_COMMIT || null,
-        capturedAt: new Date().toISOString(),
-        controls,
-        method:
-          'Unmodified real core UI; element screenshots of the left side card; browser appearance preference switched between dial, slider, and stepper; synthetic fixtures',
-      },
-      null,
-      2,
-    ) + '\n',
-  )
+  // Partial runs keep the last full run's provenance for promotion.
+  if (!only)
+    await writeFile(
+      '.capture/core-controls.json',
+      JSON.stringify(
+        {
+          sourceCommit: process.env.CORE_SOURCE_COMMIT || null,
+          capturedAt: new Date().toISOString(),
+          controls,
+          method:
+            'Unmodified real core UI; element screenshots of the left side card; browser appearance preference switched between dial, slider, and stepper; synthetic fixtures',
+        },
+        null,
+        2,
+      ) + '\n',
+    )
   const captures = [{ path: '/en', output: 'core-temperature.png' }]
   for (const [path, output, heading] of [
     ['/en/schedule', 'core-schedule.png', 'Schedule'],
@@ -218,7 +223,7 @@ try {
     ['/en/settings?section=sides', 'core-settings-sides.png', 'Sides'],
     ['/en/settings?section=updates', 'core-settings-updates.png', 'Updates'],
   ]) {
-    if (only && !only.split(',').includes(output)) continue
+    if (!wanted(output)) continue
     await page.goto(new URL(path, url).href, { waitUntil: 'networkidle' })
     await page
       .getByRole('heading', { name: new RegExp(heading) })
@@ -269,24 +274,25 @@ try {
     await page.screenshot({ path: '.capture/' + output })
     captures.push({ path, output })
   }
-  await writeFile(
-    '.capture/core-capture.json',
-    JSON.stringify(
-      {
-        url: url.origin,
-        captures,
-        preferences: { control: 'stepper', temperatureDisplay: 'degrees' },
-        viewport: { width: 1440, height: 1000 },
-        deviceScaleFactor: 2,
-        sourceCommit: process.env.CORE_SOURCE_COMMIT,
-        capturedAt: new Date().toISOString(),
-        method:
-          'Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures',
-      },
-      null,
-      2,
-    ) + '\n',
-  )
+  if (!only)
+    await writeFile(
+      '.capture/core-capture.json',
+      JSON.stringify(
+        {
+          url: url.origin,
+          captures,
+          preferences: { control: 'stepper', temperatureDisplay: 'degrees' },
+          viewport: { width: 1440, height: 1000 },
+          deviceScaleFactor: 2,
+          sourceCommit: process.env.CORE_SOURCE_COMMIT,
+          capturedAt: new Date().toISOString(),
+          method:
+            'Playwright screenshot of isolated Core with disposable databases and synthetic device-status, schedule, and sleep transport fixtures',
+        },
+        null,
+        2,
+      ) + '\n',
+    )
   // Next dev can recover a streamed metadata hydration mismatch; keep it in
   // capture provenance and fail on every other browser exception.
   await writeFile('.capture/browser-warnings.json', JSON.stringify(errors, null, 2) + '\n')

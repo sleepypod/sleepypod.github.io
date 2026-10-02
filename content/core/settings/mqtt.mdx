@@ -15,8 +15,11 @@ description: 'Connect the Pod to an MQTT broker for Home Assistant and other hom
 
 ## Connect to your broker
 
-1. Enter the **Broker URL**, for example `mqtt://broker.lan:1883`. Turn on **TLS** to use an encrypted `mqtts://` connection.
+1. Enter the **Broker URL**, for example `mqtts://broker.lan:8883`. Turn on **TLS** to use an encrypted `mqtts://` connection.
 2. Enter a **Username** and **Password** if your broker needs them. Leave both blank for a broker that allows anonymous connections.
+
+   With plain `mqtt://`, the username and password cross your network unencrypted. Use TLS whenever the broker needs credentials.
+
 3. Select **Test connection**. You should see **Connection succeeded.**
 4. Turn on **MQTT bridge**. It publishes status and biometrics and accepts commands.
 5. Turn on **Home Assistant discovery** so Home Assistant creates climate, switch, and sensor entities automatically.

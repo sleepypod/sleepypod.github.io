@@ -359,7 +359,13 @@ export function richData(name, input) {
   if (name === 'automations.diagnostics') {
     const since = now - 3 * 3600000
     const minutes = Array.from({ length: 180 }, (_, i) => since + (i + 1) * 60000)
-    const inWindow = (t) => new Date(t).getHours() >= 23
+    // Fixture night is America/Los_Angeles regardless of the capture host's timezone.
+    const laHour = new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      hourCycle: 'h23',
+      timeZone: 'America/Los_Angeles',
+    })
+    const inWindow = (t) => Number(laHour.format(t)) >= 23
     const restless = (t) => t >= now - 40 * 60000 && t <= now - 22 * 60000
     const runsFor = (rule) => {
       if (rule.id === 3)
@@ -394,8 +400,7 @@ export function richData(name, input) {
       3: { 'water.low': 0 },
       4: { 'left.movement': 64 },
     }
-    const startOfDay = new Date(now)
-    startOfDay.setHours(0, 0, 0, 0)
+    const startOfDay = new Date(`${capturedTime.slice(0, 10)}T00:00:00${capturedTime.slice(19)}`)
     return {
       now: new Date(now),
       since: new Date(Math.min(+startOfDay, since)),
