@@ -7,7 +7,7 @@ const root = resolve(process.env.PRODUCT_ROOT || '../../../../')
 const manifest = JSON.parse(await readFile('capture/manifest.json', 'utf8'))
 await mkdir('public/media', { recursive: true })
 for (const asset of manifest.assets) {
-  if (asset.method.startsWith('Playwright')) continue
+  if (/^(Playwright|scripts\/)/.test(asset.method)) continue
   let bytes = execFileSync(
     'git',
     ['-C', resolve(root, asset.repository), 'show', `${asset.commit}:${asset.source}`],

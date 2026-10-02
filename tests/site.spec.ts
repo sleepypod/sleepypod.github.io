@@ -229,6 +229,20 @@ for (const route of ['/', '/core/data-flow/']) {
   })
 }
 
+test('Dial enclosure 3D model loads and renders', async ({ page }) => {
+  await page.goto('/dial/')
+  const viewer = page.locator('model-viewer')
+  await viewer.scrollIntoViewIfNeeded()
+  await expect
+    .poll(() => viewer.evaluate((el: any) => el.src))
+    .toContain('/media/dial-enclosure.glb')
+  await expect.poll(() => viewer.evaluate((el: any) => el.loaded), { timeout: 15000 }).toBe(true)
+  expect(await viewer.evaluate((el: any) => el.model?.materials.length)).toBeGreaterThan(0)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+    true,
+  )
+})
+
 test('Autopilot rule preview cycles through example rules', async ({ page }) => {
   await page.goto('/')
   const ticker = page.locator('.rule-ticker')
