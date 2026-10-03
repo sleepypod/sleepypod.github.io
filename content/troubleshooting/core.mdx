@@ -24,7 +24,7 @@ Database or native-module errors can come from running the wrong Node.js binary.
 ## Biometrics are empty
 
 1. Check the selected side and date. For live measurements, confirm the bed is occupied.
-2. Open **System → Pipeline** and identify the selected source. Use **Health** for module state and **Sensors** for live input.
+2. Open **Settings → Device → Sensor data source**. It names the firmware pipeline (NATS or .RAW), the source Core chose at startup, and the age of the last frame, and it explains a fallback or an override. For module state use **System → Health**, and for live input use **Sensors**.
 3. On NATS firmware, confirm fresh frames and output rows; an absent RAW archive is not an ingestion failure. Calibrator may need time to collect its initial live sample window.
 4. On RAW firmware, check the hot directory and firmware journal:
 

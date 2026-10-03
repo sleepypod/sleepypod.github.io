@@ -1,6 +1,6 @@
 ---
 title: 'Device'
-description: 'Timezone, units, the auto power-off cap, pump protection, daily maintenance, and the LED.'
+description: 'Timezone, units, the auto power-off cap, pump protection, the sensor data source, daily maintenance, and the LED.'
 ---
 
 import { Callout } from 'nextra/components'
@@ -51,6 +51,22 @@ When protection turns a side off, the Temp screen shows a banner. **Re-enable** 
   In Core v3.0, **Restart service** runs the updater for the **main** channel, the same as **Check
   for updates** in [Updates](/core/settings/updates/). If you use the **dev** channel, it switches
   the Pod to main. Use it only when you are happy to update.
+</Callout>
+
+## Sensor data source
+
+This card is read-only. It tells you which firmware pipeline the Pod is on and whether sensor frames are reaching Core, which is the first thing to check when biometrics are empty.
+
+- **Firmware.** How the Pod's firmware hands sensor data to Core. Newer firmware (April 2026 and later) publishes to a local **NATS JetStream** server. Older firmware writes **.RAW** files, either on a tmpfs through a `frank.sh` shim or a `frank.service` drop-in, or straight to `/persistent`.
+- **Reading from.** The source Core chose when the service started: **NATS stream** or **.RAW files**. Core detects this itself, once per start, so after a firmware update it needs a restart to detect again. **Check for updates** in [Updates](/core/settings/updates/) rebuilds and restarts Core on your current channel. **Restart service** on this page also restarts it, but in Core v3.0 it runs the **main** channel updater, so skip it on **dev** (see the warning under Reconnect and Restart service).
+- **Last frame.** How long ago the newest sensor frame arrived, and its type. **Live** means frames are flowing. **Stalled** means nothing has arrived for over a minute.
+
+A note appears under the rows when the chosen source does not match the firmware, or when an environment override (`PIEZO_SENSOR_SOURCE` or `PIEZO_NATS_DISABLED`) is forcing a source. On a development machine without a Pod the card shows no firmware.
+
+<Callout type="info">
+  There is no switch here on purpose. Core picks one source per start and never runs both at once,
+  so a toggle would need a restart to take effect. The same information is in the [System
+  dashboard](/core/system/) under **Health**, and on the Pod in `sp-status`.
 </Callout>
 
 ## Daily maintenance
