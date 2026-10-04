@@ -3,6 +3,7 @@ export default {
   '-- setup': { type: 'separator', title: 'Set up' },
   'root-access': 'Open the Pod and get root',
   installation: 'Install and update',
+  'migrating-from-free-sleep': 'Migrating from free-sleep',
   '-- use': { type: 'separator', title: 'Use the app' },
   navigation: 'Find your way around',
   temperature: 'Temp',

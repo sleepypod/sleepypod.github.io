@@ -105,6 +105,26 @@ test('docs sidebar navigation works', async ({ page }) => {
   await expect(page).toHaveURL(/core\/installation/)
   await expect(page.locator('h1')).toHaveText('Install and update Core')
 })
+test('free-sleep migration page is reachable from the install guide and sidebar', async ({
+  page,
+}) => {
+  await page.goto('/core/installation/')
+  await page
+    .locator('main')
+    .getByRole('link', { name: 'Migrating from free-sleep', exact: true })
+    .first()
+    .click()
+  await expect(page).toHaveURL(/core\/migrating-from-free-sleep/)
+  await expect(page.locator('h1')).toHaveText('Migrating from free-sleep')
+  const menu = page.getByRole('button', { name: 'Menu', exact: true })
+  if (await menu.isVisible()) await menu.click()
+  await expect(
+    page
+      .getByRole('link', { name: 'Migrating from free-sleep', exact: true })
+      .filter({ visible: true })
+      .first(),
+  ).toHaveAttribute('href', '/core/migrating-from-free-sleep/')
+})
 test('custom 404 export exists', async ({ request }) => {
   const response = await request.get('/this-page-does-not-exist/')
   expect(response.status()).toBe(404)
