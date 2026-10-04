@@ -60,7 +60,7 @@ It also flushes the running iptables and ip6tables rules. Nothing else on the Po
 
 ## Option B: remove free-sleep by hand
 
-Run this on the Pod. It is the same block the installer prints when it refuses:
+Run this on the Pod. It is the same block the installer prints when it refuses. If your shell is already root and has no `sudo`, drop the `sudo` prefix from each line:
 
 ```bash
 sudo systemctl stop free-sleep free-sleep-stream free-sleep-update 2>/dev/null
