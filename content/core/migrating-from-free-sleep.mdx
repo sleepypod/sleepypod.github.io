@@ -1,0 +1,102 @@
+---
+title: 'Migrating from free-sleep'
+description: 'Move a Pod from free-sleep to sleepypod Core: get past the firewall it leaves behind, remove it with --purge-free-sleep or by hand, and check the install.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Migrating from free-sleep
+
+If your Pod runs [free-sleep](https://github.com/throwaway31265/free-sleep), you already have root access and a Pod that sleepypod Core supports. This page covers the one thing that is different from a fresh install: the installer refuses to run on top of free-sleep until it is removed.
+
+## What you keep
+
+- **No firmware update.** Core runs on the same stock embedded Linux that free-sleep runs on.
+- **No re-root.** Your existing root shell or SSH login is all the installer needs. You do not need to open the Pod again.
+- **Your free-sleep data stays until you choose to remove it.** Core uses its own databases and does not read free-sleep's. If you want anything from `/persistent/free-sleep-data`, copy it off the Pod first; both cleanup paths below delete that directory.
+
+## Why the installer refuses
+
+free-sleep installs persisted drop-all iptables rules in `/etc/iptables/iptables.rules` and `ip6tables.rules`. The Pod's stock `iptables.service` reloads those files on every boot. free-sleep's own `unblock_internet_access.sh` only flushes the rules that are currently running, not the files on disk, so the block comes back after a reboot and fights Core's own firewall. Until the files are gone, the installer cannot download anything and Core cannot keep its firewall consistent.
+
+So when the installer finds any free-sleep service unit, `/home/dac/free-sleep`, or `/persistent/free-sleep-data`, it stops with **free-sleep detected — refusing to install** and prints the cleanup below. You can let the installer do the cleanup with a flag, or do it by hand.
+
+## Get the Pod back online
+
+You only need LAN access to reach the Pod over SSH. free-sleep's rules allow LAN traffic, so connect as you did before.
+
+If the Pod has no internet access because free-sleep's rules are loaded, flushing them lets the installer download Core. This is the same flush the installer prints in its refusal message:
+
+```bash
+sudo iptables -F && sudo iptables -X && sudo iptables -t nat -F && sudo iptables -t nat -X
+sudo ip6tables -F && sudo ip6tables -X
+```
+
+That only clears the running rules. The files on disk still reload on the next boot, which is why the cleanup below removes them. If you use `--purge-free-sleep`, the installer does both for you.
+
+## Option A: let the installer remove free-sleep
+
+Download and inspect the installer as in [Install and update Core](/core/installation/#install-on-the-pod), then run it with `--purge-free-sleep`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sleepypod/core/main/scripts/install -o /tmp/sleepypod-install
+less /tmp/sleepypod-install
+sudo bash /tmp/sleepypod-install --purge-free-sleep
+```
+
+If your shell is already root and has no `sudo`, run `bash /tmp/sleepypod-install --purge-free-sleep`.
+
+The flag removes exactly this, then continues with the normal install without a reboot:
+
+| Removed                                                            | What it is                                      |
+| ------------------------------------------------------------------ | ----------------------------------------------- |
+| `free-sleep`, `free-sleep-stream`, `free-sleep-update` services    | Stopped, disabled, and their unit files deleted |
+| `/etc/iptables/iptables.rules` and `/etc/iptables/ip6tables.rules` | The persisted drop-all firewall                 |
+| `/home/dac/free-sleep`                                             | free-sleep's source                             |
+| `/persistent/free-sleep-data`                                      | free-sleep's databases and settings             |
+| `/etc/sudoers.d/dac`                                               | free-sleep's sudoers fragment                   |
+
+It also flushes the running iptables and ip6tables rules. Nothing else on the Pod is touched. The installer then sets up its own firewall, so no reboot is needed.
+
+## Option B: remove free-sleep by hand
+
+Run this on the Pod. It is the same block the installer prints when it refuses:
+
+```bash
+sudo systemctl stop free-sleep free-sleep-stream free-sleep-update 2>/dev/null
+sudo systemctl disable free-sleep free-sleep-stream free-sleep-update 2>/dev/null
+sudo rm -f /etc/systemd/system/free-sleep.service \
+           /etc/systemd/system/free-sleep-stream.service \
+           /etc/systemd/system/free-sleep-update.service
+sudo systemctl daemon-reload
+sudo iptables -F && sudo iptables -X && sudo iptables -t nat -F && sudo iptables -t nat -X
+sudo ip6tables -F && sudo ip6tables -X
+sudo rm -f /etc/iptables/iptables.rules /etc/iptables/ip6tables.rules
+sudo rm -rf /home/dac/free-sleep /persistent/free-sleep-data
+sudo rm -f /etc/sudoers.d/dac
+sudo reboot
+```
+
+<Callout type="warning">
+  Reboot after the manual cleanup. Without it, the stock `iptables.service` still holds free-sleep's
+  rules in memory, and systemd can keep stale state for the removed units. Option A skips the reboot
+  because the installer reconfigures the firewall itself.
+</Callout>
+
+After the Pod comes back, reconnect over SSH and run the installer as in [Install and update Core](/core/installation/#install-on-the-pod). It no longer needs the flag.
+
+## Check the install
+
+On the Pod:
+
+```bash
+sp-status
+```
+
+`sleepypod.service` should be **active**. Then open `http://POD_IP:3000` from a browser on the same network. In **System → Dashboard**, **Firewall** should read **In place**, which means Core's own rules replaced free-sleep's. **Internet** reads **Blocked** by default; that is Core's firewall, not a leftover. See [System](/core/system/) for the rest of the Dashboard.
+
+If the page does not load, follow [connection troubleshooting](/troubleshooting/connection/). If the service fails, follow the [Core troubleshooting guide](/troubleshooting/core/). When you ask for help, say that the Pod used to run free-sleep, even if you believe you removed it.
+
+---
+
+**Source reference:** [Installer preflight](https://github.com/sleepypod/core/blob/a9b58424/scripts/install) · [Deployment guide](https://github.com/sleepypod/core/blob/a9b58424/docs/DEPLOYMENT.md)
