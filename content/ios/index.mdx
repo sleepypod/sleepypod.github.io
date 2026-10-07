@@ -7,11 +7,11 @@ import { Callout } from 'nextra/components'
 # sleepypod for iOS
 
 <Callout type="info">
-  The iOS app is a developer build, not a general release. There is no App Store or TestFlight
-  distribution yet; you build it from source with Xcode and point it at your own Pod.
+  The iOS app is heading to TestFlight; the first build is being submitted now. Until a beta link is
+  published you build it from source with Xcode and point it at your own Pod.
 </Callout>
 
-A native companion for your Pod: temperature control, schedules, sleep trends, and device diagnostics in one place.
+A native companion for your Pod: temperature control, schedules, sleep stages and vitals analyzed on your iPhone, Apple Health sync, and a side-by-side check against your Apple Watch.
 
 <div className="media-grid">
   <PhoneFrame
@@ -24,15 +24,25 @@ A native companion for your Pod: temperature control, schedules, sleep trends, a
     alt="Native iOS sleep schedule"
     caption="Build a nightly temperature curve."
   />
+  <PhoneFrame
+    src="/media/ios-sleep.png"
+    alt="Native iOS sleep screen with sleep stages and vitals for one night"
+    caption="Stages and vitals for the night, analyzed on the phone."
+  />
+  <PhoneFrame
+    src="/media/ios-apple-watch.png"
+    alt="Native iOS screen comparing sleepypod's sleep stages with an Apple Watch's"
+    caption="Compare any night with your Apple Watch."
+  />
 </div>
 
 ## Made for everyday control
 
-Use the radial dial, select a side or link both, and review your night through interactive charts. The app can discover Core automatically with Bonjour or connect using a manual IP address.
+Use the dial, slider or Night & Dawn card, select a side or link both, and review your night through interactive charts. Each morning the night's stages, heart rate, HRV and breathing rate can be written to Apple Health, and any night can be compared minute by minute with what an Apple Watch recorded. The app can discover Core automatically with Bonjour or connect using a manual IP address.
 
 ## Requirements and availability
 
-The repository specifies **iOS 26.0+, Xcode 26+, and Swift 6.0**. The documented installation route is a source build with Xcode. This site does not assume an App Store or TestFlight release.
+The repository specifies **iOS 26.0+, Xcode 26+, and Swift 6.0**. The documented installation route is a source build with Xcode; a TestFlight beta is in progress.
 
 [Build and connect →](/ios/setup/)
 
@@ -42,4 +52,4 @@ Core controls the hardware and stores server-side schedules and sensor data. iOS
 
 ---
 
-**Source reference:** [iOS features and requirements](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)
+**Source reference:** [iOS features and requirements](https://github.com/sleepypod/ios/blob/5276c3c87809336ec014731c773750ec276491a4/README.md)

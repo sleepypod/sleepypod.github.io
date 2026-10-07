@@ -12,9 +12,26 @@ Choose left or right, then drag the radial dial or use the step controls. Link m
 
 Choose a side and day, adjust the temperature curve by phase, and set bedtime, alarm, and power controls. Cool, Balanced, and Warm presets provide starting points. Review the final values before saving.
 
-## Biometrics
+## Sleep
 
-Explore heart rate, HRV, breathing rate, and sleep sessions. Tap charts to inspect values. The app supports smoothing, outlier filtering, and raw CSV export. Sleep stages are estimates from on-device analysis; gaps in source data affect what can be shown.
+The Sleep tab shows one night, a week or a month. A night has the sleep summary, a stage timeline (awake, REM, light, deep) and the night's heart rate, HRV and breathing rate; tap a vital for its full chart. Stages are estimated on the iPhone from the Pod's vitals, so gaps in source data affect what can be shown.
+
+<div className="media-grid">
+  <PhoneFrame
+    src="/media/ios-sleep.png"
+    alt="iOS sleep screen with a stage timeline and vitals"
+    caption="A night: stages, then heart rate, HRV and breathing."
+  />
+  <PhoneFrame
+    src="/media/ios-apple-watch.png"
+    alt="iOS screen comparing the Pod's sleep stages and heart rate with an Apple Watch"
+    caption="Compare with Apple Watch: both stage timelines, where they differ, and heart rate as two lines."
+  />
+</div>
+
+### Apple Health and Apple Watch
+
+Settings → Apple Health turns on a morning sync: last night's stages, heart rate, HRV and respiratory rate are written to Health for this iPhone's side of the bed, and the night view shows when it was saved. With read access to Sleep, Heart Rate, HRV and Respiratory Rate, any night gains a **Compare with Apple Watch** page: the Pod's stages above the Watch's, the percentage of minutes that agree, where they disagree, heart rate as two lines with the average error, and HRV and breathing as night averages. The Week view tracks agreement per night. Only the side whose sleeper wears the Watch is compared.
 
 ## Sensors and status
 
@@ -37,4 +54,4 @@ Some status actions affect the running Pod, including calibration and internet-a
 
 ---
 
-**Source reference:** [Feature reference](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)
+**Source reference:** [Feature reference](https://github.com/sleepypod/ios/blob/5276c3c87809336ec014731c773750ec276491a4/README.md)
