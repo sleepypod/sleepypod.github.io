@@ -3,34 +3,56 @@
   "assets": [
     {
       "repository": "sleepypod-ios",
-      "commit": "845b3de9d0fb3bc9c1a4815c14edde5648986995",
+      "commit": "5276c3c87809336ec014731c773750ec276491a4",
       "source": "docs/images/temperature-control.png",
       "output": "ios-temperature.png",
       "method": "upstream iOS screenshot",
-      "sha256": "5d23aab153b039da05cc49b2dee2cfc46e879a51c6cab163caff385e68570da0",
-      "bytes": 1682270,
+      "sha256": "69887f102069870615335ee66f547a3f54c6a29bbc0dc3f593af9629c00f85cf",
+      "bytes": 278784,
       "width": 1206,
       "height": 2622
     },
     {
       "repository": "sleepypod-ios",
-      "commit": "845b3de9d0fb3bc9c1a4815c14edde5648986995",
+      "commit": "5276c3c87809336ec014731c773750ec276491a4",
       "source": "docs/images/schedule.png",
       "output": "ios-schedule.png",
       "method": "upstream iOS screenshot",
-      "sha256": "c4c0803d522513f551db88077f59c94d39677adb4fa6fe5aafc650bf14845f04",
-      "bytes": 369837,
+      "sha256": "0ddac972d4594f8a46b4624c9d5b4640bc4b056a039f0d053ca3a987ba955c2a",
+      "bytes": 370693,
       "width": 1206,
       "height": 2622
     },
     {
       "repository": "sleepypod-ios",
-      "commit": "845b3de9d0fb3bc9c1a4815c14edde5648986995",
+      "commit": "5276c3c87809336ec014731c773750ec276491a4",
       "source": "docs/images/sensors.png",
       "output": "ios-sensors.png",
       "method": "upstream iOS screenshot",
       "sha256": "13ca644184bcd5a5ee598ee9e5866d43601406453ed2e401a6c2e487a09edccc",
       "bytes": 413791,
+      "width": 1206,
+      "height": 2622
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "5276c3c87809336ec014731c773750ec276491a4",
+      "source": "docs/images/sleep-night.png",
+      "output": "ios-sleep.png",
+      "method": "upstream iOS screenshot",
+      "sha256": "efd0e42433e9234e49d9c281eafbe0cd260ca18812ea6bbbfe15043a51c4a01f",
+      "bytes": 305086,
+      "width": 1206,
+      "height": 2622
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "5276c3c87809336ec014731c773750ec276491a4",
+      "source": "docs/images/apple-watch.png",
+      "output": "ios-apple-watch.png",
+      "method": "upstream iOS screenshot",
+      "sha256": "e90ce3b7ce581e87cf8094d257f71c8140bd39b1664ffd49ac20ed249834744e",
+      "bytes": 432916,
       "width": 1206,
       "height": 2622
     },
