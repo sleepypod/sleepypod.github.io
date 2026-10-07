@@ -7,5 +7,6 @@ export default {
   troubleshooting: 'Troubleshooting',
   developers: 'Developers',
   about: 'About sleepypod',
+  privacy: 'Privacy policy',
   demo: { title: 'Live demo', type: 'page', href: 'https://sleepypod.vercel.app' },
 }
