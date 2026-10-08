@@ -7,6 +7,8 @@ export default {
   '-- use': { type: 'separator', title: 'Use the app' },
   navigation: 'Find your way around',
   temperature: 'Temp',
+  base: 'Base (experimental)',
+  tour: 'Video tour',
   autopilot: 'Autopilot',
   schedules: 'Schedule',
   biometrics: 'Sleep',

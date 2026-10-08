@@ -1,0 +1,130 @@
+{
+  "sourceCommit": "0c2344c3b527142d0752478a00e6da465f30db00",
+  "capturedTime": "2026-10-08T04:30:00Z",
+  "method": "Unmodified Core production build with NEXT_PUBLIC_DEMO=1; built-in in-browser simulation; loopback only; API network requests blocked",
+  "captures": [
+    {
+      "output": "core-thermal-bed.png",
+      "path": "/en"
+    },
+    {
+      "output": "core-temperature.png",
+      "path": "/en"
+    },
+    {
+      "output": "core-stage.png",
+      "path": "/en"
+    },
+    {
+      "output": "core-stage-preview.png",
+      "path": "/en"
+    },
+    {
+      "output": "core-base.png",
+      "path": "/en/base"
+    },
+    {
+      "output": "core-schedule.png",
+      "path": "/en/schedule"
+    },
+    {
+      "output": "core-settings-sides.png",
+      "path": "/en/settings?section=sides"
+    },
+    {
+      "output": "core-settings-device.png",
+      "path": "/en/settings?section=device"
+    },
+    {
+      "output": "core-appearance.png",
+      "path": "/en/settings?section=appearance"
+    },
+    {
+      "output": "core-sleep.png",
+      "path": "/en/sleep"
+    },
+    {
+      "output": "core-system-sensors.png",
+      "path": "/en/system?tab=sensors"
+    },
+    {
+      "output": "core-schedule-curve-editor.png",
+      "path": "/en/schedule"
+    },
+    {
+      "output": "core-schedule-alarm-editor.png",
+      "path": "/en/schedule"
+    }
+  ],
+  "clips": [
+    {
+      "scene": "stage",
+      "path": "/en",
+      "start": 8.037,
+      "duration": 10.478999999999997
+    },
+    {
+      "scene": "base",
+      "path": "/en/base",
+      "start": 5.515,
+      "duration": 5.899
+    },
+    {
+      "scene": "schedule",
+      "path": "/en/schedule",
+      "start": 3.609,
+      "duration": 4.792
+    },
+    {
+      "scene": "sleep",
+      "path": "/en/sleep",
+      "start": 3.441,
+      "duration": 6.008
+    },
+    {
+      "scene": "health",
+      "path": "/en/system?tab=health",
+      "start": 4.522,
+      "duration": 6.015000000000001
+    }
+  ],
+  "errors": [],
+  "timeline": [
+    {
+      "chapter": "intro",
+      "start": 0,
+      "duration": 3
+    },
+    {
+      "chapter": "stage",
+      "start": 3,
+      "duration": 10.48
+    },
+    {
+      "chapter": "base",
+      "start": 13.48,
+      "duration": 5.88
+    },
+    {
+      "chapter": "schedule",
+      "start": 19.36,
+      "duration": 4.8
+    },
+    {
+      "chapter": "sleep",
+      "start": 24.16,
+      "duration": 5.84
+    },
+    {
+      "chapter": "health",
+      "start": 30,
+      "duration": 6
+    },
+    {
+      "chapter": "outro",
+      "start": 36,
+      "duration": 4
+    }
+  ],
+  "durationSeconds": 40
+}

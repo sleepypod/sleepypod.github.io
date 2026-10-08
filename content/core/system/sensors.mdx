@@ -27,6 +27,10 @@ Each card shows how old its reading is. A missing card value (`--`) means no rea
 
 If readings are missing, check the live stream bar at the top, then [Health](/core/system/health/).
 
+## Live sweep and temperature regions
+
+The live piezo trace uses a sweeping cursor: new samples replace the previous sweep behind it while the rest of the trace stays in place. The 3D bed view shows individual temperature regions. These are measured sensor locations, not separate controls; temperature targets still apply to the left and right sides.
+
 ---
 
-**Source reference:** [Sensors screen](https://github.com/sleepypod/core/blob/4cc76838/src/components/Sensors/SensorsScreen.tsx) · [Frame formats](https://github.com/sleepypod/core/blob/4cc76838/src/streaming/normalizeFrame.ts)
+**Source reference:** [Sensors screen](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Sensors/SensorsScreen.tsx) · [Frame formats](https://github.com/sleepypod/core/blob/0c2344c3/src/streaming/normalizeFrame.ts)

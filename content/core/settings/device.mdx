@@ -15,6 +15,12 @@ import { Callout } from 'nextra/components'
   caption="Settings → Device with pump protection, daily prime, and LED night mode turned on. Synthetic example data."
 />
 
+## Clock and schedule defaults
+
+**Time format** chooses **12-hour** or **24-hour** display. This is saved on the Pod, so connected clients share the preference; it does not change the timezone or the times stored in your schedules.
+
+**Default after schedule ends** chooses **Turn off** or **Maintain final temperature** for new curves. Existing curves retain their own choice. See [schedule end actions](/core/schedules/#what-happens-at-the-end).
+
 ## Pod
 
 - **Timezone.** Schedules, alarms, and Autopilot time windows run in this timezone. If things happen at the wrong hour, check this first. The default is America/Los_Angeles.
@@ -81,4 +87,4 @@ A note appears under the rows when the chosen source does not match the firmware
 
 ---
 
-**Source reference:** [Device settings form](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/DeviceSettingsForm.tsx) · [Settings API](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/settings.ts) · [Update trigger](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/system.ts)
+**Source reference:** [Device settings form](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Settings/DeviceSettingsForm.tsx) · [Settings API](https://github.com/sleepypod/core/blob/0c2344c3/src/server/routers/settings.ts) · [Update trigger](https://github.com/sleepypod/core/blob/0c2344c3/src/server/routers/system.ts)

@@ -4,7 +4,7 @@ import { DiscordIcon, GitHubIcon } from 'nextra/icons'
 import Link from 'next/link'
 import { ControlShowcase } from '../components/ControlShowcase'
 import { LinkArrow } from '../components/LinkArrow'
-import { PhoneFrame, DialFrame, BrowserFrame } from '../components/media'
+import { PhoneFrame, DialFrame, BrowserFrame, Demo } from '../components/media'
 export default function Home() {
   return (
     <div className="home">
@@ -74,6 +74,26 @@ export default function Home() {
               <span className="media-tag">A little less screen time.</span>
             </div>
           </div>
+        </section>
+        <section className="web-showcase" aria-labelledby="tour-heading">
+          <div className="section-heading">
+            <p className="eyebrow">A NEW VIEW OF YOUR NIGHT.</p>
+            <h2 id="tour-heading">Meet the new interfaces.</h2>
+            <p>
+              See the temperature Stage, plan your night, and follow your sleep—all in the real app.
+            </p>
+            <Link className="text-link" href="/core/tour/">
+              Read the tour and explore the guides <LinkArrow />
+            </Link>
+          </div>
+          <Demo
+            src="/media/sleepypod-overview.mp4"
+            poster="/media/sleepypod-overview.png"
+            title="Your bed. Your rules."
+            wide
+          >
+            A silent tour of Core v3.2.1 with simulated data. Base controls are experimental.
+          </Demo>
         </section>
         <section className="web-showcase" aria-labelledby="web-heading">
           <div className="section-heading">

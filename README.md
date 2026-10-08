@@ -30,7 +30,7 @@ pnpm check
 - Technical reference: [temperature controller](content/developers/temperature-control.mdx), [sensor pipeline](content/developers/sensor-pipeline.mdx), [hardware](content/developers/hardware.mdx), and [CI/deployment workflows](content/developers/workflows.mdx).
 - [Source library](content/developers/source-library.mdx) inventories core documents; `capture/docs-coverage.json` records their treatment and source revision.
 
-The core guides and screenshots target Core v3.0, `4cc76838105c1b08af453e28255463c5588be33c`. Older client-specific pages retain their own pinned sources. Do not document an unmerged PR as released behavior.
+The new-interface guides and captures target Core v3.2.1, `0c2344c3b527142d0752478a00e6da465f30db00`. Unchanged guides and older captures retain their own pinned source references. The overview video and Stage/Base clips are documented in `capture/interfaces.json`. Do not document an unmerged PR as released behavior.
 
 ## Content and media
 
