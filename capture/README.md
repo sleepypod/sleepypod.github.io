@@ -94,7 +94,7 @@ these captures use Core's own in-browser demo handlers and sensor simulator.
    application demo handles every displayed query and simulated mutation locally.
 4. Inspect every image under `.capture/interfaces/`. These are untouched 2×
    screenshots; video recordings use a 1440×1000 viewport at 1×. The example clock
-   is October 7, 2026, 21:30 in America/Los_Angeles. A recoverable React hydration
+   starts at October 7, 2026, 21:30 in America/Los_Angeles. Stills use a fixed clock; movie clocks advance normally so simulated movements and live readings continue. The Base recording must reach the measured 40° head / 0° feet target before it is accepted. A recoverable React hydration
    warning can occur because the server clock differs; other page exceptions fail
    capture. No UI text, styles, or product geometry are rewritten.
 5. Run `node scripts/render-overview.mjs`. It produces silent H.264 Stage and Base
@@ -110,3 +110,5 @@ Base is explicitly presented as experimental and simulated. Never use these
 recordings as evidence of physical-hardware validation.
 
 The older `core-capture.json`, `core-controls.json`, and `core-workflows.json` describe their historical v3.0 capture run. For an output recaptured by `interfaces.json`, the current `manifest.json` entry is authoritative.
+
+To redo only the movies after a reviewed still capture at the same source revision, set `CAPTURE_MODE=video` on the capture command.
