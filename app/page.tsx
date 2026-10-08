@@ -69,7 +69,7 @@ export default function Home() {
             <div className="hero-dial">
               <DialFrame
                 src="/media/dial-heating.png"
-                alt="Real M5 Dial display showing a 75 degree target"
+                alt="Real sleepypod Dial display showing a 75 degree target"
               />
               <span className="media-tag">A little less screen time.</span>
             </div>
@@ -92,7 +92,7 @@ export default function Home() {
             title="Your bed. Your rules."
             wide
           >
-            A silent tour of Core v3.2.1 with simulated data. Base controls are experimental.
+            A silent tour of sleepypod Core with simulated data. Base controls are experimental.
           </Demo>
         </section>
         <section className="web-showcase" aria-labelledby="web-heading">
@@ -185,14 +185,14 @@ export default function Home() {
               <div className="product-capture dial-capture">
                 <img
                   src="/media/dial-heating.png"
-                  alt="Real M5 Dial display while heating"
+                  alt="Real sleepypod Dial display while heating"
                   width="240"
                   height="240"
                   loading="lazy"
                 />
               </div>
               <h3>
-                M5 Rotary Dial <LinkArrow />
+                sleepypod Dial <LinkArrow />
               </h3>
               <p>
                 An ESP32-based M5Stack Dial. Turn for comfort, click for off, and keep a tactile

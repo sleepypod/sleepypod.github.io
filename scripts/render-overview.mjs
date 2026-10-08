@@ -12,14 +12,24 @@ const chapters = [
     kicker: '01 / TEMPERATURE',
     title: ['See your bed', 'in a new light.'],
     body: [
-      'Explore six surface readings.',
+      'Select either side of your bed.',
       'Preview tonight’s schedule.',
       'Return to live control.',
     ],
   },
   {
+    scene: 'sensors',
+    kicker: '02 / LIVE SENSORS',
+    title: ['Feel the', 'whole picture.'],
+    body: [
+      'Find the thermal bed in Sensors.',
+      'Explore six surface readings.',
+      'See what your bed measures.',
+    ],
+  },
+  {
     scene: 'base',
-    kicker: '02 / BASE · EXPERIMENTAL',
+    kicker: '03 / BASE · EXPERIMENTAL',
     title: ['Find your', 'wind-down.'],
     body: [
       'Preview a position, then move.',
@@ -29,13 +39,13 @@ const chapters = [
   },
   {
     scene: 'schedule',
-    kicker: '03 / YOUR NIGHT',
+    kicker: '04 / YOUR NIGHT',
     title: ['A curve that', 'fits your night.'],
     body: ['Set your overnight targets.', 'Turn off at the end—or keep', 'the final temperature.'],
   },
   {
     scene: 'sleep',
-    kicker: '04 / YOUR MORNING',
+    kicker: '05 / YOUR MORNING',
     title: ['Know your', 'night.'],
     body: [
       'Explore nights and vitals.',
@@ -45,7 +55,7 @@ const chapters = [
   },
   {
     scene: 'health',
-    kicker: '05 / UNDER THE COVERS',
+    kicker: '06 / UNDER THE COVERS',
     title: ['Trace every', 'signal.'],
     body: [
       'Follow the sensor data path.',
@@ -54,9 +64,11 @@ const chapters = [
     ],
   },
 ]
+const logo = await readFile('public/media/sleepypod-logo.png')
+const logoUri = 'data:image/png;base64,' + logo.toString('base64')
 const esc = (s) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;')
 function background(c, ending = false) {
-  return `<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow"><stop stop-color="#39285d"/><stop offset="1" stop-color="#101018"/></radialGradient><linearGradient id="line"><stop stop-color="#b6a0ff"/><stop offset="1" stop-color="#68cfe0"/></linearGradient></defs><rect width="1920" height="1080" fill="#101018"/><ellipse cx="100" cy="30" rx="760" ry="650" fill="url(#glow)"/><path d="M60 140H390" stroke="url(#line)" stroke-width="2"/><text x="60" y="93" fill="#f5f1ff" font-size="31" font-family="Helvetica">sleepypod</text><text x="60" y="212" fill="#c1afff" font-size="15" letter-spacing="2" font-family="Helvetica">${esc(c.kicker)}</text>${c.title.map((t, i) => `<text x="60" y="${320 + i * 65}" fill="#faf7ff" font-size="48" font-weight="600" font-family="Helvetica">${esc(t)}</text>`).join('')}${c.body.map((t, i) => `<text x="60" y="${520 + i * 36}" fill="#b8b6c9" font-size="22" font-family="Helvetica">${esc(t)}</text>`).join('')}<text x="60" y="970" fill="#b8b6c9" font-family="Helvetica" font-size="18">${ending ? 'sleepypod.github.io' : 'Core v3.2.1 · real interface'}</text><text x="60" y="1002" fill="#77748d" font-family="Helvetica" font-size="17">Simulated data · silent tour</text><rect x="457" y="37" width="1446" height="1006" rx="3" fill="#393143"/></svg>`
+  return `<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow"><stop stop-color="#39285d"/><stop offset="1" stop-color="#101018"/></radialGradient><linearGradient id="line"><stop stop-color="#b6a0ff"/><stop offset="1" stop-color="#68cfe0"/></linearGradient></defs><rect width="1920" height="1080" fill="#101018"/><ellipse cx="100" cy="30" rx="760" ry="650" fill="url(#glow)"/><path d="M60 140H390" stroke="url(#line)" stroke-width="2"/><image href="${logoUri}" x="56" y="44" width="72" height="72"/><text x="144" y="93" fill="#f5f1ff" font-size="31" font-family="Helvetica">sleepypod</text><text x="60" y="212" fill="#c1afff" font-size="15" letter-spacing="2" font-family="Helvetica">${esc(c.kicker)}</text>${c.title.map((t, i) => `<text x="60" y="${320 + i * 65}" fill="#faf7ff" font-size="48" font-weight="600" font-family="Helvetica">${esc(t)}</text>`).join('')}${c.body.map((t, i) => `<text x="60" y="${520 + i * 36}" fill="#b8b6c9" font-size="22" font-family="Helvetica">${esc(t)}</text>`).join('')}<text x="60" y="970" fill="#b8b6c9" font-family="Helvetica" font-size="18">${ending ? 'sleepypod.github.io' : 'sleepypod Core · real interface'}</text><text x="60" y="1002" fill="#77748d" font-family="Helvetica" font-size="17">Simulated data · silent tour</text><rect x="457" y="37" width="1446" height="1006" rx="3" fill="#393143"/></svg>`
 }
 const ff = (args) =>
   execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...args], {
@@ -122,7 +134,7 @@ await still(
     ],
   },
   3,
-  'core-thermal-bed.png',
+  'core-stage.png',
 )
 for (const c of chapters) {
   const clip = meta.clips.find((x) => x.scene === c.scene)
@@ -134,6 +146,12 @@ for (const c of chapters) {
       clip.verifiedFinalPosition?.feet !== 0)
   )
     throw Error('Base recording must verify the simulator reached its target')
+  if (
+    c.scene === 'stage' &&
+    (clip.defaultView !== 'stage' ||
+      !['left', 'right'].every((side) => clip.verifiedSides?.includes(side)))
+  )
+    throw Error('Stage recording must verify the default view and clicks on both sides')
   const length = clip.duration
   const bg = dir + '/render/' + c.scene + '.png'
   await sharp(Buffer.from(background(c)))
@@ -262,7 +280,7 @@ for (const { output, path } of outputs) {
       'scripts/capture-interfaces.mjs + scripts/render-overview.mjs; ' +
       meta.method +
       (output.startsWith('sleepypod-overview')
-        ? '; original chapter typography around unchanged UI recordings'
+        ? '; original chapter typography and repository sleepypod logo around unchanged UI recordings'
         : ''),
     sha256: createHash('sha256').update(bytes).digest('hex'),
     bytes: bytes.length,
@@ -277,7 +295,13 @@ await writeFile('capture/manifest.json', JSON.stringify(manifest, null, 2) + '\n
 await writeFile(
   'capture/interfaces.json',
   JSON.stringify(
-    { ...meta, clips: meta.clips.map(({ file, ...c }) => c), timeline, durationSeconds: at },
+    {
+      ...meta,
+      branding: manifest.assets.find((x) => x.output === 'sleepypod-logo.png'),
+      clips: meta.clips.map(({ file, ...c }) => c),
+      timeline,
+      durationSeconds: at,
+    },
     null,
     2,
   ) + '\n',

@@ -53,8 +53,8 @@ Use the upstream `tools/walkthrough.py` on a test Dial with serial access. Its o
 
 Clips are short, silent, and accompanied by a text description. Dial clips are user-controlled. The Health map clip is muted and loops automatically, with controls still available.
 
-## New-interface tour (Core v3.2.1)
+## New-interface tour
 
-The [overview video](/core/tour/) and Stage/Base clips are captured from Core's built-in demo at commit `0c2344c3b527142d0752478a00e6da465f30db00`. The real interface runs in an isolated production build. Network calls to Pod APIs and external origins are blocked; all actions stay inside the in-browser simulator.
+The [overview video](/core/tour/) and Stage/Base clips are captured from Core's built-in demo at commit `2c28d2e571742842a8679779c41922310a0c03b7`. The real interface runs in an isolated production build. Network calls to Pod APIs and external origins are blocked; all actions stay inside the in-browser simulator.
 
 `capture/interfaces.json` lists captured routes and chapters. `scripts/capture-interfaces.mjs` records screenshots and live interactions, and `scripts/render-overview.mjs` adds original editorial captions beside the unchanged recordings. See `capture/README.md` in the site repository for the complete reproducible commands. Media entries carry source revisions, dimensions, and SHA-256 checksums. Base remains explicitly labelled experimental and simulated.

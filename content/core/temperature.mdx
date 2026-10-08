@@ -7,23 +7,19 @@ description: 'Change each side’s temperature and power, use holds and Resume, 
 
 **Temp** is the home screen. It shows both sides of the bed, and lets you change temperature and power right now. Choose the correct side before changing anything.
 
-<BrowserFrame
-  src="/media/core-temperature.png"
-  alt="Temp screen with Alex and Sam side cards using the Now Night Dawn stepper, room readings, a weekday alarm, and the schedule and sleep timeline"
-  caption="Temp with the Now · Night · Dawn control. Real core UI with synthetic example data."
-/>
+The Stage-default layout below is from [Core revision `2c28d2e5`](https://github.com/sleepypod/core/commit/2c28d2e5) on `dev`. Released v3.2.1 starts in Cards and still has a thermal card on Temp.
 
 ## Explore the temperature Stage
 
-Select **Stage** at the top of Temp to open a full-screen 3D bed. **Back to cards** returns to the standard layout. This choice is saved in this browser.
+Temp opens in **Stage**, a full-screen 3D bed. The **Cards | Stage** switch changes the layout and saves your choice in this browser.
 
 <BrowserFrame
   src="/media/core-stage.png"
   alt="Temperature Stage with the 3D bed, per-side targets, surface sensor readings and a schedule timeline"
-  caption="The temperature Stage in Core v3.2.1. Real application rendering with simulated sensor data."
+  caption="The temperature Stage. Real application rendering with simulated sensor data."
 />
 
-Select a side to open its controls. The Stage uses the same temperature controls and manual holds as the cards. Dragging on a bed side adjusts its target and turns it on if it was off. Linking sides copies the left target and power to the right, then applies subsequent changes to both.
+Click either side of the bed to bring it into focus and slide its controls into view. The Stage uses the same temperature controls and manual holds as the cards. Dragging on a bed side adjusts its target and turns it on if it was off. Linking sides copies the left target and power to the right, then applies subsequent changes to both.
 
 The timeline lets you **preview** scheduled temperatures. Scrubbing changes the visualization, not the Pod; choose **Back to live** to leave the preview. The live bed colours represent measured surface temperature, while side labels show targets when on. See the [schedule-preview screenshot](/media/core-stage-preview.png). The six zones are sensor readings, not six independently controlled heating zones. Missing or stale readings are shown as unknown rather than invented temperatures.
 
@@ -35,7 +31,8 @@ On a keyboard, **1 / 2** selects a side, **↑ / ↓** adjusts it, **L** links t
   title="A closer look at Stage"
   wide
 >
-  A silent demonstration of the real 3D interface with simulated data. See the [video
+  A silent demonstration that clicks each side, shows its camera and control-panel animations,
+  previews the schedule, and returns to live control. All data is simulated. See the [video
   tour](/core/tour/) for the full overview and transcript.
 </Demo>
 
@@ -43,13 +40,19 @@ On a keyboard, **1 / 2** selects a side, **↑ / ↓** adjusts it, **L** links t
 
 <BrowserFrame
   src="/media/core-thermal-bed.png"
-  alt="Thermal bed card with measured surface colour, per-side targets and live sensor status"
+  alt="System Sensors showing the 3D thermal bed and six measured temperature regions"
   caption="Thermal view in the real app, with simulated temperatures."
 />
 
-The cards layout now includes **Thermal view**: a 3D view of the bed's measured surface temperatures. Compare those readings with each side's target and status. A target is what you asked for; a surface reading is what the sensor currently measures. Open [System → Thermal](/core/system/thermal/) for the longer diagnostic trends.
+Find the 3D thermal bed in **[System → Sensors](/core/system/sensors/)**, under **Bed temp matrix**. It shows outer, centre, and inner surface readings on each side; it is no longer a card on Temp. A target is what you asked for; a surface reading is what the sensor currently measures. Open [System → Thermal](/core/system/thermal/) for the longer diagnostic trends.
 
 ## Choose your controls
+
+<BrowserFrame
+  src="/media/core-temperature.png"
+  alt="Temp Cards layout with Alex and Sam controls and the schedule and sleep timeline"
+  caption="The Cards option, using Now · Night · Dawn with simulated data."
+/>
 
 Select a style below to see the real interface. In the app, open [Settings → Appearance](/core/settings/appearance/) and choose Dial, Slider, or Now · Night · Dawn. This is a preference for this browser only.
 
@@ -91,7 +94,7 @@ When a hold ends, the side goes to whatever applies **now**. It does not replay 
 
 With the standard cards, a temperature change does not turn an off side on. In Stage, dragging directly on a side can turn it on as described above. If a side says it is on but the bed is not changing temperature, check [System → Thermal](/core/system/thermal/) rather than changing the target again.
 
-## The rest of the screen
+## The rest of the Cards layout
 
 - **Autopilot chip**: shows **AUTOPILOT · N ACTIVE**, **DRY RUN**, or **HALTED** when you have rules. Select it to open [Autopilot](/core/autopilot/).
 - **Room**: room temperature, humidity, the bed's air temperature, and light level.
@@ -110,4 +113,4 @@ Banners appear at the top when something needs attention:
 
 ---
 
-**Source reference:** [Temp screen](https://github.com/sleepypod/core/tree/0c2344c3/src/components/TempScreen) · [Temperature control](https://github.com/sleepypod/core/blob/0c2344c3/src/components/TempControl/TempControl.tsx) · [Temperature ownership](https://github.com/sleepypod/core/blob/0c2344c3/docs/temperature-control.md)
+**Source reference:** [Temp screen](https://github.com/sleepypod/core/tree/2c28d2e5/src/components/TempScreen) · [Temperature control](https://github.com/sleepypod/core/blob/2c28d2e5/src/components/TempControl/TempControl.tsx) · [Temperature ownership](https://github.com/sleepypod/core/blob/2c28d2e5/docs/temperature-control.md)

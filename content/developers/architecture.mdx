@@ -12,7 +12,7 @@ title: 'System architecture'
 flowchart TD
   accTitle: Ordinary temperature commands reach hardware through one controller
   accDescr: Web, iOS, Dial, scheduler, and Autopilot requests enter the temperature controller. It selects ownership per side, then uses a side lock and sequential DAC transport to reach the hardware daemon.
-  C["Web / iOS / M5 Dial"] -->|HTTP APIs| O["Per-side temperature controller"]
+  C["Web / iOS / sleepypod Dial"] -->|HTTP APIs| O["Per-side temperature controller"]
   S["Scheduler / run-once"] --> O
   A["Autopilot requests"] --> O
   O --> L["Per-side lock"]
