@@ -127,6 +127,13 @@ await still(
 for (const c of chapters) {
   const clip = meta.clips.find((x) => x.scene === c.scene)
   if (!clip) throw Error('Missing scene ' + c.scene)
+  if (
+    c.scene === 'base' &&
+    (clip.verifiedState !== 'At target' ||
+      clip.verifiedFinalPosition?.head !== 40 ||
+      clip.verifiedFinalPosition?.feet !== 0)
+  )
+    throw Error('Base recording must verify the simulator reached its target')
   const length = clip.duration
   const bg = dir + '/render/' + c.scene + '.png'
   await sharp(Buffer.from(background(c)))

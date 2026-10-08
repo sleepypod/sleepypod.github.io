@@ -60,35 +60,46 @@
     {
       "scene": "stage",
       "path": "/en",
-      "start": 8.037,
-      "duration": 10.478999999999997
+      "start": 7.865,
+      "duration": 7.67
     },
     {
       "scene": "base",
       "path": "/en/base",
-      "start": 5.515,
-      "duration": 5.899
+      "start": 5.036,
+      "duration": 7.9879999999999995,
+      "verifiedFinalPosition": {
+        "head": 40,
+        "feet": 0
+      },
+      "verifiedState": "At target"
     },
     {
       "scene": "schedule",
       "path": "/en/schedule",
-      "start": 3.609,
-      "duration": 4.792
+      "start": 3.405,
+      "duration": 4.751000000000001
     },
     {
       "scene": "sleep",
       "path": "/en/sleep",
-      "start": 3.441,
-      "duration": 6.008
+      "start": 3.383,
+      "duration": 6.005
     },
     {
       "scene": "health",
       "path": "/en/system?tab=health",
-      "start": 4.522,
-      "duration": 6.015000000000001
+      "start": 3.39,
+      "duration": 6.014999999999999
     }
   ],
   "errors": [],
+  "warnings": [
+    "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+    "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+    "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+    "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+  ],
   "timeline": [
     {
       "chapter": "intro",
@@ -98,33 +109,33 @@
     {
       "chapter": "stage",
       "start": 3,
-      "duration": 10.48
+      "duration": 7.68
     },
     {
       "chapter": "base",
-      "start": 13.48,
-      "duration": 5.88
+      "start": 10.68,
+      "duration": 8
     },
     {
       "chapter": "schedule",
-      "start": 19.36,
-      "duration": 4.8
+      "start": 18.68,
+      "duration": 4.76
     },
     {
       "chapter": "sleep",
-      "start": 24.16,
-      "duration": 5.84
+      "start": 23.44,
+      "duration": 5.88
     },
     {
       "chapter": "health",
-      "start": 30,
+      "start": 29.32,
       "duration": 6
     },
     {
       "chapter": "outro",
-      "start": 36,
+      "start": 35.32,
       "duration": 4
     }
   ],
-  "durationSeconds": 40
+  "durationSeconds": 39.32
 }

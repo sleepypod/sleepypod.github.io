@@ -736,11 +736,11 @@
       "source": "Core demo tour",
       "output": "core-stage-tour.mp4",
       "method": "scripts/capture-interfaces.mjs + scripts/render-overview.mjs; Unmodified Core production build with NEXT_PUBLIC_DEMO=1; built-in in-browser simulation; loopback only; API network requests blocked",
-      "sha256": "395239f371f00d410bb8f1a35a14dbc8566a3a6a1e74fd637f0c1902f699bab7",
-      "bytes": 147162,
+      "sha256": "b3e8235c6fcd17b77a69d130b1eef3519d81ef4517aebc1b4b80b6bc95cf9f7f",
+      "bytes": 107837,
       "width": 1440,
       "height": 1000,
-      "durationSeconds": 10.48
+      "durationSeconds": 7.68
     },
     {
       "repository": "sleepypod-core",
@@ -748,11 +748,11 @@
       "source": "Core demo tour",
       "output": "core-base-tour.mp4",
       "method": "scripts/capture-interfaces.mjs + scripts/render-overview.mjs; Unmodified Core production build with NEXT_PUBLIC_DEMO=1; built-in in-browser simulation; loopback only; API network requests blocked",
-      "sha256": "a856be4b8c43cb08d27662b164ab7471c9b52b337397c2626c0805bbbe237858",
-      "bytes": 68468,
+      "sha256": "cd69a90fbc3f0a27d2a2e496c67b8691686c6188f07c76c3276f0a4a9a3b9499",
+      "bytes": 103478,
       "width": 1440,
       "height": 1000,
-      "durationSeconds": 5.92
+      "durationSeconds": 8
     },
     {
       "repository": "sleepypod-core",
@@ -760,11 +760,11 @@
       "source": "Core demo tour",
       "output": "sleepypod-overview.mp4",
       "method": "scripts/capture-interfaces.mjs + scripts/render-overview.mjs; Unmodified Core production build with NEXT_PUBLIC_DEMO=1; built-in in-browser simulation; loopback only; API network requests blocked; original chapter typography around unchanged UI recordings",
-      "sha256": "94e0ff09e15466ef265b89b0752f46d7b754f76dca13a235e765c1d666c56cb1",
-      "bytes": 897239,
+      "sha256": "85b8a4ff1db1e51100d520be45f9647335ecf224b9776d69dba5cb2c77d567cb",
+      "bytes": 836666,
       "width": 1920,
       "height": 1080,
-      "durationSeconds": 40
+      "durationSeconds": 39.32
     },
     {
       "repository": "sleepypod-core",
