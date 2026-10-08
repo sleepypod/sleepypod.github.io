@@ -1,5 +1,5 @@
 // Capture the unmodified production Core demo. No physical Pod is contacted.
-import { chromium } from '@playwright/test'
+import { chromium, expect } from '@playwright/test'
 import { mkdir, writeFile, readFile } from 'node:fs/promises'
 const origin = new URL(process.env.CORE_CAPTURE_URL || 'http://127.0.0.1:3212')
 if (!['localhost', '127.0.0.1', '[::1]'].includes(origin.hostname)) throw Error('Loopback only')
@@ -62,10 +62,10 @@ try {
   if (!previous) {
     const { context, page } = await session()
     await goto(page, '/en')
-    await shot(page, 'core-thermal-bed.png', '/en')
-    await page.getByRole('button', { name: 'Thermal view', exact: true }).click()
-    await shot(page, 'core-temperature.png', '/en')
-    await page.getByRole('button', { name: 'Stage', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Stage', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
     await page.waitForTimeout(2000)
     await shot(page, 'core-stage.png', '/en')
     const lane = page.getByRole('slider', { name: "Preview tonight's schedule" })
@@ -73,7 +73,11 @@ try {
     await page.mouse.click(box.x + box.width * 0.82, box.y + box.height / 2)
     await page.waitForTimeout(1300)
     await shot(page, 'core-stage-preview.png', '/en')
-    await page.getByRole('button', { name: 'Back to cards' }).click()
+    await page.getByRole('button', { name: 'Cards', exact: true }).click()
+    await page.waitForTimeout(600)
+    await shot(page, 'core-temperature.png', '/en')
+    await goto(page, '/en/system?tab=sensors')
+    await shot(page, 'core-thermal-bed.png', '/en/system?tab=sensors')
     await goto(page, '/en/base')
     await page.getByRole('button', { name: /relax/ }).click()
     await shot(page, 'core-base.png', '/en/base')
@@ -100,10 +104,11 @@ try {
     await shot(page, 'core-schedule-alarm-editor.png', '/en/schedule')
     await context.close()
   }
-  for (const scene of ['stage', 'base', 'schedule', 'sleep', 'health']) {
+  for (const scene of ['stage', 'sensors', 'base', 'schedule', 'sleep', 'health']) {
     const { context, page, started } = await session(true)
     const path = {
       stage: '/en',
+      sensors: '/en/system?tab=sensors',
       base: '/en/base',
       schedule: '/en/schedule',
       sleep: '/en/sleep',
@@ -111,13 +116,31 @@ try {
     }[scene]
     await goto(page, path)
     if (scene === 'stage') {
-      await page.getByRole('button', { name: 'Stage', exact: true }).click()
+      await expect(page.getByRole('button', { name: 'Stage', exact: true })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
       await page.waitForTimeout(2200)
     }
     if (scene === 'base') await page.getByRole('button', { name: /relax/ }).click()
     const start = (Date.now() - started) / 1000
     await page.waitForTimeout(1200)
+    const verifiedSides = []
     if (scene === 'stage') {
+      for (const side of ['left', 'right']) {
+        // The DOM label's lower anchor is projected onto the corresponding mattress half.
+        const label = await page.getByTestId('stage-label-' + side).boundingBox()
+        await page.mouse.move(label.x + label.width / 2, label.y + label.height, { steps: 16 })
+        await page.mouse.click(label.x + label.width / 2, label.y + label.height)
+        const panel = page.getByTestId('stage-panel')
+        await expect(panel).toHaveAttribute('data-open', 'true')
+        await expect(panel).toContainText(side === 'left' ? 'Left' : 'Right')
+        await page.waitForTimeout(2400)
+        await page.screenshot({ path: '.capture/interfaces/stage-' + side + '-verified.png' })
+        verifiedSides.push(side)
+        await page.getByRole('button', { name: 'Close panel', exact: true }).click()
+        await page.waitForTimeout(1600)
+      }
       const box = await page
         .getByRole('slider', { name: "Preview tonight's schedule" })
         .boundingBox()
@@ -158,6 +181,7 @@ try {
       file,
       start,
       duration,
+      ...(scene === 'stage' ? { verifiedSides, defaultView: 'stage' } : {}),
       ...(scene === 'base'
         ? { verifiedFinalPosition: { head: 40, feet: 0 }, verifiedState: 'At target' }
         : {}),

@@ -76,29 +76,29 @@ Dial media is imported byte-for-byte from its `docs/screens` and `docs/video` di
 - Check manifest changes alongside the product source revision.
 - Source licenses are preserved in `licenses/`.
 
-## Core v3.2.1 interface tour
+## Core interface tour
 
 `capture/interfaces.json` records the source revision, screenshot routes, recorded
 interactions, and overview chapters. Unlike the older fixture transport above,
 these captures use Core's own in-browser demo handlers and sensor simulator.
 
-1. Check out Core commit `0c2344c3b527142d0752478a00e6da465f30db00` in an isolated
+1. Check out Core commit `2c28d2e571742842a8679779c41922310a0c03b7` in an isolated
    worktree and install its locked dependencies. Build with
    `CI=1 NEXT_PUBLIC_DEMO=1 DATABASE_URL=:memory: BIOMETRICS_DATABASE_URL=:memory: pnpm build`.
 2. Start `.next/standalone/server.js` on `127.0.0.1:3212` with `CI=1`,
    `HOSTNAME=127.0.0.1`, `PORT=3212`, and disposable database paths. No `.env`
    from a physical Pod is used.
 3. In the site worktree, run
-   `CORE_SOURCE_COMMIT=0c2344c3b527142d0752478a00e6da465f30db00 node scripts/capture-interfaces.mjs`.
+   `CORE_SOURCE_COMMIT=2c28d2e571742842a8679779c41922310a0c03b7 node scripts/capture-interfaces.mjs`.
    The browser blocks external requests and all `/api/` network calls. The
    application demo handles every displayed query and simulated mutation locally.
 4. Inspect every image under `.capture/interfaces/`. These are untouched 2×
    screenshots; video recordings use a 1440×1000 viewport at 1×. The example clock
-   starts at October 7, 2026, 21:30 in America/Los_Angeles. Stills use a fixed clock; movie clocks advance normally so simulated movements and live readings continue. The Base recording must reach the measured 40° head / 0° feet target before it is accepted. A recoverable React hydration
+   starts at October 7, 2026, 21:30 in America/Los_Angeles. Stills use a fixed clock; movie clocks advance normally so simulated movements and live readings continue. The Stage recording starts in the default view, clicks the left and right mattress halves, and verifies each side panel after the camera animation. The Sensors chapter shows the thermal bed in its diagnostic location. The Base recording must reach the measured 40° head / 0° feet target before it is accepted. A recoverable React hydration
    warning can occur because the server clock differs; other page exceptions fail
    capture. No UI text, styles, or product geometry are rewritten.
 5. Run `node scripts/render-overview.mjs`. It produces silent H.264 Stage and Base
-   clips plus a chaptered overview. Original editorial typography sits beside the
+   clips plus a chaptered overview. The original repository logo and editorial typography sit beside the
    unmodified UI recordings; fades are added only between chapters. There is no
    synthetic voice or third-party soundtrack. The full transcript is in the tour
    guide. Encoding uses fast-start metadata for web playback.

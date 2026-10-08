@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://sleepypod.github.io'),
   title: { default: 'sleepypod — Your bed. Your rules.', template: '%s — sleepypod' },
   description:
-    'Local control for your Pod. Meet sleepypod Core, the native iOS app, and the M5 Rotary Dial.',
+    'Local control for your Pod. Meet sleepypod Core, the native iOS app, and the sleepypod Dial.',
   openGraph: { siteName: 'sleepypod', type: 'website' },
 }
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -30,7 +30,7 @@ pnpm check
 - Technical reference: [temperature controller](content/developers/temperature-control.mdx), [sensor pipeline](content/developers/sensor-pipeline.mdx), [hardware](content/developers/hardware.mdx), and [CI/deployment workflows](content/developers/workflows.mdx).
 - [Source library](content/developers/source-library.mdx) inventories core documents; `capture/docs-coverage.json` records their treatment and source revision.
 
-The new-interface guides and captures target Core v3.2.1, `0c2344c3b527142d0752478a00e6da465f30db00`. Unchanged guides and older captures retain their own pinned source references. The overview video and Stage/Base clips are documented in `capture/interfaces.json`. Do not document an unmerged PR as released behavior.
+The new-interface guides and captures target the Stage-default Core revision, `2c28d2e571742842a8679779c41922310a0c03b7`. Unchanged guides and older captures retain their own pinned source references. The overview video and Stage/Base clips are documented in `capture/interfaces.json`. Do not document an unmerged PR as released behavior.
 
 ## Content and media
 
@@ -54,7 +54,7 @@ Branch protection should require `Build and browser checks`, a pull request, and
 
 ## Media attribution
 
-Core and iOS source/media originate in their AGPL-3.0 repositories. Dial source/media originate in the MIT-licensed M5 Rotary Dial repository, derived from dallonby/RotaryDial. Full source links and exact revisions are retained in the manifest and page references. Browser framing and capture discipline take inspiration from `noctune-docs`; no noctune product screenshots are reused.
+Core and iOS source/media originate in their AGPL-3.0 repositories. Dial source/media originate in the MIT-licensed sleepypod Dial repository, derived from dallonby/RotaryDial. Full source links and exact revisions are retained in the manifest and page references. Browser framing and capture discipline take inspiration from `noctune-docs`; no noctune product screenshots are reused.
 
 ## Dependency patch
 

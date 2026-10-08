@@ -1,16 +1,8 @@
 {
-  "sourceCommit": "0c2344c3b527142d0752478a00e6da465f30db00",
+  "sourceCommit": "2c28d2e571742842a8679779c41922310a0c03b7",
   "capturedTime": "2026-10-08T04:30:00Z",
   "method": "Unmodified Core production build with NEXT_PUBLIC_DEMO=1; built-in in-browser simulation; loopback only; API network requests blocked",
   "captures": [
-    {
-      "output": "core-thermal-bed.png",
-      "path": "/en"
-    },
-    {
-      "output": "core-temperature.png",
-      "path": "/en"
-    },
     {
       "output": "core-stage.png",
       "path": "/en"
@@ -18,6 +10,14 @@
     {
       "output": "core-stage-preview.png",
       "path": "/en"
+    },
+    {
+      "output": "core-temperature.png",
+      "path": "/en"
+    },
+    {
+      "output": "core-thermal-bed.png",
+      "path": "/en/system?tab=sensors"
     },
     {
       "output": "core-base.png",
@@ -60,14 +60,22 @@
     {
       "scene": "stage",
       "path": "/en",
-      "start": 7.865,
-      "duration": 7.67
+      "start": 5.576,
+      "duration": 21.451,
+      "verifiedSides": ["left", "right"],
+      "defaultView": "stage"
+    },
+    {
+      "scene": "sensors",
+      "path": "/en/system?tab=sensors",
+      "start": 4.232,
+      "duration": 6.001
     },
     {
       "scene": "base",
       "path": "/en/base",
-      "start": 5.036,
-      "duration": 7.9879999999999995,
+      "start": 4.541,
+      "duration": 7.735999999999999,
       "verifiedFinalPosition": {
         "head": 40,
         "feet": 0
@@ -77,20 +85,20 @@
     {
       "scene": "schedule",
       "path": "/en/schedule",
-      "start": 3.405,
-      "duration": 4.751000000000001
+      "start": 3.337,
+      "duration": 4.759
     },
     {
       "scene": "sleep",
       "path": "/en/sleep",
-      "start": 3.383,
-      "duration": 6.005
+      "start": 3.42,
+      "duration": 6.007
     },
     {
       "scene": "health",
       "path": "/en/system?tab=health",
-      "start": 3.39,
-      "duration": 6.014999999999999
+      "start": 3.403,
+      "duration": 6.013
     }
   ],
   "errors": [],
@@ -98,8 +106,21 @@
     "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
     "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
     "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+    "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+    "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
     "Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
   ],
+  "branding": {
+    "repository": "sleepypod-core",
+    "commit": "2d445d7d82c93aa17ce0593584f9f09a8fc368a4",
+    "source": "public/logo.png",
+    "output": "sleepypod-logo.png",
+    "method": "original upstream brand artwork",
+    "sha256": "ab645a288f53de50481e7175a65863380563d2854bed598c7d20245a21f1eb6c",
+    "bytes": 24605,
+    "width": 128,
+    "height": 128
+  },
   "timeline": [
     {
       "chapter": "intro",
@@ -109,33 +130,38 @@
     {
       "chapter": "stage",
       "start": 3,
-      "duration": 7.68
+      "duration": 21.44
+    },
+    {
+      "chapter": "sensors",
+      "start": 24.44,
+      "duration": 6
     },
     {
       "chapter": "base",
-      "start": 10.68,
-      "duration": 8
+      "start": 30.44,
+      "duration": 7.72
     },
     {
       "chapter": "schedule",
-      "start": 18.68,
+      "start": 38.16,
       "duration": 4.76
     },
     {
       "chapter": "sleep",
-      "start": 23.44,
+      "start": 42.92,
       "duration": 5.88
     },
     {
       "chapter": "health",
-      "start": 29.32,
+      "start": 48.8,
       "duration": 6
     },
     {
       "chapter": "outro",
-      "start": 35.32,
+      "start": 54.8,
       "duration": 4
     }
   ],
-  "durationSeconds": 39.32
+  "durationSeconds": 58.8
 }
