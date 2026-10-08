@@ -9,7 +9,7 @@ description: 'Build nightly temperature curves, set vibration alarms, and check 
 
 <BrowserFrame
   src="/media/core-schedule.png"
-  alt="Schedule page for the left side with an every-day curve from 10 PM to 7 AM, last night's bed temperature, the phase strip, and a weekday 6:45 AM alarm"
+  alt="Schedule page for Alex with a 10 PM to 6 AM weekday and Sunday curve, a separate weekend curve, measured bed temperature, and a weekday 6:45 AM alarm"
   caption="Schedule for the left side. Real core UI with synthetic example data."
 />
 
@@ -30,18 +30,24 @@ description: 'Build nightly temperature curves, set vibration alarms, and check 
 3. **Times**: set **Bedtime** and **Wake up**. Changing them stretches the existing points to fit.
 4. **Range**: set **Coolest** and **Warmest**, between 55 and 110°F and at least 2°F apart.
 5. **Preset**: start from **Hot Sleeper**, **Balanced**, or **Cold Sleeper**, or **Custom AI curve** (below). Presets are starting points, not recommendations.
-6. Adjust points: drag them on the chart, change a temperature with − and +, select a time to edit it, or **Add set point**. The first point powers the side on and the last one powers it off.
-7. Select **Save curve**.
+6. Adjust points: drag them on the chart, change a temperature with − and +, select a time to edit it, or **Add set point**. The first point powers the side on. **After schedule ends** chooses what happens at the final point.
+7. Choose **After schedule ends**: **Turn off** or **Maintain final temperature**, then select **Save curve**.
 
 <BrowserFrame
   src="/media/core-schedule-curve-editor.png"
   alt="Edit curve page with days, bedtime and wake up times, coolest and warmest range, presets, the curve chart, and four set points"
-  caption="Editing an every-day curve. Nothing is saved until Save curve. Synthetic example data."
+  caption="Editing a weekday/Sunday curve with Maintain final temperature selected. Nothing is saved until Save curve. Built-in demo data."
 />
 
 Nothing changes until you save. If some of the days you chose already belong to another curve, you are asked to **Move & save** them to this one.
 
 To delete a curve, select its bin icon and confirm. The Pod will not change temperature on those days until you create a new curve.
+
+### What happens at the end
+
+**Turn off** stops heating or cooling at the last set point. **Maintain final temperature** keeps that target until you turn the side off or another schedule or automation takes over. Auto-off limits still apply; this is not the same as disabling safety limits.
+
+Set the default for new curves in **Settings → Device → Default after schedule ends**. Editing an existing curve preserves its saved end action until you change it.
 
 ### Custom AI curve
 
@@ -58,7 +64,7 @@ Using a curve only fills in the editor. Nothing is saved until **Save curve**. T
 
 <BrowserFrame
   src="/media/core-schedule-alarm-editor.png"
-  alt="Edit alarm dialog with a 6:45 AM wake time, left side, weekdays, rise pattern, 100% intensity, 30-second duration, and 82° bed temperature at wake"
+  alt="Edit alarm dialog with a 6:45 AM wake time, Alex selected, weekdays, a wake-window picker, vibration controls, and bed temperature at wake"
   caption="Editing a weekday alarm. Synthetic example data."
 />
 
@@ -70,6 +76,10 @@ Using a curve only fills in the editor. Nothing is saved until **Save curve**. T
 6. Select **Test** to feel it now, then **Save alarm**.
 
 Pod 5 covers ignore pattern and intensity; the duration is what you feel. A saved value does not mean the hardware can reproduce it. The ▶ button on an alarm card fires it right away.
+
+**Wake window** can allow the alarm to fire early on movement within the chosen window; if it does not, it rings at the saved wake time. Leave it off to ring at the exact time.
+
+The alarm temperature is applied during a warm-up period starting 30 minutes before the alarm (or the wake-window start if longer), and remains active for 15 minutes after vibration stops. This temporarily takes priority over the curve; it does not replace the saved schedule.
 
 While an alarm rings, the Temp screen offers **Snooze 5m** and **Stop**. You can also set [cover taps](/core/settings/gestures/) to snooze or stop it.
 
@@ -87,4 +97,4 @@ The iOS app has its own curve editor with per-phase controls, day and side selec
 
 ---
 
-**Source reference:** [Schedule screen](https://github.com/sleepypod/core/tree/4cc76838/src/components/Schedule) · [Curve editor](https://github.com/sleepypod/core/blob/4cc76838/src/components/Schedule/CurveEditor.tsx) · [Alarm editor](https://github.com/sleepypod/core/blob/4cc76838/src/components/Schedule/AlarmEditor.tsx) · [AI curve wizard](https://github.com/sleepypod/core/blob/4cc76838/src/components/Schedule/AICurveWizard.tsx) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/4cc76838/docs/hardware/alarms.md)
+**Source reference:** [Schedule screen](https://github.com/sleepypod/core/tree/0c2344c3/src/components/Schedule) · [Curve editor](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Schedule/CurveEditor.tsx) · [Alarm editor](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Schedule/AlarmEditor.tsx) · [AI curve wizard](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Schedule/AICurveWizard.tsx) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/0c2344c3/docs/hardware/alarms.md)

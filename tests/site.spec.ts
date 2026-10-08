@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 function routes(dir = 'content', prefix = ''): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
@@ -74,7 +74,14 @@ test('search finds an indexed product guide', async ({ page }) => {
   await expect(page).toHaveURL(/core\/(integrations|settings\/homekit)/)
 })
 test('videos decode and play to the end', async ({ page }) => {
-  for (const route of ['/dial/', '/dial/controls/']) {
+  test.setTimeout(150000)
+  for (const route of [
+    '/dial/',
+    '/dial/controls/',
+    '/core/tour/',
+    '/core/temperature/',
+    '/core/base/',
+  ]) {
     await page.goto(route)
     for (const video of await page.locator('video').all()) {
       await video.scrollIntoViewIfNeeded()
@@ -85,10 +92,21 @@ test('videos decode and play to the end', async ({ page }) => {
       })
       await expect
         .poll(() => video.evaluate((element: HTMLVideoElement) => element.ended), {
-          timeout: 15000,
+          timeout: 45000,
         })
         .toBe(true)
-      expect(await video.evaluate((element: HTMLVideoElement) => element.videoWidth)).toBe(480)
+      const source = await video.evaluate((element: HTMLVideoElement) => element.currentSrc)
+      const assets = JSON.parse(readFileSync('capture/manifest.json', 'utf8')).assets
+      const asset = assets.find(
+        (entry: { output: string }) => entry.output === path.basename(new URL(source).pathname),
+      )
+      expect(asset).toBeDefined()
+      expect(await video.evaluate((element: HTMLVideoElement) => element.videoWidth)).toBe(
+        asset.width,
+      )
+      expect(await video.evaluate((element: HTMLVideoElement) => element.videoHeight)).toBe(
+        asset.height,
+      )
       expect(await video.evaluate((element: HTMLVideoElement) => element.error)).toBeNull()
     }
   }

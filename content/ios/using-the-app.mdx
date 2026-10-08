@@ -55,3 +55,13 @@ Some status actions affect the running Pod, including calibration and internet-a
 ---
 
 **Source reference:** [Feature reference](https://github.com/sleepypod/ios/blob/5276c3c87809336ec014731c773750ec276491a4/README.md)
+
+## Newer build controls
+
+The iOS development build identified as 1.1.1 adds the following controls. The screenshots above retain their separately pinned redesign revision; the exact layout depends on your installed build.
+
+- **3D thermal bed:** Sensors shows a bed surface view built from measured temperatures, alongside the temperature trend. It visualizes readings; it does not add independently controlled heating zones.
+- **Sweeping piezo trace:** the cursor writes new incoming samples over the previous sweep, keeping the remaining trace still.
+- **After schedule ends:** when the connected backend supports it, the schedule editor offers **Turn off** or **Maintain final temperature**. Maintaining keeps the final target until a manual change, schedule, or automation takes over; auto-off limits still apply. Device settings can set the default for new curves without changing existing schedules.
+
+**Source reference for these additions:** [iOS development revision 8139bda](https://github.com/sleepypod/ios/tree/8139bda) · [Thermal bed](https://github.com/sleepypod/ios/blob/8139bda/Sleepypod/Views/Sensor/ThermalBedView.swift) · [Piezo sweep](https://github.com/sleepypod/ios/blob/8139bda/Sleepypod/Views/Sensor/PiezoSweep.swift) · [Schedule end action](https://github.com/sleepypod/ios/blob/8139bda/Sleepypod/Views/Schedule/ScheduleScreen.swift)

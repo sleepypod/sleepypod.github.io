@@ -1,15 +1,16 @@
 ---
 title: 'Find your way around'
-description: 'The six sections of the Core web app, where each screen lives, and which guide covers it.'
+description: 'The sections of the Core web app, where each screen lives, and which guide covers it.'
 ---
 
 # Find your way around
 
-Open `http://POD_IP:3000` in a browser on the same network as the Pod, or try the [live demo](https://sleepypod.vercel.app). The app has six sections. They are the same on a phone, tablet, and computer.
+Open `http://POD_IP:3000` in a browser on the same network as the Pod, or try the [live demo](https://sleepypod.vercel.app). The app has six standard sections, plus **Base** when a local base setup is available or in the demo. They are the same on a phone, tablet, and computer.
 
 | Section       | What it is for                                               | Guide                         |
 | ------------- | ------------------------------------------------------------ | ----------------------------- |
 | **Temp**      | Change temperature and power right now                       | [Temp](/core/temperature/)    |
+| **Base**      | Experimental adjustable-base positioning and schedules       | [Base](/core/base/)           |
 | **Autopilot** | Rules that react to the room, your body, or the Pod          | [Autopilot](/core/autopilot/) |
 | **Schedule**  | Nightly temperature curves and vibration alarms              | [Schedule](/core/schedules/)  |
 | **Sleep**     | Night records, sleep stages, and vitals                      | [Sleep](/core/biometrics/)    |
@@ -20,7 +21,7 @@ Open `http://POD_IP:3000` in a browser on the same network as the Pod, or try th
 
 ## On a computer
 
-At 900 pixels wide and above, a sidebar lists the six sections. Autopilot, Sleep, System, and Settings expand to show their pages when you open them.
+At 900 pixels wide and above, a sidebar lists the available sections. Autopilot, Sleep, System, and Settings expand to show their pages when you open them.
 
 - **Build chip.** Next to the logo. A release shows its version, for example `v3.0.0`. Any other build shows an amber **DEV** chip. Select it to see the version, host, branch, and commit. Include these when you report a problem.
 - **Docs.** Opens this site.
@@ -30,7 +31,7 @@ At 900 pixels wide and above, a sidebar lists the six sections. Autopilot, Sleep
 
 A tab bar at the bottom replaces the sidebar. The Schedule tab shows a green dot while a schedule is active, and the System tab shows a green or amber health dot. Settings opens as a list; tap a row to open that section, and **‹ Settings** to go back.
 
-On touch screens you can swipe left or right to move between Temp, Schedule, Sleep, System, and Settings. Swiping skips Autopilot; tap its tab instead.
+On touch screens you can swipe left or right to move between Temp, Schedule, Sleep, System, and Settings. Base joins the swipe order when available. Swiping skips Autopilot; tap its tab instead.
 
 ## Every screen and its guide
 
@@ -39,6 +40,7 @@ Each screen has its own address, so you can bookmark or share it. Replace `POD_I
 | App address                             | Guide                                                     |
 | --------------------------------------- | --------------------------------------------------------- |
 | `/en`                                   | [Temp](/core/temperature/)                                |
+| `/en/base`                              | [Base (experimental)](/core/base/)                        |
 | `/en/autopilot`                         | [Autopilot → Automations](/core/autopilot/#automations)   |
 | `/en/autopilot?view=diagnostics`        | [Autopilot → Diagnostics](/core/autopilot/#diagnostics)   |
 | `/en/autopilot/new`, `/en/autopilot/ID` | [Autopilot → Build a rule](/core/autopilot/#build-a-rule) |
@@ -78,4 +80,4 @@ The `/en` part is the language. The app also accepts `/es`, and it picks a langu
 
 ---
 
-**Source reference:** [Navigation](https://github.com/sleepypod/core/blob/4cc76838/src/components/AppShell/navItems.ts) · [Settings sections](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/sections.ts) · [System tabs](https://github.com/sleepypod/core/blob/4cc76838/src/components/System/systemTabs.ts) · [Swipe navigation](https://github.com/sleepypod/core/blob/4cc76838/src/hooks/useSwipeNavigation.ts)
+**Source reference:** [Navigation](https://github.com/sleepypod/core/blob/0c2344c3/src/components/AppShell/navItems.ts) · [Settings sections](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Settings/sections.ts) · [System tabs](https://github.com/sleepypod/core/blob/0c2344c3/src/components/System/systemTabs.ts) · [Swipe navigation](https://github.com/sleepypod/core/blob/0c2344c3/src/hooks/useSwipeNavigation.ts)

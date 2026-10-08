@@ -1,0 +1,43 @@
+---
+title: 'A tour of the new interfaces'
+description: 'Watch the new temperature Stage, experimental Base, schedule editor, sleep view and health map in action.'
+---
+
+# A tour of the new interfaces
+
+A quick look around sleepypod Core v3.2.1: a new view of your bed, more control over your night, and the data behind it.
+
+<Demo
+  src="/media/sleepypod-overview.mp4"
+  poster="/media/sleepypod-overview.png"
+  title="Your bed. Your rules."
+  wide
+>
+  A silent overview with on-screen chapter captions. Every interface is captured from the real Core
+  application using its built-in demo; temperatures, sleep records and base movements are simulated.
+</Demo>
+
+[Download the overview video](/media/sleepypod-overview.mp4) · [Try the live demo](https://sleepypod.vercel.app)
+
+## Transcript and chapters
+
+1. **Your bed. Your rules.** A new view of your night: temperature, schedules and sleep in one local interface.
+2. **See your bed in a new light.** The [temperature Stage](/core/temperature/#explore-the-temperature-stage) shows surface sensor readings and lets you preview tonight's schedule before returning to live control. Previewing does not change the Pod.
+3. **Find your wind-down.** [Base](/core/base/) previews adjustable-bed positions. Both sides move together. This feature is experimental and the video shows simulated hardware, not a verified physical installation.
+4. **A curve that fits your night.** In [Schedule](/core/schedules/), choose whether to turn off or maintain the final temperature when a curve ends. The video changes an unsaved example curve; select Save curve to apply your own edit.
+5. **Know your night.** [Sleep](/core/biometrics/) brings nights and vitals together. These are example readings, not a diagnosis.
+6. **Trace every signal.** [System → Health](/core/system/health/) follows the sensor data path. This demo includes a simulated DAC-monitor stall, showing how the map points to a failing service.
+7. **Try it. Make it yours.** Explore the live demo and use these guides with your own Pod.
+
+## More changes to explore
+
+- [Solo bed setup and Away mode](/core/settings/sides/#bed-setup) are separate choices, with an explicit policy for the other temperature zone.
+- [12-hour or 24-hour time](/core/settings/device/#clock-and-schedule-defaults) is saved on the Pod.
+- [Alarm wake windows](/core/schedules/#vibration-alarms) can ring early on movement, or at the saved time if no movement is detected.
+- The [live Sensors view](/core/system/sensors/) draws incoming piezo data as a sweeping trace.
+
+The overview and feature clips have player controls and do not autoplay. Use the transcript above if you prefer to read. The [media workflow](/developers/media/) explains source pinning and capture provenance.
+
+---
+
+**Source reference:** [Core v3.2.1](https://github.com/sleepypod/core/tree/0c2344c3) · [Built-in demo](https://github.com/sleepypod/core/tree/0c2344c3/src/demo)

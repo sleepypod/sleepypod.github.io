@@ -9,9 +9,21 @@ description: 'Name each side and set Away mode, Auto-off after leaving the bed, 
 
 <BrowserFrame
   src="/media/core-settings-sides.png"
-  alt="Sides settings for the left side: profile name, Away mode, and Auto-off with presence available and Always on"
+  alt="Sides settings with Two sleepers bed setup, other temperature zone policy, Alex profile, Away mode, Auto-off, and Always on"
   caption="Settings → Sides for the left side. Synthetic example data."
 />
+
+## Bed setup
+
+Choose **Two sleepers**, **Solo · left**, or **Solo · right** for who normally sleeps here. This is separate from a partner's temporary Away mode and from temperature linking.
+
+**Other temperature zone** decides what happens when one sleeper is home:
+
+- **Stay off** keeps the unused zone off.
+- **Follow my schedule** follows the active sleeper's schedule.
+- **Use its own schedule** keeps the other zone's saved schedule.
+
+Both zones retain their saved schedules. An absent sleeper's alarms are paused. One active sleeper gets one sleep record using sensors across the bed; manual controls remain available for both temperature zones.
 
 ## Profile
 
@@ -19,7 +31,7 @@ description: 'Name each side and set Away mode, Auto-off after leaving the bed, 
 
 ## Away mode
 
-Turn on **Away** while this person is away. It pauses their schedule and keeps their side off until you turn Away off again. Sleep pages hide an away side's Person switch.
+Turn on **Away** while this person is away. It preserves the normal bed setup and pauses that person's alarms. The **Other temperature zone** choice determines whether their zone stays off, follows the active sleeper, or runs its own schedule. Turn Away off when they return.
 
 ## Auto-off
 
@@ -35,4 +47,4 @@ Always on and Auto-off cannot both be on. Turning one on turns the other off.
 
 ---
 
-**Source reference:** [Side settings form](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/SideSettingsForm.tsx) · [Settings screen](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/SettingsScreen.tsx)
+**Source reference:** [Side settings form](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Settings/SideSettingsForm.tsx) · [Settings screen](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Settings/SettingsScreen.tsx)

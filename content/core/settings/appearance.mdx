@@ -9,7 +9,7 @@ description: 'Choose the temperature control style, how temperatures are shown, 
 
 <BrowserFrame
   src="/media/core-appearance.png"
-  alt="Appearance settings with Dial, Slider, and Now Night Dawn control choices, the Show as options, theme, and units"
+  alt="Appearance settings with Dial, Slider, and Now Night Dawn control choices, the Show as options, 3D stage zone readings and auto-return, theme, and units"
   caption="Settings → Appearance. Real core UI with synthetic example data."
 />
 
@@ -35,6 +35,12 @@ See [Temp](/core/temperature/#choose-your-controls) to compare the three.
 
 This only changes how numbers appear. Schedules and the API still store temperatures in Fahrenheit.
 
+On the phone Settings overview, **Time format** also offers 12-hour or 24-hour display. This is a Pod-wide setting, also available in [Device](/core/settings/device/#clock-and-schedule-defaults).
+
+## 3D stage
+
+**Zone readings** controls when the six surface readings appear: **On hover**, **Always**, or **Off**. **Auto-return** brings the camera home after a pause. These are browser preferences for the [temperature Stage](/core/temperature/#explore-the-temperature-stage), not changes to the sensors.
+
 ## Display
 
 - **Theme:** **Auto** (default) follows your device's light or dark setting. **Dark** and **Light** override it.
@@ -44,4 +50,4 @@ Temperature control, Show as, and Theme are saved in this browser only. If you c
 
 ---
 
-**Source reference:** [Appearance settings](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/AppearanceSettings.tsx)
+**Source reference:** [Appearance settings](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Settings/AppearanceSettings.tsx)
