@@ -21,6 +21,26 @@ ssh -p 8822 root@POD_IP
 
 Database or native-module errors can come from running the wrong Node.js binary. The service uses `/usr/local/bin/node`; use that binary for manual scripts when comparing behavior. Preserve databases before attempting a repair or reinstall.
 
+## Web UI down, service restarting in a loop
+
+Check whether the installed build still exists:
+
+```bash
+ls -l /home/dac/sleepypod-core/.next/standalone/server.js
+journalctl -u sleepypod.service -n 50 --no-pager
+```
+
+If `server.js` is missing, the build is gone. The usual cause is running `next build` or `pnpm build` on the Pod: Next empties `.next` before compiling, and the Pod's 2GB of RAM can't finish the build. Newer Core releases log `No production build at .next/standalone/server.js`; older ones show a misleading pnpm permission error while the service restarts repeatedly.
+
+Recover by reinstalling a pre-built bundle:
+
+```bash
+sp-update                    # on the Pod: latest release
+./scripts/deploy POD_IP      # from a computer: your local checkout
+```
+
+Never build on the Pod. See [Core development](/developers/core/#never-build-on-the-pod).
+
 ## Biometrics are empty
 
 1. Check the selected side and date. For live measurements, confirm the bed is occupied.
@@ -63,4 +83,4 @@ The upstream runbook below is the authoritative reference for device-specific pa
 
 ---
 
-**Source reference:** [NATS diagnostics](https://github.com/sleepypod/core/blob/17d5369e/docs/nats-frame-readers.md) · [System navigation](https://github.com/sleepypod/core/blob/17d5369e/src/components/System/systemTabs.ts) · [Debugging runbook](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [Deployment and service details](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEPLOYMENT.md)
+**Source reference:** [NATS diagnostics](https://github.com/sleepypod/core/blob/17d5369e/docs/nats-frame-readers.md) · [System navigation](https://github.com/sleepypod/core/blob/17d5369e/src/components/System/systemTabs.ts) · [Debugging runbook](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEBUGGING.md) · [Deployment and service details](https://github.com/sleepypod/core/blob/ae930282a0f3dcea4edbe3b3bc0b095c572d3b3d/docs/DEPLOYMENT.md) · [Missing-build crash loop](https://github.com/sleepypod/core/pull/799)
