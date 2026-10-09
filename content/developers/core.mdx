@@ -39,7 +39,11 @@ For an **already installed** Pod with root SSH key access (default port 8822):
 
 The deploy helper builds locally, transfers an archive, and invokes the updater on the Pod. The updater preserves configuration, backs up code/database, installs native dependencies for the Pod, migrates, and restarts. The Pod may need temporary WAN access for dependencies; consult the deployment guide.
 
-Do not compile large development builds on the memory-constrained device when a local or CI build is available.
+## Never build on the Pod
+
+Edit on your computer and deploy with `./scripts/deploy POD_IP`. Do not run `pnpm build` or `next build` on the Pod. Next deletes the installed `.next` before compiling, the build runs out of the Pod's 2GB of RAM, and the service is left with no `.next/standalone/server.js` to start. The web UI then goes down and `sleepypod.service` restarts in a loop.
+
+Core releases that include [core#799](https://github.com/sleepypod/core/pull/799) refuse `next build` when `/etc/sleepypod/data-dir` exists, which is only true on an installed Pod. Set `SP_ALLOW_POD_BUILD=1` to override. If the build is already gone, see [Web UI down, service restarting in a loop](/troubleshooting/core/#web-ui-down-service-restarting-in-a-loop).
 
 ## Key directories
 
