@@ -54,6 +54,7 @@ journalctl -u frank -n 100 --no-pager
 ```
 
 5. For RAW readers, confirm `RAW_DATA_DIR` points to the firmware's hot directory. For either transport, check module logs and increasing biometrics rows. A healthy web UI does not prove processing is running.
+6. If using cross-generation hardware (such as a Pod 3 hub paired with a Pod 4 cover) or older firmware, inspect `journalctl -u frank` for bootloader errors (such as `BL: Likely wrong Firmware address`). See [Updating stock firmware](/core/firmware-updates/) to update underlying daemons and microcontroller firmware.
 
 See [sensor pipeline and calibration](/developers/sensor-pipeline/) for record types, source selection, and transport-specific limitations.
 
