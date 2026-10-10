@@ -58,7 +58,8 @@ Connect to your Pod over SSH as `root` (port 8822) and back up the current daemo
 ```bash
 ssh -p 8822 root@POD_IP "
   cp -a /opt/eight/bin/frankenfirmware /opt/eight/bin/frankenfirmware.bak && \
-  cp -a /opt/eight/lib/subsystem_updates /opt/eight/lib/subsystem_updates.bak
+  cp -a /opt/eight/lib/subsystem_updates /opt/eight/lib/subsystem_updates.bak && \
+  if [ -f /opt/eight/config/machine.json ]; then cp -a /opt/eight/config/machine.json /opt/eight/config/machine.json.bak; fi
 "
 ```
 
@@ -98,9 +99,33 @@ Locate the required universal artifacts:
 | `usr/bin/nats-server` & `usr/bin/nats`                     | Static ARM64 NATS server and management CLI           |
 | `etc/nats.conf` & `lib/systemd/system/nats-server.service` | NATS service configuration and systemd unit           |
 
-### Step 4: Install and start NATS JetStream
+### Step 4: Transfer artifacts to the Pod
 
-Transfer `libnats.so.3.11.0`, `nats-server`, `nats`, `nats.conf`, and `nats-server.service` to the Pod:
+From your computer within the `swu_extracted` directory, transfer the extracted binaries, libraries, firmware images, and service units to their target paths on the Pod over port 8822:
+
+```bash
+# Transfer the updated frankenfirmware daemon to staging in /tmp/
+scp -P 8822 opt/eight/bin/frankenfirmware root@POD_IP:/tmp/frankenfirmware
+
+# Transfer the microcontroller firmware images to subsystem updates
+scp -P 8822 opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin \
+  opt/eight/lib/subsystem_updates/firmware-frozen.bbin \
+  root@POD_IP:/opt/eight/lib/subsystem_updates/
+
+# Transfer the C NATS shared library to /usr/lib64/
+scp -P 8822 usr/lib64/libnats.so.3.11.0 root@POD_IP:/usr/lib64/
+
+# Transfer the NATS server and management CLI to /usr/bin/
+scp -P 8822 usr/bin/nats-server usr/bin/nats root@POD_IP:/usr/bin/
+
+# Transfer NATS configuration and systemd service unit
+scp -P 8822 etc/nats.conf root@POD_IP:/etc/nats.conf
+scp -P 8822 lib/systemd/system/nats-server.service root@POD_IP:/etc/systemd/system/nats-server.service
+```
+
+### Step 5: Install and start NATS JetStream
+
+On the Pod, configure the library loader, start the NATS service, and provision the `raw` JetStream stream:
 
 ```bash
 # Link the shared library and update loader cache
@@ -123,14 +148,21 @@ ssh -p 8822 root@POD_IP "
 "
 ```
 
-### Step 5: Configure UART mapping and stage cover firmware
+### Step 6: Configure UART mapping and stage cover firmware (Pod 3 Hub + Pod 4 Cover)
 
-On the MediaTek Pumpkin MT8365 Pod 3 board, verify the hardware serial port routing in `/opt/eight/config/machine.json`:
+<Callout type="info">
+  **Hardware scope:** This step applies specifically when pairing a **Pod 3 Hub with a Pod 4 Cover**.
+
+If you are updating a Pod 3 Hub paired with its original Pod 3 Cover (STM32F0/F1), do **not** overwrite `firmware-sensor.bbin` with the G0 binary or change `machine.json`—retain the stock port mapping and cover firmware so the original microcontroller can initialize normally.
+
+</Callout>
+
+When connecting a Pod 4 Cover to a Pod 3 MediaTek Pumpkin board, verify the hardware serial port routing in `/opt/eight/config/machine.json`:
 
 - `/dev/ttyS2` connects to the **Cover Sensor port** (`pn 20600`, Pod 4 cover).
 - `/dev/ttyS1` connects to the **Hub Thermal Controller** (`pn 20500`, water/TEC/pump controller).
 
-Write the configuration and stage the cover firmware so uninitialized bootloaders load the STM32G0 image:
+Write the configuration and stage `firmware-sensor-g0.bbin` into the fallback locations so that uninitialized or blank cover bootloaders boot the STM32G0 image:
 
 ```bash
 ssh -p 8822 root@POD_IP "
@@ -143,13 +175,13 @@ ssh -p 8822 root@POD_IP "
 }
 EOF
 
-  # Copy the G0 firmware into the fallback locations
+  # Copy the G0 firmware into the fallback locations for the Pod 4 cover
   cp /opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin /opt/eight/lib/subsystem_updates/firmware-sensor-legacy.bbin && \
   cp /opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin /opt/eight/lib/subsystem_updates/firmware-sensor.bbin
 "
 ```
 
-### Step 6: Deploy updated `frankenfirmware`
+### Step 7: Deploy updated `frankenfirmware`
 
 Stop the background service, place the new binary, and restart:
 
@@ -169,7 +201,7 @@ frozen.cpp: handleCommand|[frozen] -> FW: Firmware initialized v1.5.156
 Sensor.cpp: handleCommand|[sensor] -> FW: Firmware initialized v5.5.9
 ```
 
-### Step 7: Restart sleepypod biometrics services
+### Step 8: Restart sleepypod biometrics services
 
 Once the microcontrollers boot their new application firmwares, restart the sleepypod processing stack to connect to NATS:
 
