@@ -4,6 +4,7 @@ export default {
   'root-access': 'Open the Pod and get root',
   installation: 'Install and update',
   'migrating-from-free-sleep': 'Migrating from free-sleep',
+  'firmware-updates': 'Update stock firmware',
   '-- use': { type: 'separator', title: 'Use the app' },
   navigation: 'Find your way around',
   temperature: 'Temp',

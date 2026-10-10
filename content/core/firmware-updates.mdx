@@ -1,0 +1,264 @@
+---
+title: 'Updating stock firmware'
+description: 'Update legacy Eight Sleep firmware daemons and cover microcontrollers to support modern covers, NATS JetStream telemetry, and cross-generation hardware.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Updating stock firmware and subsystems
+
+sleepypod runs as userspace software on top of the Pod's underlying embedded Linux operating system. The sleepypod biometrics pipeline communicates with the bed via stock background daemons (`frankenfirmware`) and onboard microcontroller firmware (`firmware-sensor` on the cover, and `firmware-frozen` in the hub).
+
+While sleepypod Core updates itself with `sp-update`, the underlying stock firmware daemons and microcontroller binaries are not updated by sleepypod. Usually you do not need to touch stock firmware. However, there are scenarios where updating the stock subsystems is necessary.
+
+## When an update is needed
+
+- **Cross-generation hardware pairings:** For example, pairing a Pod 3 Hub with a Pod 4 Cover. Stock Pod 3 firmware only supports older STM32F0/F1 cover microcontrollers (`0x08005000` flash base). The Pod 4 cover uses an STM32G0 microcontroller with bootloader `v2.0.3.0` (`0x08008000` flash base). Older firmware repeatedly sends a jump command to the wrong address, putting the cover into an infinite reboot loop (`BL: Likely wrong Firmware address 8005000`).
+- **Missing NATS JetStream telemetry:** Older hub firmware streams sensor data exclusively through legacy `.RAW` files on disk. Modern Eight Sleep firmware publishes real-time CBOR frames directly to a local `nats-server` JetStream message bus (`raw.sens.*` and `raw.frz.*`), providing 500 Hz dual-channel piezo audio, 2 Hz capacitive presence grids, and bed surface temperatures.
+- **Hub thermal controller features:** Updating `firmware-frozen.bbin` to version `v1.5.156` adds `raw.frz.health` and `raw.frz.therm` telemetry for pump flow rates, fan RPMs, and TEC thermal power.
+
+<Callout type="warning">
+  **Never flash a full `.swu` image to a Pod 3 hub.**
+
+Official `.swu` firmware packages distributed by Eight Sleep contain complete root filesystem archives built for the **NXP i.MX 8M Mini** platform (`imx8mm-var-dart-eight`). The Pod 3 Hub runs on a **MediaTek MT8365** SoC. Flashing the entire `.swu` file directly with `swupdate` or writing it to the eMMC will corrupt the kernel, device tree, and drivers, permanently bricking the board.
+
+However, the userspace ARM64 binaries (`frankenfirmware`, `libnats`, `nats-server`) and the STM32 `.bbin` microcontroller firmware images inside the archive are universal across Pod 3, Pod 4, and Pod 5 hardware.
+
+</Callout>
+
+---
+
+## Option 1: Factory reset and official OTA (safest)
+
+If you are using matching hardware (such as a Pod 3 Hub with a Pod 3 Cover, or a Pod 4 Hub with a Pod 4 Cover) and want the safest path to the latest vendor firmware, use the official factory reset procedure.
+
+1. **Perform a hardware factory reset:**
+   Hold down the reset button or follow the [hardware reset instructions](https://github.com/throwaway31265/free-sleep/blob/main/INSTALLATION.md). The hub boots from its factory backup partition and resets network settings.
+2. **Pair with the official Eight Sleep app:**
+   Temporarily pair the Pod to the official mobile app over Wi-Fi. Allow the hub to connect to Eight Sleep's servers and download official over-the-air (OTA) updates. Wait until all firmware and subsystem updates finish applying.
+3. **Re-gain root access and reinstall sleepypod:**
+   Once the official firmware is up to date, re-open the root shell using the hardware serial procedure described in [Open your Pod and get root](/core/root-access/), then install sleepypod following [Install and update Core](/core/installation/).
+
+<Callout type="info">
+  **Limitation:** Official OTA will not resolve cross-generation hardware pairings (for example,
+  official servers will not push STM32G0 Pod 4 cover firmware to a registered Pod 3 hub). For
+  mismatched hardware or offline setups, use Option 2 below.
+</Callout>
+
+---
+
+## Option 2: Manual subsystem update (surgical extraction)
+
+This method extracts universal 64-bit ARM binaries and STM32 microcontroller firmware from an official `.swu` release and stages them directly on your rooted Pod.
+
+### Step 1: Back up the existing pod state
+
+Connect to your Pod over SSH as `root` (port 8822) and back up the current daemon and firmware directory:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  cp -a /opt/eight/bin/frankenfirmware /opt/eight/bin/frankenfirmware.bak && \
+  cp -a /opt/eight/lib/subsystem_updates /opt/eight/lib/subsystem_updates.bak
+"
+```
+
+### Step 2: Acquire the update archive
+
+Firmware updates are distributed as `.swu` packages through Eight Sleep's update API (`update-api.8slp.net`).
+
+You can check the API directly using your device ID and current revision hash:
+
+```bash
+curl -is "https://update-api.8slp.net/v1/updates/pod3/1?deviceId=<id>&currentRev=<rev>"
+```
+
+- When an update is available, the API returns `HTTP/1.1 302 Found` with a signed AWS CloudFront/S3 download URL in the `Location:` header pointing to `https://fw.8slp.net/pod3-updates/pod3/releases/<hash>.swu`.
+- Alternatively, public releases are indexed on the [Wayback Machine](http://web.archive.org/web/*/fw.8slp.net/pod3-updates/pod3/releases/*). For example, `77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu` contains ARM64 daemons with NATS JetStream support, STM32G0 cover firmware (`v5.5.9`), and hub thermal firmware (`v1.5.156`).
+
+### Step 3: Extract universal artifacts on your computer
+
+Download the `.swu` file to your computer and extract the root filesystem archive:
+
+```bash
+mkdir -p swu_extracted && cd swu_extracted
+# The .swu file is a standard cpio archive
+cpio -idmv < ../77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu
+# Extract the rootfs tarball
+tar -xzf eightsleep-nxp-image-*.tar.gz
+```
+
+Locate the required universal artifacts:
+
+| Path in archive                                            | Artifact description                                  |
+| ---------------------------------------------------------- | ----------------------------------------------------- |
+| `opt/eight/bin/frankenfirmware`                            | ARM64 daemon with NATS JetStream and STM32G0 support  |
+| `opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin`  | STM32G0 Pod 4 cover firmware (`v5.5.9`, ~136 KB)      |
+| `opt/eight/lib/subsystem_updates/firmware-frozen.bbin`     | Hub thermal controller firmware (`v1.5.156`, ~120 KB) |
+| `usr/lib64/libnats.so.3.11.0`                              | C NATS shared library                                 |
+| `usr/bin/nats-server` & `usr/bin/nats`                     | Static ARM64 NATS server and management CLI           |
+| `etc/nats.conf` & `lib/systemd/system/nats-server.service` | NATS service configuration and systemd unit           |
+
+### Step 4: Install and start NATS JetStream
+
+Transfer `libnats.so.3.11.0`, `nats-server`, `nats`, `nats.conf`, and `nats-server.service` to the Pod:
+
+```bash
+# Link the shared library and update loader cache
+ssh -p 8822 root@POD_IP "
+  ln -sf /usr/lib64/libnats.so.3.11.0 /usr/lib64/libnats.so.3.11 && \
+  ldconfig
+"
+
+# Set permissions and start nats-server
+ssh -p 8822 root@POD_IP "
+  chmod +x /usr/bin/nats-server /usr/bin/nats && \
+  mkdir -p /persistent/jetstream && \
+  systemctl daemon-reload && \
+  systemctl enable --now nats-server.service
+"
+
+# Provision the 'raw' JetStream stream required by frankenfirmware
+ssh -p 8822 root@POD_IP "
+  nats stream add raw --subjects 'raw.>' --storage file --retention limits --max-age 24h --max-bytes 512MB --discard old --defaults
+"
+```
+
+### Step 5: Configure UART mapping and stage cover firmware
+
+On the MediaTek Pumpkin MT8365 Pod 3 board, verify the hardware serial port routing in `/opt/eight/config/machine.json`:
+
+- `/dev/ttyS2` connects to the **Cover Sensor port** (`pn 20600`, Pod 4 cover).
+- `/dev/ttyS1` connects to the **Hub Thermal Controller** (`pn 20500`, water/TEC/pump controller).
+
+Write the configuration and stage the cover firmware so uninitialized bootloaders load the STM32G0 image:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  cat > /opt/eight/config/machine.json << 'EOF'
+{
+    \"F04\": {
+        \"sensorPort\": \"/dev/ttyS2\",
+        \"frozenPort\": \"/dev/ttyS1\"
+    }
+}
+EOF
+
+  # Copy the G0 firmware into the fallback locations
+  cp /opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin /opt/eight/lib/subsystem_updates/firmware-sensor-legacy.bbin && \
+  cp /opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin /opt/eight/lib/subsystem_updates/firmware-sensor.bbin
+"
+```
+
+### Step 6: Deploy updated `frankenfirmware`
+
+Stop the background service, place the new binary, and restart:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  systemctl stop frank.service && \
+  cp /tmp/frankenfirmware /opt/eight/bin/frankenfirmware && \
+  chmod +x /opt/eight/bin/frankenfirmware && \
+  systemctl start frank.service
+"
+```
+
+Monitor the firmware log with `journalctl -u frank -f`. You should see `frank` recognize the bootloader, stage the firmware, and jump to the application:
+
+```text
+frozen.cpp: handleCommand|[frozen] -> FW: Firmware initialized v1.5.156
+Sensor.cpp: handleCommand|[sensor] -> FW: Firmware initialized v5.5.9
+```
+
+### Step 7: Restart sleepypod biometrics services
+
+Once the microcontrollers boot their new application firmwares, restart the sleepypod processing stack to connect to NATS:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  systemctl restart \
+    sleepypod-piezo-processor.service \
+    sleepypod-sleep-detector.service \
+    sleepypod-environment-monitor.service \
+    sleepypod-cover-buttons.service \
+    sleepypod-calibrator.service \
+    sleepypod.service
+"
+```
+
+---
+
+## Verification
+
+Check the system status on the Pod:
+
+```bash
+sp-status
+```
+
+Confirm that the sensor pipeline reports `NATS JetStream`:
+
+```text
+sensor/cover: Pod 4 (I05)
+pipeline:     NATS JetStream
+nats-server:  active (port 4222 open)
+jetstream:    /persistent/jetstream present
+raw stream:   present (subject raw.>)
+```
+
+Inspect active message rates with the NATS CLI:
+
+```bash
+nats stream subjects raw
+```
+
+You should see active traffic across subjects:
+
+- `raw.sens.piezo`: dual-channel 500 Hz piezo audio (~27+ msg/s)
+- `raw.sens.capsense`: 2 Hz capacitive presence grid
+- `raw.sens.bedtemp`: multi-point bed surface temperatures
+- `raw.frz.temp` & `raw.frz.water`: hub cooling loop and reservoir status
+
+Finally, check `/persistent/sleepypod-data/biometrics.db` to confirm that `cap_sense_frames` and `bed_temp` rows are incrementing in real time.
+
+---
+
+## Optional: Synchronizing the backup partition (Slot B)
+
+<Callout type="error">
+  **Advanced and high risk.**
+
+The Pod uses an A/B dual-boot partition layout (`/dev/mmcblk0p5` for Slot A, `/dev/mmcblk0p7` for Slot B).
+
+**Leaving Slot B untouched is recommended.** If Slot B retains its original factory installation, a hardware factory reset will safely boot into a pristine stock environment. If you overwrite Slot B, factory reset will boot into this modified environment instead.
+
+Only synchronize Slot B if you are completely confident in your installation and want to prevent a lockout or firmware mismatch if the hardware ever fails over to Slot B.
+
+</Callout>
+
+If you choose to synchronize Slot B:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  mkdir -p /mnt/slot_b && mount -o rw /dev/mmcblk0p7 /mnt/slot_b
+
+  # Preserve root SSH key access on Slot B
+  cp -a /etc/ssh/authorized_keys /mnt/slot_b/etc/ssh/authorized_keys
+  mkdir -p /mnt/slot_b/home/root/.ssh
+  cp -a /etc/ssh/authorized_keys /mnt/slot_b/home/root/.ssh/authorized_keys
+  chmod 700 /mnt/slot_b/home/root/.ssh && chmod 600 /mnt/slot_b/home/root/.ssh/authorized_keys
+  sed -i 's/^PermitRootLogin no/PermitRootLogin prohibit-password/' /mnt/slot_b/etc/ssh/sshd_config
+
+  # Sync updated binaries, configurations, and NATS service
+  cp -a /opt/eight/bin/frankenfirmware /mnt/slot_b/opt/eight/bin/frankenfirmware
+  cp -a /opt/eight/lib/subsystem_updates/* /mnt/slot_b/opt/eight/lib/subsystem_updates/
+  cp -a /opt/eight/config/machine.json /mnt/slot_b/opt/eight/config/machine.json
+  cp -a /usr/lib64/libnats.so* /mnt/slot_b/usr/lib64/
+  cp -a /usr/bin/nats* /mnt/slot_b/usr/bin/
+  cp -a /etc/nats.conf /mnt/slot_b/etc/nats.conf
+  cp -a /etc/systemd/system/nats-server.service /mnt/slot_b/etc/systemd/system/nats-server.service
+  ln -sf /etc/systemd/system/nats-server.service /mnt/slot_b/etc/systemd/system/multi-user.target.wants/nats-server.service
+
+  # Flush changes and unmount
+  sync && umount /mnt/slot_b
+"
+```
