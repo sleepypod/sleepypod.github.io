@@ -776,6 +776,75 @@
       "bytes": 277849,
       "width": 1920,
       "height": 1080
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+      "source": "/en/sleep?view=biometrics",
+      "output": "core-vitals-preview.mp4",
+      "method": "scripts/capture-development.mjs + scripts/promote-development.mjs; unmodified loopback production demo, synthetic data, API/external requests blocked",
+      "sha256": "6f6cb9e6e84c19f045d8f0919d398c2946938c1cb4a8d809487997830a9f8ce6",
+      "bytes": 391634,
+      "width": 1440,
+      "height": 1000,
+      "duration": 9.96
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+      "source": "/en/sleep?view=biometrics",
+      "output": "core-vitals-preview.png",
+      "method": "scripts/capture-development.mjs + scripts/promote-development.mjs; unmodified loopback production demo, synthetic data, API/external requests blocked",
+      "sha256": "a2e7dcb06420fc1076e28334141ca151ba58a5c366b2a4e630b827da5a2d5054",
+      "bytes": 178778,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+      "source": "/en/settings?section=biometric-calibration",
+      "output": "core-calibration-preview.mp4",
+      "method": "scripts/capture-development.mjs + scripts/promote-development.mjs; unmodified loopback production demo, synthetic data, API/external requests blocked",
+      "sha256": "3bf4ed4d692b714cd5482e328dc1b916cff82a2dca1a8a3f12c9ec5d92bc7ad9",
+      "bytes": 650720,
+      "width": 1440,
+      "height": 1000,
+      "duration": 18.12
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+      "source": "/en/settings?section=biometric-calibration",
+      "output": "core-calibration-preview.png",
+      "method": "scripts/capture-development.mjs + scripts/promote-development.mjs; unmodified loopback production demo, synthetic data, API/external requests blocked",
+      "sha256": "2b5ad02d14952ea298d9991b709f7c806cde500a80f95f9b80c6c8a7d7c20cd4",
+      "bytes": 126781,
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "ce1d455cb69b00413f8d84630052c1878d9a5f5b",
+      "source": "Marketing/AppStore/output/iphone-6.9/clip-sleep-watch.mp4",
+      "output": "ios-watch-preview.mp4",
+      "method": "scripts/capture-ios-watch.py; upstream XCUITest tour on dedicated iPhone 17 Pro Max iOS 26.2 simulator, demo backend, Health sync disabled; original raw screenshot and encoded clip",
+      "sha256": "402c50847fd46e8d2596ab8da09b84171a808af7c82b20ec39e2e4d00cb0f13c",
+      "bytes": 1255936,
+      "width": 886,
+      "height": 1920,
+      "duration": 19.433333
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "ce1d455cb69b00413f8d84630052c1878d9a5f5b",
+      "source": "Marketing/AppStore/raw/iphone-6.9/dark/07-apple-watch.png",
+      "output": "ios-watch-preview.png",
+      "method": "scripts/capture-ios-watch.py; upstream XCUITest tour on dedicated iPhone 17 Pro Max iOS 26.2 simulator, demo backend, Health sync disabled; original raw screenshot and encoded clip",
+      "sha256": "bba58073c87c1966e7bac39e29f4965b153541132f0f51188a13268df96f7305",
+      "bytes": 366350,
+      "width": 1320,
+      "height": 2868
     }
   ]
 }

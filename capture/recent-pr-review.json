@@ -1,0 +1,89 @@
+{
+  "reviewedAt": "2026-10-14",
+  "scope": "Documentation and demonstration coverage of recent product PRs against product main; site PR review and merge. This is not a full audit or approval of product code.",
+  "baselines": {
+    "core": {
+      "main": "9bbc7232924fd2b18c7176c259556151aecc6412",
+      "development": "f905a776a8eca61cf0e855726b06e7774f241c52",
+      "promotionPR": 820
+    },
+    "ios": {
+      "main": "bb81c0aa08f71843283559c4cd45a723b26bb31b",
+      "development": "ce1d455cb69b00413f8d84630052c1878d9a5f5b"
+    }
+  },
+  "coverage": [
+    {
+      "repository": "sleepypod/core",
+      "prs": [802, 803, 814, 821, 826],
+      "topic": "Watch reference data and vitals exploration",
+      "guide": "/core/development-preview/",
+      "media": ["core-vitals-preview.mp4"],
+      "status": "development preview; upload dialog demonstrated without uploading Health data"
+    },
+    {
+      "repository": "sleepypod/core",
+      "prs": [815, 816, 817, 822, 823, 828, 829, 830, 831],
+      "topic": "Stage rules, biometric profiles, references, replay and activation",
+      "guide": "/core/development-preview/",
+      "media": ["core-calibration-preview.mp4"],
+      "status": "development preview; synthetic reference import and candidate save demonstrated; no claim of live adoption or validated accuracy"
+    },
+    {
+      "repository": "sleepypod/core",
+      "prs": [825, 827, 832],
+      "topic": "MCP sleep curves, saved templates and notes",
+      "guide": "/core/development-preview/",
+      "media": [],
+      "status": "development preview; existing schedule video retained at its own revision"
+    },
+    {
+      "repository": "sleepypod/core",
+      "prs": [804, 805, 806, 807, 808, 813],
+      "topic": "Sleep detection fixes, away controls and side tabs",
+      "guide": "/core/development-preview/",
+      "media": [],
+      "status": "development preview; existing Stage video retains its own revision"
+    },
+    {
+      "repository": "sleepypod/core",
+      "prs": [833, 834],
+      "topic": "HTTP and sensor WebSocket Host/Origin allowlist",
+      "guide": "/core/development-preview/",
+      "media": [],
+      "status": "development preview; pinned deployment reference; no visual workflow required"
+    },
+    {
+      "repository": "sleepypod/core",
+      "prs": [811, 812, 818, 819],
+      "topic": "Build and dependency maintenance",
+      "guide": null,
+      "media": [],
+      "status": "no new user workflow; current development demo production build verified"
+    },
+    {
+      "repository": "sleepypod/ios",
+      "prs": [58, 59, 60, 61, 62],
+      "topic": "Health resync/rebuild and Watch comparison",
+      "guide": "/ios/using-the-app/",
+      "media": ["ios-watch-preview.mp4"],
+      "status": "development preview; real simulator demo; no Health writes"
+    },
+    {
+      "repository": "sleepypod/sleepypod.github.io",
+      "prs": [39],
+      "topic": "Firmware recovery claims and modified Slot B stop condition",
+      "guide": "/core/firmware-updates/",
+      "media": [],
+      "status": "corrected and merged at 945ff5dc6c2f2b6632249efa56fdd7a37eb73664; no new UI to record"
+    }
+  ],
+  "notReleased": [
+    {
+      "repository": "sleepypod/core",
+      "prs": [809, 810],
+      "reason": "Open feature/fix branches outside the reviewed dev and main snapshots; not presented as released behavior."
+    }
+  ],
+  "preservedMedia": "Existing screenshots and clips retain their original pinned revisions; newly generated media are additive."
+}

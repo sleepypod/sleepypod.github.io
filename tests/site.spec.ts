@@ -81,6 +81,8 @@ test('videos decode and play to the end', async ({ page }) => {
     '/core/tour/',
     '/core/temperature/',
     '/core/base/',
+    '/core/development-preview/',
+    '/ios/using-the-app/',
   ]) {
     await page.goto(route)
     for (const video of await page.locator('video').all()) {

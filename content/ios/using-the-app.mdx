@@ -65,3 +65,31 @@ The iOS development build identified as 1.1.1 adds the following controls. The s
 - **After schedule ends:** when the connected backend supports it, the schedule editor offers **Turn off** or **Maintain final temperature**. Maintaining keeps the final target until a manual change, schedule, or automation takes over; auto-off limits still apply. Device settings can set the default for new curves without changing existing schedules.
 
 **Source reference for these additions:** [iOS development revision 8139bda](https://github.com/sleepypod/ios/tree/8139bda) · [Thermal bed](https://github.com/sleepypod/ios/blob/8139bda/Sleepypod/Views/Sensor/ThermalBedView.swift) · [Piezo sweep](https://github.com/sleepypod/ios/blob/8139bda/Sleepypod/Views/Sensor/PiezoSweep.swift) · [Schedule end action](https://github.com/sleepypod/ios/blob/8139bda/Sleepypod/Views/Schedule/ScheduleScreen.swift)
+
+## Development preview: Health rebuild and Watch charts
+
+These additions are pinned to iOS development revision `ce1d455`, compared with `main` at `bb81c0a` on October 14, 2026. They are not yet on `main`; availability depends on your installed build. The screenshots earlier on this page show an older revision.
+
+### Sync or rebuild Apple Health
+
+**Settings → Apple Health → Sync last 7 nights now** retries recent nights for this iPhone’s selected side. The sync uses full nights and rewrites a night when its analysis changes, including changed stage rules. Check the side and any reported failures in the sync status.
+
+**Rebuild last 90 nights** is a broader action. After confirmation, it rewrites the last 90 nights from the Pod using the current analysis, then deletes other data that sleepypod previously wrote to Health, including older nights. Apple Watch and other apps’ data are not touched. Keep the app open until it finishes. If rewriting fails, cleanup of older data is skipped; fix the reported error and retry. Demo mode never writes to Health.
+
+### Read the Watch comparison
+
+From a night in Sleep, open **Compare with Apple Watch**. The newer comparison adds heart-rate, HRV, and breathing charts you can touch to read at a specific time, a stage overlay showing disagreement, and a table of minutes classified as each pair of stages. HRV values can represent different metrics between the Pod and Watch; differences alone do not establish which device is more accurate.
+
+The Watch’s night no longer has to fit entirely inside the bed’s recorded window. The app selects the Watch session with the largest overlap; if none overlaps, it can select the nearest session within 12 hours. Check both time spans before interpreting the comparison. Stage agreement uses the overlapping classified epochs, and heart-rate pairing requires readings close in time. Missing Watch data remains missing rather than counting as agreement.
+
+<Demo
+  src="/media/ios-watch-preview.mp4"
+  poster="/media/ios-watch-preview.png"
+  title="Compare a night with Apple Watch"
+>
+  Simulator demo with synthetic readings and Health sync disabled. Open Compare with Apple Watch
+  from Sleep, inspect the stage overlay and minutes-by-stage table, scroll through the heart-rate
+  and HRV charts, then return to Sleep. Silent video; no real Health data is shown.
+</Demo>
+
+**Pinned source references:** [Health sync and rebuild](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Services/HealthSyncService.swift) · [Health settings and confirmation](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Views/Settings/HealthAccessView.swift) · [Watch matching and scoring](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Services/WatchComparison.swift) · [Comparison charts](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Views/Data/WatchComparisonView.swift)

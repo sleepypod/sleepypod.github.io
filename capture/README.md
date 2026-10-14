@@ -112,3 +112,49 @@ recordings as evidence of physical-hardware validation.
 The older `core-capture.json`, `core-controls.json`, and `core-workflows.json` describe their historical v3.0 capture run. For an output recaptured by `interfaces.json`, the current `manifest.json` entry is authoritative.
 
 To redo only the movies after a reviewed still capture at the same source revision, set `CAPTURE_MODE=video` on the capture command.
+
+## October 14 development preview
+
+`capture/development.json` records the unreleased Core and iOS source revisions
+and capture methods. The site labels these features as development previews.
+
+For Core, use an isolated checkout at
+`f905a776a8eca61cf0e855726b06e7774f241c52`. Install locked dependencies with scripts
+disabled, then run `pnpm rebuild better-sqlite3`. Build with
+`CI=1 NEXT_PUBLIC_DEMO=1 DATABASE_URL=:memory: BIOMETRICS_DATABASE_URL=:memory: pnpm build`.
+Start the standalone server with `CI=1 HOSTNAME=127.0.0.1 PORT=3214`, both database
+URLs set to `:memory:`, and a nonexistent `DAC_SOCK_PATH`. Run
+`node scripts/capture-development.mjs` from this site worktree. API and external
+network requests are blocked; the built-in demo handles queries and mutations.
+The Watch dialog clip stops before uploading; the calibration clip imports only
+the synthetic records embedded in the script and saves a candidate without
+applying it. No product UI is modified.
+
+For iOS, use a clean checkout at `ce1d455cb69b00413f8d84630052c1878d9a5f5b` and
+build the upstream `Marketing/AppStore/capture.py` app/test target. Create a
+**sleepypod Docs Watch** iPhone 17 Pro Max simulator on iOS 26.2, then run:
+
+```sh
+IOS_SOURCE_ROOT=/path/to/pinned/ios IOS_CAPTURE_UDID=<dedicated-simulator-udid> \
+  python3 scripts/capture-ios-watch.py
+```
+
+The wrapper runs the upstream Watch screenshot and `testClipSleepAndWatch` tour,
+using its demo launch arguments and disabling Apple Health sync. It resets only
+the named disposable simulator's app data. The upstream runtime auto-selection
+failed to create an iPhone 17 Pro Max on this machine's iOS 27.1 runtime, so the
+wrapper selects the explicitly supplied compatible simulator. Screenshots are
+copied from `raw/`, with no marketing frame baked into their pixels.
+
+After reviewing raw captures, run:
+
+```sh
+IOS_SOURCE_ROOT=/path/to/pinned/ios node scripts/promote-development.mjs
+pnpm check
+```
+
+Promotion trims Core recording startup, encodes silent H.264, and copies the
+upstream iOS clip and untouched screenshot. It records dimensions, durations,
+byte sizes, and SHA-256 hashes. Captions provide the action transcript and
+identify synthetic data. These demonstrations do not validate biometric accuracy,
+live processor adoption, or Apple Health writes.

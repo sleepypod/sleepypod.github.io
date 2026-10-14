@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+  "method": "Unmodified Core production demo; local in-browser simulation; API and external network requests blocked",
+  "records": [
+    {
+      "name": "core-vitals-preview",
+      "route": "/en/sleep?view=biometrics",
+      "raw": ".capture/development/page@f6ddb3b6f5f8dfab4020fafe5fa43c71.webm",
+      "start": 3.626,
+      "duration": 10.088000000000001
+    },
+    {
+      "name": "core-calibration-preview",
+      "route": "/en/settings?section=biometric-calibration",
+      "raw": ".capture/development/page@96b4e670c820c4c5418fccc1679af0e6.webm",
+      "start": 3.653,
+      "duration": 18.218
+    }
+  ],
+  "ios": {
+    "sourceCommit": "ce1d455cb69b00413f8d84630052c1878d9a5f5b",
+    "simulator": "iPhone 17 Pro Max / iOS 26.2",
+    "method": "scripts/capture-ios-watch.py; upstream testClipSleepAndWatch",
+    "data": "Built-in synthetic demo; Apple Health sync disabled"
+  }
+}
