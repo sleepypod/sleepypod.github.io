@@ -87,6 +87,7 @@ test('videos decode and play to the end', async ({ page }) => {
     '/ios/using-the-app/',
   ]) {
     await page.goto(route)
+    await expect(page.locator('video').first()).toBeAttached()
     for (const video of await page.locator('video').all()) {
       await video.scrollIntoViewIfNeeded()
       await video.evaluate(async (element: HTMLVideoElement) => {
