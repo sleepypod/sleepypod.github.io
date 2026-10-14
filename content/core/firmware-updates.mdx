@@ -34,28 +34,11 @@ The userspace ARM64 binaries (`frankenfirmware`, `libnats`, `nats-server`) run a
 
 ---
 
-## Option 1: Factory reset and official OTA (safest)
-
-If you are using matching hardware (such as a Pod 3 hub with a Pod 3 cover, or a Pod 4 hub with a Pod 4 cover) and want the safest path to the latest vendor firmware, use the official factory reset procedure.
-
-1. **Perform a hardware factory reset:**
-   Follow the firmware reset photos for your model in [free-sleep's installation guide](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md). The hub boots from its factory backup partition and resets network settings.
-2. **Pair with the official Eight Sleep app:**
-   Temporarily pair the Pod to the official mobile app over Wi-Fi. Allow the hub to connect to Eight Sleep's servers and download official over-the-air (OTA) updates. Wait until all firmware and subsystem updates finish applying.
-3. **Re-gain root access and reinstall sleepypod:**
-   Once the official firmware is up to date, re-open the root shell using the hardware serial procedure described in [Open your Pod and get root](/core/root-access/), then install sleepypod following [Install and update Core](/core/installation/).
-
-<Callout type="info">
-  **Limitation:** Official OTA will not resolve cross-generation hardware pairings (for example,
-  official servers will not push STM32G0 Pod 4 cover firmware to a registered Pod 3 hub). For
-  mismatched hardware or offline setups, use Option 2 below.
-</Callout>
-
----
-
-## Option 2: Manual subsystem update (surgical extraction)
+## Method 1: Manual subsystem update
 
 This method extracts universal 64-bit ARM binaries and STM32 microcontroller firmware from an official `.swu` release and stages them directly on your rooted Pod.
+
+This procedure replaces selected subsystem files without installing a complete stock operating system. It does not intentionally change your SSH keys or masked update services. That narrower scope does not guarantee compatibility or recovery: use only the verified hardware combination and keep the backups below.
 
 ### Step 1: Back up the existing pod state
 
@@ -367,9 +350,12 @@ Finally, check `/persistent/sleepypod-data/biometrics.db` to confirm that `cap_s
 
 This procedure is strictly limited to boards running on the verified **Slot A** eMMC boot path (`/dev/mmcblk0p5`, `rootfs_a`) described in the [root access guide](/core/root-access/#6-boot-a-temporary-administrator-shell). Do not run this on SD-card installations (such as Pod 3 with an SD card), systems booted from Slot B, or unknown partition layouts.
 
-**Leaving Slot B untouched is recommended.** If Slot B retains its original factory installation, a hardware factory reset will safely boot into a pristine stock environment. If you overwrite Slot B, factory reset will boot into this modified environment instead.
+**Weighing Slot B synchronization:**
 
-Only synchronize Slot B if you are completely confident in your installation and want to prevent a lockout or firmware mismatch if the hardware ever fails over to Slot B.
+- **Leaving Slot B untouched:** If Slot B retains its original factory installation, a hardware factory reset boots that factory environment. If stock update services are active and the hub has internet access, it may then install newer firmware. The root-access procedure has not been verified against every resulting firmware version.
+- **Synchronizing Slot B:** Copying SSH keys, configurations, and subsystem binaries to Slot B is intended to preserve access and the verified subsystem combination after failover. It does not guarantee access: this script does not disable Slot B’s stock update services, and a later OTA may replace the copied files. Synchronizing Slot B also modifies the factory backup.
+
+Only synchronize Slot B if you are completely confident in your installation and want to prevent a firmware mismatch or loss of SSH access if the hardware ever fails over to Slot B.
 
 </Callout>
 
@@ -499,6 +485,34 @@ ssh -p 8822 root@POD_IP "
   umount /mnt/slot_b
 "
 ```
+
+---
+
+## Alternative: Official OTA via factory reset
+
+<Callout type="error">
+  **Root access after OTA is not guaranteed.**
+
+Factory reset and pairing with the official app can install newer vendor firmware. The pinned root-access instructions describe particular hardware and firmware; they do not establish that the same serial/UART procedure works after every future update.
+
+Do not assume that you can regain root access or reinstall sleepypod afterward. This guide has no verified firmware-version evidence establishing a permanent UART lockout, so it does not claim that a particular update patches that method.
+
+**Do not use this method if you plan to keep root access or run sleepypod.** Only follow these steps if you are returning the device permanently to stock operation and will only use the official Eight Sleep service.
+
+</Callout>
+
+For matched hardware returning to stock, first confirm that Slot B is untouched. **If Slot B was synchronized or its state is unknown, stop: do not continue to app pairing under this procedure.** A reset into modified Slot B is not a verified stock-restoration method. If you need to keep root access, use Method 1 only for a supported subsystem update.
+
+1. **Perform a hardware factory reset:**
+   Follow the firmware reset photos for your model in [free-sleep's installation guide](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md). If Slot B remains untouched, the hub boots from its factory backup partition and resets network settings. If you previously synchronized Slot B, a factory reset boots that modified environment instead of pristine factory stock.
+2. **Pair with the official Eight Sleep app:**
+   Pair the Pod to the official mobile app over Wi-Fi. Allow the hub to connect to Eight Sleep's servers and download official over-the-air (OTA) updates until all firmware and subsystem updates finish applying.
+
+<Callout type="info">
+  **Hardware limitation:** Official OTA will not resolve cross-generation hardware pairings (for
+  example, official servers will not push STM32G0 Pod 4 cover firmware to a registered Pod 3 hub).
+  For cross-generation hardware, use Method 1 above.
+</Callout>
 
 ---
 
