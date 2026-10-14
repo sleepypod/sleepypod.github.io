@@ -1,0 +1,58 @@
+---
+title: 'Sleep stages'
+description: 'Inspect sleep-stage rules, preview changes against recent nights, and track saved changes.'
+---
+
+# Sleep stages
+
+Open **Settings → Sleep stages** and choose the sleeper using the section’s side tabs. This editor controls how Core classifies nights as Wake, Light, Deep, and REM. It is also available under **Settings → Biometric calibration → Profiles**.
+
+<BrowserFrame
+  src="/media/core-sleep-stage-rules.png"
+  alt="Sleep stages settings with Wake sensitivity and Deep sleep sliders, ordered rules, a saved-versus-draft preview, and a change log"
+  caption="Real Core demo with synthetic nights and Watch references. No live processor is connected."
+/>
+
+## Read the rules
+
+Each five-minute epoch takes the first matching rule, from top to bottom. Conditions use movement, heart-rate ratio, and HRV. Click a value to edit it; use the arrows to change rule order. **Otherwise** supplies the stage when no rule matches.
+
+**Load preset** offers Default, Movement only, and HRV first. Presets are starting points. **Quick adjust** changes matching values in the rules below: Wake sensitivity adjusts the movement threshold, and Deep sleep adjusts the heart-rate ratio threshold.
+
+Below the rules, **Signal** defines which readings are accepted. Low-quality calibration has a separate rule list. **Cleanup** smooths brief stage changes and controls disallowed transitions. Review these alongside the ordered rules when explaining an unexpected result.
+
+## Preview before saving
+
+1. Select the correct side and inspect the saved profile.
+2. Change a condition or load a preset. The draft stays local until you save.
+3. In **Preview**, choose **Last night** or **7 nights**. Compare **Saved** with **These rules**, changed epochs, Wake and Deep minutes, and Watch agreement where reference data overlaps.
+4. Choose **Save** to request the change, or **Discard** to return to the saved rules.
+
+<Demo
+  src="/media/core-sleep-stage-rules.mp4"
+  poster="/media/core-sleep-stage-rules.png"
+  title="Adjust a sleep-stage rule and compare recent nights"
+  wide
+>
+  Real Core demo: lower Wake sensitivity from 200 to 150, compare seven nights, then save and
+  inspect Changes. The values and results are synthetic examples, not recommended settings or
+  evidence of live processor adoption.
+</Demo>
+
+Watch agreement covers only overlapping reference data. No reference coverage means there is nothing to score. Consider Cohen’s kappa as well as percentage agreement: predicting the same stage everywhere can inflate raw accuracy. Pod and Watch HRV can use different definitions; check metric identity before comparing them. See [Watch imports](/core/biometrics/#explore-vitals-and-import-watch-data).
+
+## Saved versus applied
+
+A saved change can remain pending until the processor adopts it. Displayed nights keep using the acknowledged rules while delivery is pending. Applied changes also re-score past nights; they do not rewrite the original sensor observations.
+
+**Changes** records saved edits and their effects. Use **Revert** to restore a previous ruleset, or **Reset to default** to return to the default rules. Check processor acknowledgment after saving. If another save causes a conflict, reload the current rules before trying again.
+
+For broader signal-processing profiles, retained datasets, and replay evidence, see [Biometric calibration](/core/settings/biometric-calibration/).
+
+## Connected agents
+
+`get_sleep_stage_rules` inspects saved rules and reference coverage. `preview_sleep_stage_rules` compares a candidate without saving. To save exactly the previewed candidate, pass the returned `candidateRuleset` as `ruleset` to `set_sleep_stage_rules`; overrides are resolved again against the rules saved at save time. See [MCP for agents](/core/mcp/#sleep-stage-rules).
+
+## Source references
+
+[Sleep-stage editor](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/components/Settings/SleepStageRules.tsx) · [Preview](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/components/Settings/SleepStagePreview.tsx) · [MCP contracts](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/README.md#sleep-stage-tuning)

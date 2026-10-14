@@ -10,7 +10,7 @@ export default {
   temperature: 'Temp',
   base: 'Base (experimental)',
   tour: 'Video tour',
-  'development-preview': 'Development preview',
+  'development-preview': { title: 'Development preview', display: 'hidden' },
   autopilot: 'Autopilot',
   schedules: 'Schedule',
   biometrics: 'Sleep',

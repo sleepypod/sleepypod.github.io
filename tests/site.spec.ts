@@ -81,7 +81,9 @@ test('videos decode and play to the end', async ({ page }) => {
     '/core/tour/',
     '/core/temperature/',
     '/core/base/',
-    '/core/development-preview/',
+    '/core/biometrics/',
+    '/core/settings/biometric-calibration/',
+    '/core/settings/sleep-stages/',
     '/ios/using-the-app/',
   ]) {
     await page.goto(route)

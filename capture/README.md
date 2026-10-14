@@ -115,8 +115,9 @@ To redo only the movies after a reviewed still capture at the same source revisi
 
 ## October 14 development preview
 
-`capture/development.json` records the unreleased Core and iOS source revisions
-and capture methods. The site labels these features as development previews.
+`capture/development.json` records the Core and iOS source revisions and methods
+from the original preview capture. Core subsequently merged into `main` in PR #820;
+its media now appear in the permanent guides. Capture revisions remain unchanged.
 
 For Core, use an isolated checkout at
 `f905a776a8eca61cf0e855726b06e7774f241c52`. Install locked dependencies with scripts
@@ -158,3 +159,21 @@ upstream iOS clip and untouched screenshot. It records dimensions, durations,
 byte sizes, and SHA-256 hashes. Captions provide the action transcript and
 identify synthetic data. These demonstrations do not validate biometric accuracy,
 live processor adoption, or Apple Health writes.
+
+## Sleep-stage rules
+
+Use the same isolated Core demo build at `f905a776a8eca61cf0e855726b06e7774f241c52`
+and loopback server described above. The stage editor, preview, and settings section
+sources are unchanged in released Core `f8948b04586542fab1817aadc72b65a9c2988f8c`.
+
+Run `node scripts/capture-sleep-stages.mjs`, review the untouched PNG and raw
+recording under `.capture/sleep-stages/`, then run
+`node scripts/promote-sleep-stages.mjs`. The clip changes Wake sensitivity from
+200 to 150, previews seven nights, and saves into the in-browser simulation.
+API and external requests remain blocked. It demonstrates pending adoption without
+claiming live processor validation. The 1440×1000 screenshot is copied unchanged;
+the video is trimmed and encoded as silent H.264 at 25 fps.
+
+`capture/sleep-stages.json` records capture timing and source; `manifest.json`
+records dimensions, duration, bytes, and SHA-256 hashes. Run `pnpm check` before
+publishing.

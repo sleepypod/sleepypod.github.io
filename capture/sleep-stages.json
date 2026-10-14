@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+  "method": "Unmodified Core production demo; local in-browser simulation; API and external network requests blocked",
+  "records": [
+    {
+      "name": "core-sleep-stage-rules",
+      "route": "/en/settings?section=sleep-stages",
+      "raw": ".capture/sleep-stages/page@b6541bd79f9d96b81c61154476fc37b4.webm",
+      "start": 3.707,
+      "duration": 12.806999999999999
+    }
+  ]
+}

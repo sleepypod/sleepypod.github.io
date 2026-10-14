@@ -1,113 +1,38 @@
 ---
 title: 'Development preview'
-description: 'Try the upcoming Core biometrics, calibration, and saved-curve workflows with their release status made explicit.'
+description: 'Find the permanent guides for the Core features previously documented as a development preview.'
 ---
-
-import { Callout } from 'nextra/components'
 
 # Development preview
 
-<Callout type="info">
-  These features are on Core’s development branch at `f905a776`, reviewed against `main` at
-  `9bbc7232` on October 14, 2026. They are awaiting release in [Core PR
-  #820](https://github.com/sleepypod/core/pull/820). An installation from `main` may not have these
-  controls yet.
-</Callout>
+These Core features merged into `main` in [PR #820](https://github.com/sleepypod/core/pull/820). Their guides now live with the rest of the app documentation. This page preserves earlier links.
 
 ## Explore vitals and compare Watch data
 
-Open **Sleep → Biometrics**, select the sleeper, and choose **Night**, **Week**, or **Month**. Select a session to focus its full time span. The vitals explorer lets you inspect heart rate, HRV, and breathing; the **Raw log** keeps the per-minute readings separate from the chart.
-
-**Upload Apple Watch data** imports a Health export for the selected sleeper:
-
-1. In Apple Health on the iPhone, open your profile and choose **Export All Health Data**.
-2. Transfer the export to the device running the Core browser.
-3. Choose **Upload Apple Watch data**, verify the sleeper and side, and select `export.zip` or extracted `export.xml` (up to 512 MiB).
-4. Select the last 7, 30, or 90 days, then **Upload and sync**. Keep the window open while the Pod processes the file.
-5. Read the result: new samples, previously imported records, and any conflicting stage batches are reported separately.
-
-The full export is uploaded to your Pod. This workflow imports Watch heart rate and sleep stages, then removes the uploaded file. It preserves the Pod’s observations and skips duplicate imported records. Watch heart rate overlays the Pod’s heart rate; imported stages provide reference data. This is a one-time import, so upload a fresh export to add later nights.
-
-This Core import is separate from the iOS app’s Apple Health sync and its Watch comparison screen.
-
-<Demo
-  src="/media/core-vitals-preview.mp4"
-  poster="/media/core-vitals-preview.png"
-  title="Explore vitals and the Watch import controls"
-  wide
->
-  Real development UI with synthetic demo data. Switch from Week to Night, zoom the chart, reset the
-  zoom, then open the Watch import dialog and choose seven days. This clip does not upload a Health
-  export.
-</Demo>
+See [Sleep: vitals and Watch imports](/core/biometrics/#explore-vitals-and-import-watch-data).
 
 ## Biometric calibration
 
-Open **Settings → Biometric calibration** and select a side. This is personalization of biometric processing and stage analysis; it is distinct from calibrating the physical presence sensors on an empty bed.
-
-| View             | What to do                                                                                                                    |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Overview**     | Inspect the active profile, requested changes, and processor acknowledgment.                                                  |
-| **References**   | Preview and import reference records with a sleeper identifier, source, metric, and time span; inspect saved imports.         |
-| **Profiles**     | Review candidate parameter changes and save a revision without applying it. The sleep-stage rule editor also lives here.      |
-| **Backtests**    | Select sessions and references, freeze inputs into a dataset, configure an experiment, queue a replay, and review its report. |
-| **History**      | Inspect recorded profile changes and their outcomes.                                                                          |
-| **Observations** | Inspect prospective shadow runs and their comparisons. These do not replace the live profile.                                 |
-
-<Demo
-  src="/media/core-calibration-preview.mp4"
-  poster="/media/core-calibration-preview.png"
-  title="Preview references and save a candidate"
-  wide
->
-  Real development demo: open References, preview two synthetic records, save the import, then open
-  Profiles, change a candidate parameter, review and save it without applying. Return to Overview:
-  the saved profile is still System defaults. No live processor or hardware is involved.
-</Demo>
+See [Biometric calibration](/core/settings/biometric-calibration/).
 
 ### Review before applying
 
-Saving a candidate and running a backtest do not apply that candidate to the live processor. Compare the candidate and baseline on the same retained inputs. Check coverage, metric definitions, excluded data, and the report’s evidence status before interpreting an apparent improvement. Missing raw data can prevent waveform replay; synthetic demo results do not establish accuracy on a real sleeper.
-
-**Apply unvalidated revision** is explicitly a manual choice without validation evidence. It requires reviewing the exact revision and acknowledging that choice. Saving an activation requests a change; **Waiting for delivery** is not **Applied**. Overview reports processor adoption separately. A conflicting save requires reloading the current profile before trying again.
-
-The recovery controls distinguish restoring the previous profile from returning to defaults. Review the comparison and resulting acknowledgment in either case. Historical observations keep their provenance; a replay result is not a replacement measurement from the bed.
+See [Review before applying](/core/settings/biometric-calibration/#review-before-applying).
 
 ### Sleep-stage rules
 
-Under **Profiles**, the ordered rules read as sentences. Choose a preset or edit a condition, inspect the preview for recent nights, and compare the draft with the saved rules before saving. Quick adjustments, signal limits, transition cleanup, and the change log explain how the rules affect the classification.
-
-A saved rule change can remain pending until the processor adopts it. Displayed nights continue using the acknowledged rules while delivery is pending. Watch agreement only covers overlapping reference data; missing reference coverage is not perfect agreement. Pod HRV and Watch HRV can use different definitions, so check the metric identity before comparing values.
+See [Sleep stages](/core/settings/sleep-stages/) for the screenshot, video, rules, preview, and save workflow.
 
 ## Saved curves and notes
 
-Named saved curves are templates stored on the Pod. They are not assigned to a sleeper or day and do not run by themselves. Schedule shows them with **NO DAYS**. Choose **Use** on a saved curve to open it in the editor, choose the side and days, review the points and end action, then save the schedule.
-
-Deleting a saved template does not delete schedules already created from it. Curve **Notes** can record why you chose a curve or what you want to compare next; notes do not change temperature behavior.
-
-For connected agents, `get_saved_curves` lists templates and `manage_saved_curve` saves or deletes one. `apply_sleep_curve` supports a preview before applying a curve to selected days. Review the preview, including day conflicts and the final temperature action, before requesting application.
+See [Schedule: saved curves and notes](/core/schedules/#saved-curves-and-notes).
 
 ## Other changes in this preview
 
-- **Away mode:** Temperature’s side card and Stage panel expose the away toggle. Check the sleeper before changing it.
-- **Settings:** sections with per-side values have their own side tabs, replacing the previous global side switch.
-- **Sleep detection:** changes address quiet-sleeper re-entry, bed-empty transitions, pump-time movement scoring, and classification when calibration quality is unknown. These fixes do not promise accurate classification for every sleeper.
-- **Network access:** HTTP and sensor WebSocket requests are checked against the Host/Origin allowlist. A custom hostname or reverse proxy may need configuration; see the pinned deployment guide below.
-- **Agents:** `get_sleep_stage_rules`, `preview_sleep_stage_rules`, and `set_sleep_stage_rules` expose inspection, dry-run comparison, and a separate save operation. The calibration API also exposes versioned profiles, references, datasets, replay jobs, activation receipts, and rollback.
+See [Settings](/core/settings/) for side tabs, [Away mode](/core/settings/sides/#away-mode), and [MCP for agents](/core/mcp/). Network access is checked against the Host/Origin allowlist; custom hostnames and reverse proxies may need configuration in the deployment guide below.
+
+The release also improved quiet-sleeper re-entry, bed-empty transitions, pump-time movement scoring, and handling of unknown calibration quality. These changes do not promise accurate classification for every sleeper.
 
 ## Pinned implementation references
 
-All Core references below identify the reviewed development revision, not a released version.
-
-- [Vitals and Watch import UI](https://github.com/sleepypod/core/tree/f905a776a8eca61cf0e855726b06e7774f241c52/src/components/biometrics)
-- [Calibration UI](https://github.com/sleepypod/core/tree/f905a776a8eca61cf0e855726b06e7774f241c52/src/components/biometrics/Calibration)
-- [Sleep-stage editor](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/src/components/Settings/SleepStageRules.tsx)
-- [Schedule UI](https://github.com/sleepypod/core/tree/f905a776a8eca61cf0e855726b06e7774f241c52/src/components/Schedule)
-- [MCP tools](https://github.com/sleepypod/core/tree/f905a776a8eca61cf0e855726b06e7774f241c52/src/mcp/tools)
-- [Reference import contracts](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/docs/biometrics-reference-imports.md)
-- [Datasets and replay inputs](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/docs/biometrics-datasets.md)
-- [Backtest lifecycle and resource limits](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/docs/biometrics-backtest-jobs.md)
-- [Activation and processor acknowledgment](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/docs/biometrics-runtime-activation.md)
-- [Calibration API](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/docs/biometrics-calibration-api.md)
-- [Validation evidence and limitations](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/docs/biometrics-calibration-readiness.md)
-- [Network deployment configuration](https://github.com/sleepypod/core/blob/f905a776a8eca61cf0e855726b06e7774f241c52/docs/DEPLOYMENT.md)
+[Released Core source](https://github.com/sleepypod/core/tree/f8948b04586542fab1817aadc72b65a9c2988f8c) · [Network deployment guide](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/docs/DEPLOYMENT.md). Feature-specific references are pinned in each guide above.

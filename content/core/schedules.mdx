@@ -5,8 +5,6 @@ description: 'Build nightly temperature curves, set vibration alarms, and check 
 
 # Schedule
 
-Looking for newer development controls? See the [development preview](/core/development-preview/) for their status and workflows.
-
 **Schedule** holds your nightly temperature curves and vibration alarms. They run on the Pod, so closing the app does not stop them.
 
 <BrowserFrame
@@ -62,6 +60,14 @@ Set the default for new curves in **Settings → Device → Default after schedu
 
 Using a curve only fills in the editor. Nothing is saved until **Save curve**. The Pod does not contact any AI service itself.
 
+## Saved curves and notes
+
+Named saved curves are templates stored on the Pod. They are not assigned to a sleeper or day and do not run by themselves. Schedule shows them with **NO DAYS**. Choose **Use** on a saved curve to open it in the editor, choose the side and days, review the points and end action, then save the schedule.
+
+Deleting a saved template does not delete schedules already created from it. Curve **Notes** can record why you chose a curve or what you want to compare next; notes do not change temperature behavior.
+
+For connected agents, `get_saved_curves` lists templates and `manage_saved_curve` saves or deletes one. `apply_sleep_curve` supports a preview before applying a curve to selected days. Review the preview, including day conflicts and the final temperature action, before requesting application.
+
 ## Vibration alarms
 
 <BrowserFrame
@@ -100,3 +106,5 @@ The iOS app has its own curve editor with per-phase controls, day and side selec
 ---
 
 **Source reference:** [Schedule screen](https://github.com/sleepypod/core/tree/0c2344c3/src/components/Schedule) · [Curve editor](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Schedule/CurveEditor.tsx) · [Alarm editor](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Schedule/AlarmEditor.tsx) · [AI curve wizard](https://github.com/sleepypod/core/blob/0c2344c3/src/components/Schedule/AICurveWizard.tsx) · [Alarm hardware behavior](https://github.com/sleepypod/core/blob/0c2344c3/docs/hardware/alarms.md)
+
+**Saved curves reference:** [Schedule UI](https://github.com/sleepypod/core/tree/f8948b04586542fab1817aadc72b65a9c2988f8c/src/components/Schedule) · [MCP curve contracts](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/README.md#sleep-curves)

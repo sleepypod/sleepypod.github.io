@@ -845,6 +845,29 @@
       "bytes": 366350,
       "width": 1320,
       "height": 2868
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+      "source": "/en/settings?section=sleep-stages",
+      "output": "core-sleep-stage-rules.mp4",
+      "method": "scripts/capture-sleep-stages.mjs + scripts/promote-sleep-stages.mjs; unmodified loopback production demo, synthetic data, API/external requests blocked",
+      "sha256": "df129876423932c6159c48aa57bc0df8534dbcb819be022cde22962f24ee8e38",
+      "bytes": 395090,
+      "width": 1440,
+      "height": 1000,
+      "duration": 12.8
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "f905a776a8eca61cf0e855726b06e7774f241c52",
+      "source": "/en/settings?section=sleep-stages",
+      "output": "core-sleep-stage-rules.png",
+      "method": "scripts/capture-sleep-stages.mjs + scripts/promote-sleep-stages.mjs; unmodified loopback production demo, synthetic data, API/external requests blocked",
+      "sha256": "e6ffd521164d2c90e309ce0a615a1ea7263ac87272d65e48a2a957918fdf8572",
+      "bytes": 153926,
+      "width": 1440,
+      "height": 1000
     }
   ]
 }

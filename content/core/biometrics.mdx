@@ -5,8 +5,6 @@ description: 'Review nights, sleep stages, and vitals by night, week, or month, 
 
 # Sleep
 
-Looking for newer development controls? See the [development preview](/core/development-preview/) for their status and workflows.
-
 **Sleep** shows what the Pod measured while you slept. It has two views: **Nights** for sleep records and **Biometrics** for heart rate, HRV, and breathing. Everything is processed on the Pod; see [Follow your data](/core/data-flow/) for how.
 
 Choose whose data you see with **Left** / **Right** at the top. The switch is hidden while one side is in [Away mode](/core/settings/sides/#away-mode).
@@ -75,6 +73,33 @@ A calendar shaded by hours asleep (5 to 8 hours), the month's nights, average sl
 - **Sessions**: one row per night. Select one to zoom the chart to it.
 - **Raw log**: every per-minute reading in a searchable table. **Raw data** opens the export described above.
 
+### Explore vitals and import Watch data
+
+Open **Sleep → Biometrics**, select the sleeper, and choose **Night**, **Week**, or **Month**. Select a session to focus its full time span. The vitals explorer lets you inspect heart rate, HRV, and breathing; the **Raw log** keeps the per-minute readings separate from the chart.
+
+**Upload Apple Watch data** imports a Health export for the selected sleeper:
+
+1. In Apple Health on the iPhone, open your profile and choose **Export All Health Data**.
+2. Transfer the export to the device running the Core browser.
+3. Choose **Upload Apple Watch data**, verify the sleeper and side, and select `export.zip` or extracted `export.xml` (up to 512 MiB).
+4. Select the last 7, 30, or 90 days, then **Upload and sync**. Keep the window open while the Pod processes the file.
+5. Read the result: new samples, previously imported records, and any conflicting stage batches are reported separately.
+
+The full export is uploaded to your Pod. This workflow imports Watch heart rate and sleep stages, then removes the uploaded file. It preserves the Pod’s observations and skips duplicate imported records. Watch heart rate overlays the Pod’s heart rate; imported stages provide reference data. This is a one-time import, so upload a fresh export to add later nights.
+
+This Core import is separate from the iOS app’s Apple Health sync and its Watch comparison screen.
+
+<Demo
+  src="/media/core-vitals-preview.mp4"
+  poster="/media/core-vitals-preview.png"
+  title="Explore vitals and the Watch import controls"
+  wide
+>
+  Real Core UI with synthetic demo data. Switch from Week to Night, zoom the chart, reset the zoom,
+  then open the Watch import dialog and choose seven days. This clip does not upload a Health
+  export.
+</Demo>
+
 ### When readings are missing
 
 The page warns you when something looks wrong:
@@ -83,6 +108,8 @@ The page warns you when something looks wrong:
 - If someone is in bed but no vitals have arrived for 15 minutes, it suggests the processing may be stalled, with a **Health →** link to [System → Health](/core/system/health/).
 
 Missing readings are missing, not zero. Sensor availability depends on the Pod generation, firmware, and calibration; see [System → Calibration](/core/system/calibration/).
+
+For classifier changes, see [Sleep stages](/core/settings/sleep-stages/). For reference imports, profile candidates, and replay comparisons, see [Biometric calibration](/core/settings/biometric-calibration/).
 
 ## Understand the limits
 
@@ -95,3 +122,5 @@ Settings and state are in `sleepypod.db`. Sensor-derived measurements are in `bi
 ---
 
 **Source reference:** [Sleep screen](https://github.com/sleepypod/core/tree/4cc76838/src/components/Sleep) · [Biometrics page](https://github.com/sleepypod/core/blob/4cc76838/src/components/biometrics/BiometricsPage.tsx) · [Debugging runbook](https://github.com/sleepypod/core/blob/4cc76838/docs/DEBUGGING.md) · [On-device analysis](https://github.com/sleepypod/ios/blob/845b3de9d0fb3bc9c1a4815c14edde5648986995/README.md)
+
+**Vitals and Watch import reference:** [Core UI](https://github.com/sleepypod/core/tree/f8948b04586542fab1817aadc72b65a9c2988f8c/src/components/biometrics)

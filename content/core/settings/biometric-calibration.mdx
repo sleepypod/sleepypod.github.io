@@ -1,0 +1,54 @@
+---
+title: 'Biometric calibration'
+description: 'Import references, compare biometric profiles on retained inputs, and review processor adoption.'
+---
+
+# Biometric calibration
+
+Open **Settings → Biometric calibration** and select a side. This is personalization of biometric processing and stage analysis; it is distinct from calibrating the physical presence sensors on an empty bed.
+
+| View             | What to do                                                                                                                    |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Overview**     | Inspect the active profile, requested changes, and processor acknowledgment.                                                  |
+| **References**   | Preview and import reference records with a sleeper identifier, source, metric, and time span; inspect saved imports.         |
+| **Profiles**     | Review candidate parameter changes and save a revision without applying it. The sleep-stage rule editor also lives here.      |
+| **Backtests**    | Select sessions and references, freeze inputs into a dataset, configure an experiment, queue a replay, and review its report. |
+| **History**      | Inspect recorded profile changes and their outcomes.                                                                          |
+| **Observations** | Inspect prospective shadow runs and their comparisons. These do not replace the live profile.                                 |
+
+<Demo
+  src="/media/core-calibration-preview.mp4"
+  poster="/media/core-calibration-preview.png"
+  title="Preview references and save a candidate"
+  wide
+>
+  Real Core demo: open References, preview two synthetic records, save the import, then open
+  Profiles, change a candidate parameter, review and save it without applying. Return to Overview:
+  the saved profile is still System defaults. No live processor or hardware is involved.
+</Demo>
+
+## Review before applying
+
+Saving a candidate and running a backtest do not apply that candidate to the live processor. Compare the candidate and baseline on the same retained inputs. Check coverage, metric definitions, excluded data, and the report’s evidence status before interpreting an apparent improvement. Missing raw data can prevent waveform replay; synthetic demo results do not establish accuracy on a real sleeper.
+
+**Apply unvalidated revision** is explicitly a manual choice without validation evidence. It requires reviewing the exact revision and acknowledging that choice. Saving an activation requests a change; **Waiting for delivery** is not **Applied**. Overview reports processor adoption separately. A conflicting save requires reloading the current profile before trying again.
+
+The recovery controls distinguish restoring the previous profile from returning to defaults. Review the comparison and resulting acknowledgment in either case. Historical observations keep their provenance; a replay result is not a replacement measurement from the bed.
+
+## Sleep-stage rules
+
+For presets, ordered rules, recent-night previews, and the change log, use the [Sleep stages guide](/core/settings/sleep-stages/). The rule editor is also available under **Profiles**.
+
+## Connected agents
+
+The [MCP guide](/core/mcp/#biometric-calibration) covers reference imports, immutable candidate profiles, datasets, backtests, and explicit activation or rollback.
+
+## Source references
+
+- [Calibration UI](https://github.com/sleepypod/core/tree/f8948b04586542fab1817aadc72b65a9c2988f8c/src/components/biometrics/Calibration)
+- [Reference imports](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/docs/biometrics-reference-imports.md)
+- [Datasets and replay inputs](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/docs/biometrics-datasets.md)
+- [Backtest lifecycle](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/docs/biometrics-backtest-jobs.md)
+- [Processor acknowledgment](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/docs/biometrics-runtime-activation.md)
+- [Calibration API](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/docs/biometrics-calibration-api.md)
+- [Validation evidence and limitations](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/docs/biometrics-calibration-readiness.md)

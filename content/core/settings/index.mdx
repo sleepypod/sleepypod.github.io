@@ -9,19 +9,21 @@ Settings holds things you configure. To check how the Pod is doing, use [System]
 
 On a computer, the Settings sections are listed under **Settings** in the sidebar, and Appearance opens first. On a phone, Settings opens as a list. It starts with quick Appearance controls, then groups the sections under **POD**, **SYSTEM**, and **HELP**. Tap a row to open it.
 
-| Section                                  | What it controls                                           | Saved for                 |
-| ---------------------------------------- | ---------------------------------------------------------- | ------------------------- |
-| [Appearance](/core/settings/appearance/) | Temperature control style, number format, theme, and units | This browser (units: Pod) |
-| [Backup](/core/settings/backup/)         | Nightly archive copy to a computer you control             | Pod                       |
-| [Device](/core/settings/device/)         | Timezone, power cap, pump protection, maintenance, LED     | Pod                       |
-| [Gestures](/core/settings/gestures/)     | What double, triple, and quad taps on the cover do         | Each side                 |
-| [HomeKit](/core/settings/homekit/)       | The Apple Home bridge                                      | Pod                       |
-| [MQTT](/core/settings/mqtt/)             | The broker connection used by Home Assistant               | Pod                       |
-| [Network](/core/settings/network/)       | Whether the Pod can reach the internet                     | Pod                       |
-| [Sides](/core/settings/sides/)           | Names, Away mode, Auto-off, and Always on                  | Each side                 |
-| [Updates](/core/settings/updates/)       | Installed software, update channel, and disk use           | Pod                       |
+| Section                                                        | What it controls                                           | Saved for                 |
+| -------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------- |
+| [Appearance](/core/settings/appearance/)                       | Temperature control style, number format, theme, and units | This browser (units: Pod) |
+| [Backup](/core/settings/backup/)                               | Nightly archive copy to a computer you control             | Pod                       |
+| [Biometric calibration](/core/settings/biometric-calibration/) | References, candidate profiles, backtests, and adoption    | Each side                 |
+| [Sleep stages](/core/settings/sleep-stages/)                   | Classification rules, previews, and change history         | Each side                 |
+| [Device](/core/settings/device/)                               | Timezone, power cap, pump protection, maintenance, LED     | Pod                       |
+| [Gestures](/core/settings/gestures/)                           | What double, triple, and quad taps on the cover do         | Each side                 |
+| [HomeKit](/core/settings/homekit/)                             | The Apple Home bridge                                      | Pod                       |
+| [MQTT](/core/settings/mqtt/)                                   | The broker connection used by Home Assistant               | Pod                       |
+| [Network](/core/settings/network/)                             | Whether the Pod can reach the internet                     | Pod                       |
+| [Sides](/core/settings/sides/)                                 | Names, Away mode, Auto-off, and Always on                  | Each side                 |
+| [Updates](/core/settings/updates/)                             | Installed software, update channel, and disk use           | Pod                       |
 
-**Gestures** and **Sides** are per person. Choose **Left** or **Right** with the switch at the top before making changes. The switch shows each side's name once you set one.
+Sections with per-side values have their own side tabs. Choose the sleeper within the section before making changes. The tabs show each side’s configured name.
 
 ## Backups and maintenance
 
@@ -34,4 +36,4 @@ To free up disk space, use [System → Storage](/core/system/storage/). To updat
 
 ---
 
-**Source reference:** [Settings screen](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/SettingsScreen.tsx) · [Sections](https://github.com/sleepypod/core/blob/4cc76838/src/components/Settings/sections.ts)
+**Source reference:** [Settings screen](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/components/Settings/SettingsScreen.tsx) · [Sections](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/components/Settings/sections.ts)

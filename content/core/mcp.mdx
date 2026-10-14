@@ -6,8 +6,6 @@ import { Tabs } from 'nextra/components'
 
 # MCP for agents
 
-Looking for newer development controls? See the [development preview](/core/development-preview/) for their status and workflows.
-
 Core includes a [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server. Any MCP host, such as Claude Desktop, Claude Code, Codex, Cursor, or a Home Assistant agent, can connect to it and read or control the Pod in plain language. "How did I sleep?", "Set my side to 68 for an hour", and "Is everything OK?" each map to one tool call.
 
 ## Connect a host
@@ -71,7 +69,7 @@ http://POD_IP:3000/api/mcp
 
 ## What the assistant can do
 
-The server is intent-shaped, not endpoint-shaped. Twenty-two tools cover roughly 110 Core procedures; each tool is one thing a person would ask for. Every tool calls the same procedures the web app uses, so validation, side locks, the pump-stall guard, and live updates all apply.
+The server is intent-shaped, not endpoint-shaped. Each tool describes something a person would ask for, using the shared Core procedures. Every tool calls the same procedures the web app uses, so validation, side locks, the pump-stall guard, and live updates all apply.
 
 | You say                                                         | Tool                  |
 | --------------------------------------------------------------- | --------------------- |
@@ -100,7 +98,50 @@ The server is intent-shaped, not endpoint-shaped. Twenty-two tools cover roughly
 
 Temperatures accept your unit (`F` or `C`, defaulting to the device setting) and are converted to the 55–110°F hardware setpoint. Errors come back as readable text with the Core error code, so the assistant can explain "pump stall guard tripped" instead of retrying.
 
-Two resources, `sleepypod://status` and `sleepypod://settings`, give hosts a compact snapshot to attach as context. Two prompts are built in: **Morning report** summarizes last night for both sides and flags anything degraded, and **Set up tonight** turns a plain-language request for one side into the right tool calls.
+## Sleep-stage rules
+
+| Request                                                                | Tool                        |
+| ---------------------------------------------------------------------- | --------------------------- |
+| Inspect saved rules, recent changes, and Watch reference coverage      | `get_sleep_stage_rules`     |
+| Compare a preset or edited rules with recent nights without saving     | `preview_sleep_stage_rules` |
+| Save a reviewed candidate or reset to defaults                         | `set_sleep_stage_rules`     |
+| Import extracted Watch heart-rate samples or stage segments for a side | `import_apple_watch_data`   |
+
+Preview accepts a preset, a complete ruleset, or indexed condition overrides, for up to 14 nights. Compare reference coverage, stage minutes, Cohen’s kappa, and per-stage recall. Missing Watch overlap cannot establish agreement.
+
+To apply exactly what was previewed, pass the returned `candidateRuleset` as `ruleset` to the save tool. Overrides are resolved again against the saved rules at save time. On `CONFLICT`, inspect the current rules before retrying. Saving requests a change; processor adoption is a separate state. See [Sleep stages](/core/settings/sleep-stages/) for the UI and video.
+
+Watch import accepts up to 2,000 records per array, with Unix-second timestamps and an explicit side. Repeated records are skipped. Check `stageError` for partial success. For a full Health export, use [Upload Apple Watch data](/core/biometrics/#explore-vitals-and-import-watch-data) instead of putting the archive in model context.
+
+## Biometric calibration
+
+| Tool                            | Purpose                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `inspect_biometric_calibration` | Inspect metric definitions, profiles, runtime state, references, sessions, and replay admission. |
+| `import_biometric_reference`    | Preview normalized reference records, then commit with the exact preview hash.                   |
+| `propose_biometric_profile`     | Save an immutable candidate without activating it.                                               |
+| `manage_biometric_experiment`   | Freeze datasets, retain selected waveform sources, and manage experiments with pinned protocols. |
+| `backtest_biometrics`           | Queue, inspect, list, or cancel replay jobs; read reports and bounded trace pages.               |
+| `apply_biometric_profile`       | Request explicitly authorized validated or manual activation, reset, or rollback.                |
+| `release_biometric_artifacts`   | Delete references or release datasets and reports; report release requires its content hash.     |
+
+A candidate is not an active profile, and a replay is not proof of processor adoption. Validated activation pins the evaluation and report identity and requires matching qualification policies and evidence. Manual activation requires explicit acknowledgment that the revision is unvalidated. See [Biometric calibration](/core/settings/biometric-calibration/) for review and recovery.
+
+Reports return compact summaries with omitted-detail indicators and a local REST path. Trace requests use the exact report hash and return at most 500 original intervals per page. Report resources are available at `sleepypod://biometrics/reports/{id}`; discover IDs through the backtest list. Released reports remain unavailable.
+
+Processing stays on the Pod, but a connected MCP host may send returned data to its model provider. These tools do not authorize off-pod waveform transfer or executable algorithm installation.
+
+## Saved curves
+
+`get_saved_curves` lists templates. `manage_saved_curve` saves or deletes one; saving the same name replaces that template. Templates have no assigned side or days and do not run by themselves.
+
+`apply_sleep_curve` accepts points or a saved `curveName`, a side, and days. Start with `mode: "preview"` to inspect replaced rows, preserved alarms, warnings, and the final temperature action. `mode: "apply"` with the reviewed arguments writes the curve. Optional notes replace the selected days’ previous notes. See [Saved curves and notes](/core/schedules/#saved-curves-and-notes).
+
+## Resources and prompts
+
+`sleepypod://status` and `sleepypod://settings` provide compact device context. `sleepypod://biometrics/algorithms` describes metric definitions, while `sleepypod://biometrics/profiles/left` and `sleepypod://biometrics/profiles/right` report profile and runtime state.
+
+The built-in prompts are `morning_report`, `bedtime`, `design_sleep_curve`, `calibrate_biometrics`, `explain_biometric_difference`, and `develop_biometric_algorithm`. They guide host workflows; they do not bypass server validation or grant permission to apply changes. The algorithm-development prompt adds no execution or installation tool.
 
 ## Approvals and safety
 
@@ -112,8 +153,8 @@ Tool output is untrusted input for the model. Logs, sleep records, and settings 
 
 ## Deliberately not exposed
 
-Developer and installer surfaces stay REST-only: raw hardware opcodes, raw sensor files, database row browsing, calibration triggers, MQTT, HomeKit, and archive-push configuration, backtests, cap-zone replays, and vitals ingestion. They are either dangerous without context or useless to a sleeper. Use the [API reference](/developers/api/) for those.
+Developer and installer surfaces stay REST-only: raw hardware opcodes, raw sensor files, database row browsing, sensor calibration triggers, MQTT, HomeKit, and archive-push configuration, automation backtests, cap-zone replays, and canonical vitals ingestion. They are either dangerous without context or useless to a sleeper. Use the [API reference](/developers/api/) for those.
 
 ---
 
-**Source reference:** [MCP server README and intent catalogue](https://github.com/sleepypod/core/blob/c44e17c54135d42158ad02832abc2b356e57ca8f/src/mcp/README.md) · [Server and prompts](https://github.com/sleepypod/core/blob/c44e17c54135d42158ad02832abc2b356e57ca8f/src/mcp/server.ts) · [HTTP endpoint and origin check](https://github.com/sleepypod/core/blob/c44e17c54135d42158ad02832abc2b356e57ca8f/app/api/mcp/route.ts)
+**Source reference:** [MCP server README and intent catalogue](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/README.md) · [Server and prompts](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/server.ts) · [HTTP endpoint and origin check](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/app/api/mcp/route.ts)
