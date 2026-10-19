@@ -14,10 +14,11 @@ try {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1100 },
     deviceScaleFactor: 2,
+    colorScheme: 'dark',
   })
   // This capture uses Core's built-in NEXT_PUBLIC_DEMO handlers, never a pod API.
   await page.route('**/api/**', (route) => route.abort())
-  await page.goto(new URL('/en/system?tab=storage', origin).href)
+  await page.goto(new URL('/en/system?tab=storage', origin).href, { timeout: 120000 })
   await expect(page.getByRole('combobox', { name: 'App logging mode' })).toHaveValue('quiet', {
     timeout: 30000,
   })
@@ -39,7 +40,7 @@ try {
       source: '/en/system?tab=storage',
       output,
       method:
-        'scripts/capture-storage-recording.mjs; unmodified Core UI with NEXT_PUBLIC_DEMO=1; isolated loopback, in-memory databases, API network requests blocked; 2x element capture',
+        'scripts/capture-storage-recording.mjs; unmodified Core UI with NEXT_PUBLIC_DEMO=1; isolated loopback, in-memory databases, API network requests blocked; dark mode; 2x element capture',
       sha256: createHash('sha256').update(data).digest('hex'),
       bytes: data.length,
       width,
