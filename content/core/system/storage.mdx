@@ -1,13 +1,13 @@
 ---
 title: 'Storage'
-description: 'See what uses the Pod disk and safely free up leftover files.'
+description: 'Monitor flash writes, choose what data to record, and safely free up leftover files.'
 ---
 
 import { Callout } from 'nextra/components'
 
 # Storage
 
-**System → Storage** shows what is using the Pod's storage, `/persistent`, and lets you delete leftover files.
+**System → Storage** shows disk usage, flash endurance and write rates, and controls for optional data recording. You can also delete leftover files to reclaim space.
 
 <BrowserFrame
   src="/media/core-system-storage.png"
@@ -20,6 +20,59 @@ import { Callout } from 'nextra/components'
 The bar splits used space into **Raw sensor archive**, **sleepypod app**, **Databases**, **Swap**, **Reclaimable leftovers**, and **Other**. The line under it says how many days of raw sensor history are kept.
 
 The Pod keeps `/persistent` under a limit (80%, shown by the marker on the bar) by deleting the oldest raw archives. So every leftover file costs you raw history.
+
+## Flash endurance
+
+The **Flash endurance** card shows the eMMC chip's wear estimate and reserve-block status, plus how much has been written since boot. Wear is reported by the chip in 10% bands; it is not an exact remaining-lifetime forecast. This card is hidden on machines without the Pod's eMMC counters.
+
+<BrowserFrame
+  src="/media/core-storage-endurance.png"
+  alt="Flash endurance card with one-hour, 24-hour and seven-day daily write rates, measurement coverage, and an hourly bar chart"
+  caption="The real endurance card with synthetic demo measurements."
+/>
+
+**Last hour**, **Last 24 hours** and **Last 7 days** show projected GB/day over each window's measured intervals. The coverage label tells you how many hours were usable; **partial** means some of that window is missing. Select a bar in the 24-hour chart to inspect its estimated bytes written and coverage.
+
+The rates come from the whole device's write counter: firmware, sleepypod and OS writes are combined. They are not the amount of new disk space used, and they do not identify an individual service's write cost. The card cannot yet tell you how many GB/day the Health timeline alone contributes.
+
+At least an hour of usable coverage is needed for a rate. Reboots, counter resets and long sampling gaps are excluded rather than counted as zero writes. Window boundaries are estimated between hourly samples. Write-rate GB uses 1,000,000,000 bytes; the older disk-space figures use binary-sized units.
+
+<Callout type="info">
+  A deployment or archive job can briefly raise the hourly projection. Compare full 24-hour windows
+  with similar activity before judging an improvement. These counters measure writes sent to the
+  device, not the flash controller's internal write amplification.
+</Callout>
+
+## Data recording
+
+<BrowserFrame
+  src="/media/core-storage-recording.png"
+  alt="Data recording controls showing Quiet app logging, a Debug for 15 minutes button, and enabled Health timeline and raw archive switches"
+  caption="Recording defaults: Quiet logging, with Health history and raw archiving enabled."
+/>
+
+Changes persist across restarts. Turning recording off does not delete saved history; existing data remains subject to its normal retention rules.
+
+| Control                        | Destination                                         | What changes                                                                                                                                          |
+| ------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **App diagnostic logs: Quiet** | System journal, configured for RAM by the installer | Keeps core console and bundled Python warnings and errors. This is the default.                                                                       |
+| **App diagnostic logs: Off**   | No new app diagnostic output                        | Suppresses those app logs, including errors. Firmware, OS logs and direct third-party output are unaffected.                                          |
+| **Debug for 15 minutes**       | System journal                                      | Temporarily permits detailed app logs, then returns to the selected Quiet/Off mode. **Stop debug logging** ends it early. Expiry survives a restart.  |
+| **Health timeline**            | Flash                                               | Stops or resumes new diagnostic timeline samples, taking effect within a minute. Live checks, safety monitoring and module lifecycle status continue. |
+| **Raw waveform archive**       | Flash                                               | Stops or resumes compressed RAW archives on firmware using the RAM-backed RAW archiver. Live sensing continues; NATS-managed telemetry is unaffected. |
+
+<Callout type="warning">
+  Stopping raw archiving asks you to confirm that pending, unsaved waveforms in RAM will be
+  discarded. The linker releases those pins within a minute, while an in-progress archive file may
+  finish. Completed temporary files are still cleaned up so the RAM filesystem cannot fill.
+  Previously saved compressed archives are preserved, subject to normal retention.
+</Callout>
+
+Biometric history stays enabled because current vitals and sleep views depend on those records. Hourly flash-write measurements also continue, so you can compare settings.
+
+RAM-backed logs disappear on reboot. Turning logging Off prevents future troubleshooting records from being captured; enabling debug later cannot recover them. Since these logs already use RAM, suppressing them primarily saves processing and memory rather than more flash writes. Smaller log or archive retention limits mainly reclaim space: deleting data does not undo the writes that saved it.
+
+For a bug report, enable temporary debug, reproduce the issue, and open [System → Logs](/core/system/logs/) to copy or download the relevant output before rebooting.
 
 ## Free up space
 
@@ -38,4 +91,4 @@ Over SSH, `sp-storage-cleanup --dry-run --json` shows the same list without dele
 
 ---
 
-**Source reference:** [Storage tab](https://github.com/sleepypod/core/blob/4cc76838/src/components/System/StorageTab.tsx) · [Storage report](https://github.com/sleepypod/core/blob/4cc76838/src/lib/podStorage.ts) · [Operations tools](https://github.com/sleepypod/core/blob/4cc76838/scripts/README.md)
+**Source reference:** [Write-rate calculations](https://github.com/sleepypod/core/blob/3a6741cb/src/lib/flashInsights.ts) · [Recording controls](https://github.com/sleepypod/core/blob/3a6741cb/src/components/System/DataRecordingCard.tsx) · [Recording behavior](https://github.com/sleepypod/core/blob/3a6741cb/docs/DEPLOYMENT.md#optional-recording-controls) · [Storage tab](https://github.com/sleepypod/core/blob/3a6741cb/src/components/System/StorageTab.tsx) · [Storage report](https://github.com/sleepypod/core/blob/4cc76838/src/lib/podStorage.ts) · [Operations tools](https://github.com/sleepypod/core/blob/4cc76838/scripts/README.md)
