@@ -50,6 +50,10 @@ PRs to `main` are release promotions and need a title starting with `feat:`, `fi
 
 Prefer CI or local prebuilt packages over an on-Pod build. For an installed test Pod, use `scripts/deploy POD_IP` from a reviewed checkout, or `scripts/push POD_IP` after a local build. The installed `sp-update` helper selects an update and preserves configuration while handling migrations and service restart. Verify the reported build commit and hardware reconnect after deployment.
 
+## Train a personal stage model
+
+`scripts/train-personal-models.py --pod POD_IP --side left` snapshots the Pod's biometrics database over SSH, trains the two personal sleep-stage models with leave-one-night-out scoring, and uploads the better one to `PUT /api/sleep-stages/model`. It needs `uv`, root SSH on port 8822, and Watch stages already imported to the Pod. The flags, the Pod routes, and the honest numbers are in [Personal stage models](/core/personal-stage-models/).
+
 ## Documentation site workflow
 
 The Nextra site installs with its own lockfile. Run `pnpm check`: formatting, media hashes, static export, Pagefind search, types, and browser checks all participate. PRs require **Build and browser checks**; a push to site `main` deploys the static export through Pages. Source pinning and media provenance are part of review, not just visual polish.

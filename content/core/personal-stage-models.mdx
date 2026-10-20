@@ -1,0 +1,100 @@
+---
+title: 'Personal stage models'
+description: 'Train a sleep-stage model from your own nights with the Apple Watch as the label, store it on the Pod, and score it beside the rules.'
+---
+
+# Personal stage models
+
+A personal stage model is a classifier trained on your own nights: the Pod's heart rate, HRV, breathing, and movement are the inputs, and the stages your Apple Watch recorded on the same nights are the labels. It is scored with Cohen's kappa (κ) against the Watch on nights it never saw, beside two baselines: the Pod's [sleep-stage rules](/core/settings/sleep-stages/) and the bundled challenger model that ships in the iOS app.
+
+This is a development preview. The Pod side is pinned to core development revision `9a0b43bb` and the phone side to iOS development revision `5eee894e`, both on `dev` as of October 20, 2026. Neither is on `main` yet; availability depends on your installed build.
+
+## What gets trained
+
+Two models, taken from the open sleep_classifiers work on wrist-worn data:
+
+- **Logistic regression**, the safer result with few nights.
+- **Random forest**, 200 trees of depth 4, which needs more nights before its score settles.
+
+Each is trained on one of two feature contracts:
+
+| Contract | Inputs                                                                          | Why it exists                                                        |
+| -------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **A**    | The four inputs the bundled challenger uses                                     | Parity with the challenger, so a personal fit can be compared fairly |
+| **B**    | Pod native: contract A plus HRV, breathing, and 15-minute windows (the default) | Uses everything the Pod measures                                     |
+
+Rows are five-minute epochs labeled by the Watch stage at the epoch midpoint. Rare stages are oversampled rather than weighted. Scoring is leave-one-night-out: each night is predicted by a model trained on the others, and κ is reported pooled and per night. The per-night values matter; with ten nights, one lucky pooled number is easy to get.
+
+## Train on a Mac (recommended)
+
+Training runs in a few seconds on Apple silicon and nothing runs on the phone. You need:
+
+- Watch stages already on the Pod for the side you are training. Import a Health export with `scripts/import-watch-health.py` from the core repository, or from the browser under [Sleep → Biometrics](/core/biometrics/#explore-vitals-and-import-watch-data).
+- Root SSH to the Pod on port 8822 (see [Open the Pod and get root](/core/root-access/)).
+- [uv](https://docs.astral.sh/uv/), which fetches NumPy and scikit-learn for the run.
+
+From a checkout of the core repository:
+
+```bash
+scripts/train-personal-models.py --pod POD_IP --side left
+```
+
+One run does all of this:
+
+1. Takes a consistent snapshot of the Pod's `biometrics.db` over SSH and copies it to the Mac.
+2. Builds the per-minute dataset of Pod vitals with Watch labels for that side.
+3. Trains both models on the chosen contract with leave-one-night-out scoring.
+4. Exports each model in the Pod's portable JSON form and checks it against scikit-learn on every training row.
+5. Uploads the model with the higher pooled κ to the Pod with `PUT /api/sleep-stages/model`.
+
+Useful flags:
+
+| Flag                                | Effect                                                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `--side left` / `--side right`      | Which sleeper to train for (default `left`)                                                                   |
+| `--contract A` / `--contract B`     | Feature contract (default `B`)                                                                                |
+| `--kind logistic` / `--kind forest` | Upload a specific model instead of the higher-scoring one                                                     |
+| `--no-upload`                       | Train and export only                                                                                         |
+| `--snapshot PATH`                   | Reuse an existing `biometrics.db` snapshot instead of taking one                                              |
+| `--work DIR`                        | Working directory (default `./personal-models`)                                                               |
+| `--keep-snapshot`                   | Keep the database snapshot after the run (pending in core [#857](https://github.com/sleepypod/core/pull/857)) |
+
+**Footprint.** A run leaves the dataset and the exported models, about half a megabyte, in the work directory. The database snapshot is about 75 MB. At the pinned revision it stays in the work directory; the pending cleanup in core [#857](https://github.com/sleepypod/core/pull/857) deletes it after the run unless you pass `--keep-snapshot`. The Pod keeps one model row per side, about half a megabyte, replaced on every upload.
+
+## What the Pod does with it
+
+The Pod stores the model and evaluates it with its own TypeScript, computing the same feature contracts from a night's vitals and movement. Three routes under `/api`:
+
+| Method | Path                          | Purpose                                                                                                                                                                                            |
+| ------ | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/sleep-stages/model`         | The side's stored model and when it was uploaded                                                                                                                                                   |
+| PUT    | `/sleep-stages/model`         | Store a model for a side, or `null` to remove it. The Pod refuses a model that names an unknown feature contract or fails any of its own test vectors, so a converter mismatch is caught at upload |
+| POST   | `/sleep-stages/model/preview` | Stage recent nights with the stored model (or one sent inline) and score it against the Watch beside the side's rules on the same nights                                                           |
+
+```bash
+curl --fail -X POST http://POD_IP:3000/api/sleep-stages/model/preview \
+  -H 'content-type: application/json' -d '{"side":"left","nights":14}'
+```
+
+The stored model is scored beside the rules; it does not replace the Pod's live classifier. The classifier is pinned to the hashed biometrics manifest through the [profile system](/core/settings/biometric-calibration/), and switching engines there is a migration of its own. Nights in [Sleep](/core/biometrics/) keep using the saved rules.
+
+## On the iPhone
+
+The app fetches the Pod's model on every load of a night and evaluates the same document the same way the Pod does.
+
+- **Sleep → Night → Compare stage models** shows a **Pod model** lane beside the rules, the bundled challenger, and the Watch, with its score and the leave-one-night-out κ it was trained with.
+- **Settings → On-device analysis → Sleep stages from** offers **Pod model** for the stages the app shows and syncs to Health.
+
+On-device training with Create ML remains for people without a Mac. It is slow: a forest run on about ten nights takes around 20 minutes in the foreground, iOS suspends it the moment the phone locks, and it never runs on background refresh. Keep the phone unlocked and the app open, or train on a Mac instead.
+
+## What the numbers mean
+
+On the developer's own Pod, with ten to eleven left-side nights, the contract B forest reached κ 0.20 held out against the Watch. The bundled challenger scored κ 0.12 on the same nights and the rules about 0.02. Contract A, with the challenger's four inputs, did not beat the challenger with either model.
+
+Read these as agreement with the Watch, not accuracy. The Watch is itself an estimate, at roughly κ 0.6 against a sleep lab, so a personal model can at best learn to agree with it. The scores will move as nights accumulate; the forest in particular needs 15 to 20 nights before its κ stabilises. HRV may be defined differently on the Pod and the Watch; see the note on metric identity in [Sleep stages](/core/settings/sleep-stages/#preview-before-saving).
+
+sleepypod is not a medical device. Stage estimates, from the rules or from a personal model, are for trends and curiosity, not diagnosis.
+
+---
+
+**Source reference:** [Training script](https://github.com/sleepypod/core/blob/9a0b43bb/scripts/train-personal-models.py) · [Model routes](https://github.com/sleepypod/core/blob/9a0b43bb/src/server/routers/sleepStages.ts) · [Pod evaluator](https://github.com/sleepypod/core/blob/9a0b43bb/src/lib/personal-stage-model.ts) · [Calibration research](https://github.com/sleepypod/core/blob/9a0b43bb/docs/research/sleep-stage-calibration/README.md) · [iOS design](https://github.com/sleepypod/ios/blob/5eee894e/docs/design/on-device-stage-training.md) · [Portable model on iOS](https://github.com/sleepypod/ios/blob/5eee894e/Sleepypod/Services/PortableStageModel.swift) · [Stage models screen](https://github.com/sleepypod/ios/blob/5eee894e/Sleepypod/Views/Data/StageComparisonView.swift)

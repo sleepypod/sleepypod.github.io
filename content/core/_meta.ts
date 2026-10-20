@@ -19,6 +19,7 @@ export default {
   '-- technical': { type: 'separator', title: 'How it works' },
   'autopilot-engine': 'Autopilot engine',
   'data-flow': 'Follow your data',
+  'personal-stage-models': 'Personal stage models',
   integrations: 'HomeKit and MQTT reference',
   mcp: 'MCP for agents',
 }
