@@ -7,14 +7,14 @@ description: 'Train a sleep-stage model from your own nights with the Apple Watc
 
 A personal stage model is a classifier trained on your own nights: the Pod's heart rate, HRV, breathing, and movement are the inputs, and the stages your Apple Watch recorded on the same nights are the labels. It is scored with Cohen's kappa (κ) against the Watch on nights it never saw, beside two baselines: the Pod's [sleep-stage rules](/core/settings/sleep-stages/) and the bundled challenger model that ships in the iOS app.
 
-This is a development preview. The Pod side is pinned to core development revision `9a0b43bb` and the phone side to iOS development revision `5eee894e`, both on `dev` as of October 20, 2026. Neither is on `main` yet; availability depends on your installed build.
+This is a development preview. The Pod side is pinned to core development revision `14a7cda7` and the phone side to iOS development revision `3fe45f1a`, both on `dev` as of October 20, 2026. Neither side is on `main` yet; availability depends on your installed build.
 
 ## What gets trained
 
 Two models, taken from the open sleep_classifiers work on wrist-worn data:
 
 - **Logistic regression**, the safer result with few nights.
-- **Random forest**, 200 trees of depth 4, which needs more nights before its score settles.
+- **Random forest**, 200 trees of depth 8, which needs more nights before its score settles.
 
 Each is trained on one of two feature contracts:
 
@@ -49,17 +49,17 @@ One run does all of this:
 
 Useful flags:
 
-| Flag                                | Effect                                                                                                        |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `--side left` / `--side right`      | Which sleeper to train for (default `left`)                                                                   |
-| `--contract A` / `--contract B`     | Feature contract (default `B`)                                                                                |
-| `--kind logistic` / `--kind forest` | Upload a specific model instead of the higher-scoring one                                                     |
-| `--no-upload`                       | Train and export only                                                                                         |
-| `--snapshot PATH`                   | Reuse an existing `biometrics.db` snapshot instead of taking one                                              |
-| `--work DIR`                        | Working directory (default `./personal-models`)                                                               |
-| `--keep-snapshot`                   | Keep the database snapshot after the run (pending in core [#857](https://github.com/sleepypod/core/pull/857)) |
+| Flag                                | Effect                                                             |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| `--side left` / `--side right`      | Which sleeper to train for (default `left`)                        |
+| `--contract A` / `--contract B`     | Feature contract (default `B`)                                     |
+| `--kind logistic` / `--kind forest` | Upload a specific model instead of the higher-scoring one          |
+| `--no-upload`                       | Train and export only                                              |
+| `--snapshot PATH`                   | Reuse an existing `biometrics.db` snapshot instead of taking one   |
+| `--work DIR`                        | Working directory (default `./personal-models`)                    |
+| `--keep-snapshot`                   | Keep the database snapshot after the run; it is deleted by default |
 
-**Footprint.** A run leaves the dataset and the exported models, about half a megabyte, in the work directory. The database snapshot is about 75 MB. At the pinned revision it stays in the work directory; the pending cleanup in core [#857](https://github.com/sleepypod/core/pull/857) deletes it after the run unless you pass `--keep-snapshot`. The Pod keeps one model row per side, about half a megabyte, replaced on every upload.
+**Footprint.** A run leaves the dataset and the exported models, about 0.8 MB, in the work directory. The database snapshot is about 75 MB and is deleted after the run unless you pass `--keep-snapshot`. The Pod keeps one model row per side, replaced on every upload; a depth 8 forest is about 2 MB.
 
 ## What the Pod does with it
 
@@ -76,7 +76,7 @@ curl --fail -X POST http://POD_IP:3000/api/sleep-stages/model/preview \
   -H 'content-type: application/json' -d '{"side":"left","nights":14}'
 ```
 
-Preview scores are in-sample when the previewed nights were also in the training set, which they are after a normal run: the same contract B forest that scored κ 0.20 leave-one-night-out reached κ 0.33 when the Pod previewed its own training nights. Treat the preview as a check that the Pod evaluates the model the same way the Mac did, not as independent validation; the held-out κ from training is the number to compare.
+Preview scores are in-sample when the previewed nights were also in the training set, which they are after a normal run: the earlier depth 4 contract B forest that scored κ 0.20 leave-one-night-out reached κ 0.33 when the Pod previewed its own training nights. Treat the preview as a check that the Pod evaluates the model the same way the Mac did, not as independent validation; the held-out κ from training is the number to compare.
 
 The stored model is scored beside the rules; it does not replace the Pod's live classifier. The classifier is pinned to the hashed biometrics manifest through the [profile system](/core/settings/biometric-calibration/), and switching engines there is a migration of its own. Nights in [Sleep](/core/biometrics/) keep using the saved rules.
 
@@ -91,7 +91,9 @@ On-device training with Create ML remains for people without a Mac. It is slow: 
 
 ## What the numbers mean
 
-On the developer's own Pod, with ten to eleven left-side nights, the contract B forest reached κ 0.20 held out against the Watch. The bundled challenger scored κ 0.12 on the same nights and the rules about 0.02. Contract A, with the challenger's four inputs, did not beat the challenger with either model.
+On the developer's own Pod, with eleven left-side nights, the contract B forest at depth 8 reached κ 0.25 held out against the Watch. The bundled challenger scored κ 0.12 on the same nights and the rules about 0.02. Contract A, with the challenger's four inputs, did not beat the challenger with either model.
+
+Depth 8 came from a leave-one-night-out sweep on those nights with 200 trees: κ 0.18, 0.21, 0.22, 0.26, and 0.23 at depth 3, 4, 6, 8, and unlimited. Using 100 to 1000 trees made no difference at any depth, and logistic regression stayed flat at κ 0.10 to 0.11 across regularisation strengths from 0.01 to 100. Histogram gradient boosting at depth 3 reached κ 0.27, within the noise of the forest and needing its own export format, so it is a later candidate rather than a change.
 
 Read these as agreement with the Watch, not accuracy. The Watch is itself an estimate, at roughly κ 0.6 against a sleep lab, so a personal model can at best learn to agree with it. The scores will move as nights accumulate; the forest in particular needs 15 to 20 nights before its κ stabilises. HRV may be defined differently on the Pod and the Watch; see the note on metric identity in [Sleep stages](/core/settings/sleep-stages/#preview-before-saving).
 
@@ -99,4 +101,4 @@ sleepypod is not a medical device. Stage estimates, from the rules or from a per
 
 ---
 
-**Source reference:** [Training script](https://github.com/sleepypod/core/blob/9a0b43bb/scripts/train-personal-models.py) · [Model routes](https://github.com/sleepypod/core/blob/9a0b43bb/src/server/routers/sleepStages.ts) · [Pod evaluator](https://github.com/sleepypod/core/blob/9a0b43bb/src/lib/personal-stage-model.ts) · [Calibration research](https://github.com/sleepypod/core/blob/9a0b43bb/docs/research/sleep-stage-calibration/README.md) · [iOS design](https://github.com/sleepypod/ios/blob/5eee894e/docs/design/on-device-stage-training.md) · [Portable model on iOS](https://github.com/sleepypod/ios/blob/5eee894e/Sleepypod/Services/PortableStageModel.swift) · [Stage models screen](https://github.com/sleepypod/ios/blob/5eee894e/Sleepypod/Views/Data/StageComparisonView.swift)
+**Source reference:** [Training script](https://github.com/sleepypod/core/blob/14a7cda7/scripts/train-personal-models.py) · [Model routes](https://github.com/sleepypod/core/blob/14a7cda7/src/server/routers/sleepStages.ts) · [Pod evaluator](https://github.com/sleepypod/core/blob/14a7cda7/src/lib/personal-stage-model.ts) · [Calibration research](https://github.com/sleepypod/core/blob/14a7cda7/docs/research/sleep-stage-calibration/README.md) · [iOS design](https://github.com/sleepypod/ios/blob/3fe45f1a/docs/design/on-device-stage-training.md) · [Portable model on iOS](https://github.com/sleepypod/ios/blob/3fe45f1a/Sleepypod/Services/PortableStageModel.swift) · [Stage models screen](https://github.com/sleepypod/ios/blob/3fe45f1a/Sleepypod/Views/Data/StageComparisonView.swift)
