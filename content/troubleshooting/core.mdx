@@ -21,6 +21,10 @@ ssh -p 8822 root@POD_IP
 
 Database or native-module errors can come from running the wrong Node.js binary. The service uses `/usr/local/bin/node`; use that binary for manual scripts when comparing behavior. Preserve databases before attempting a repair or reinstall.
 
+## App logs are quiet or missing
+
+Check [System → Storage → Data recording](/core/system/storage/#data-recording). Quiet captures app warnings/errors; Off suppresses app diagnostic output. Enable **Debug for 15 minutes**, reproduce the issue, and copy the relevant output from [System → Logs](/core/system/logs/). The app setting does not control firmware or OS logging. RAM-backed journal messages disappear on reboot, so save them first.
+
 ## Web UI down, service restarting in a loop
 
 Check whether the installed build still exists:

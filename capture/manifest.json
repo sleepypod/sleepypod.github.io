@@ -868,6 +868,28 @@
       "bytes": 153926,
       "width": 1440,
       "height": 1000
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "11433d34f84d67328bbf47ed6c6773905ce71122",
+      "source": "/en/system?tab=storage",
+      "output": "core-storage-endurance.png",
+      "method": "scripts/capture-storage-recording.mjs; unmodified Core UI with NEXT_PUBLIC_DEMO=1; isolated loopback, in-memory databases, API network requests blocked; dark mode; 2x element capture",
+      "sha256": "e7186b51a3fbaefd3d671d29b8718b6b31a91ff4dca73e3c4980b4316ef806ed",
+      "bytes": 180286,
+      "width": 2304,
+      "height": 1234
+    },
+    {
+      "repository": "sleepypod-core",
+      "commit": "11433d34f84d67328bbf47ed6c6773905ce71122",
+      "source": "/en/system?tab=storage",
+      "output": "core-storage-recording.png",
+      "method": "scripts/capture-storage-recording.mjs; unmodified Core UI with NEXT_PUBLIC_DEMO=1; isolated loopback, in-memory databases, API network requests blocked; dark mode; 2x element capture",
+      "sha256": "a996419832b6bca6af9243092aa73a86b579d950aa0120dcb0922388b3161b2c",
+      "bytes": 164122,
+      "width": 2304,
+      "height": 888
     }
   ]
 }
