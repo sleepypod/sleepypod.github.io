@@ -76,6 +76,8 @@ curl --fail -X POST http://POD_IP:3000/api/sleep-stages/model/preview \
   -H 'content-type: application/json' -d '{"side":"left","nights":14}'
 ```
 
+Preview scores are in-sample when the previewed nights were also in the training set, which they are after a normal run: the same contract B forest that scored κ 0.20 leave-one-night-out reached κ 0.33 when the Pod previewed its own training nights. Treat the preview as a check that the Pod evaluates the model the same way the Mac did, not as independent validation; the held-out κ from training is the number to compare.
+
 The stored model is scored beside the rules; it does not replace the Pod's live classifier. The classifier is pinned to the hashed biometrics manifest through the [profile system](/core/settings/biometric-calibration/), and switching engines there is a migration of its own. Nights in [Sleep](/core/biometrics/) keep using the saved rules.
 
 ## On the iPhone
