@@ -9,6 +9,13 @@ A personal stage model is a classifier trained on your own nights: the Pod's hea
 
 This is a development preview. The Pod side is pinned to core development revision `14a7cda7` and the phone side to iOS development revision `3fe45f1a`, both on `dev` as of October 20, 2026. Neither side is on `main` yet; availability depends on your installed build.
 
+## Explore models in the training workspace
+
+For live training progress, historical runs, and side-by-side Pod / candidate /
+baseline / Watch timelines, see the [ML training workspace](/developers/training/).
+That separate research app saves candidates locally without activating them;
+the core script documented below includes an upload step.
+
 ## What gets trained
 
 Two models, taken from the open sleep_classifiers work on wrist-worn data:

@@ -9,6 +9,7 @@ export default {
   'temperature-control': 'Temperature controller',
   'sensor-pipeline': 'Sensor pipeline',
   hardware: 'Hardware protocol',
+  training: 'ML training workspace',
   workflows: 'Build and release workflows',
   'source-library': 'Technical source library',
 }

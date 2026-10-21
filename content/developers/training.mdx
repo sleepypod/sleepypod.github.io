@@ -1,0 +1,66 @@
+---
+title: 'ML training workspace'
+description: 'Watch sleep-stage training, compare models and sleep timelines, and save local candidates with the sleepypod training app.'
+---
+
+# ML training workspace
+
+The [sleepypod training app](https://github.com/sleepypod/training) is a local
+research workspace for sleep-stage models. The repository is currently private;
+you need repository access to clone it. The browser dashboard runs on your
+computer, alongside Python training with scikit-learn, NumPy, and SciPy.
+
+## Start training
+
+Install Node.js 24 and uv, then run these commands from the training checkout:
+
+```bash
+npm ci
+uv sync --locked
+uv run --locked python scripts/train.py --pod 192.168.1.88 --side left --dashboard --verbose
+```
+
+Replace the example IP with your pod's address. The pipeline reads completed
+sessions and imported Watch labels through the pod's local HTTP API without
+authentication. It does not require MCP or SSH. If Watch labels are not already
+on the pod, add `--watch-export data/export.zip`.
+
+Open the loopback URL printed by the command. Progress updates as data arrives
+and models are fitted. The dashboard stays open after training completes.
+
+## Explore a run
+
+- **Overview:** pipeline progress, held-out scores, per-night results, and review checks.
+- **Nights:** aligned Pod, candidate, baseline, and Watch sleep stages, disagreement navigation, and stage-duration comparisons.
+- **Data:** label coverage, input distributions, and per-night summaries.
+- **Log:** detailed events, configuration, failures, and the candidate download.
+
+Technical terms have contextual explanations and a searchable glossary. Run
+history persists locally. Hypnograms show stage sequences; they do not establish
+validated sleep-cycle boundaries. Held-out predictions are distinguished from
+predictions on the final model's own training data.
+
+See the [README screenshots](https://github.com/sleepypod/training#training-workspace)
+for captures made with synthetic test data.
+
+## Reopen results and save models
+
+```bash
+uv run --locked python scripts/dashboard.py --port 8765
+```
+
+Open `http://127.0.0.1:8765` on the same computer. This starts the viewer without
+retraining and discovers saved runs. Each run also saves an interactive offline
+`index.html` report.
+
+Training automatically writes `model/candidate.json`, the portable model, and
+`model/candidate.joblib`, the fitted Python model. The Log tab can download the
+candidate JSON. Keep the whole run folder to retain its scores and provenance.
+Raw data and fitted artifacts stay in the ignored local `data/` directory.
+
+This research workflow does not upload or activate models. It uses retrospective
+whole-night features; its scores do not prove prospective or clinical validity.
+The [core personal-model workflow](/core/personal-stage-models/) is separate and
+includes a pod upload step.
+
+**Source reference:** [Training README](https://github.com/sleepypod/training/blob/3687ae7/README.md) · [Training pipeline](https://github.com/sleepypod/training/blob/3687ae7/scripts/train.py) · [Dashboard](https://github.com/sleepypod/training/blob/3687ae7/scripts/dashboard.py)
