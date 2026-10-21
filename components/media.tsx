@@ -1,11 +1,16 @@
 import { ImageZoom } from 'nextra/components'
 type MediaProps = { src: string; alt: string; caption?: string; priority?: boolean }
-export function BrowserFrame({ src, alt, caption }: MediaProps) {
+export function BrowserFrame({
+  src,
+  alt,
+  caption,
+  address = 'sleepypod.local:3000',
+}: MediaProps & { address?: string }) {
   return (
     <figure className="browser-frame">
       <div className="browser-bar" aria-hidden="true">
         <span>← → ↻</span>
-        <span>sleepypod.local:3000</span>
+        <span>{address}</span>
         <span>•••</span>
       </div>
       <ImageZoom src={src} alt={alt} width={1440} height={1000} loading="lazy" />

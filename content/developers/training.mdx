@@ -40,8 +40,27 @@ history persists locally. Hypnograms show stage sequences; they do not establish
 validated sleep-cycle boundaries. Held-out predictions are distinguished from
 predictions on the final model's own training data.
 
-See the [README screenshots](https://github.com/sleepypod/training#training-workspace)
-for captures made with synthetic test data.
+### Training overview
+
+<BrowserFrame
+  src="/media/training-overview.jpg"
+  address="127.0.0.1:8765"
+  alt="sleepypod training overview with run history, pipeline status, and held-out model scores"
+  caption="Real training app with deterministic synthetic test data. Scores demonstrate the interface, not real-world model accuracy. Select the image to enlarge it."
+/>
+
+### Compare the same night
+
+<BrowserFrame
+  src="/media/training-nights.jpg"
+  address="127.0.0.1:8765"
+  alt="sleepypod training Nights view comparing Pod rules replay, held-out candidate, baseline, and Watch stages"
+  caption="The same synthetic night in four aligned stage timelines. The Pod lane is a local rules replay in this snapshot-based example; orange marks candidate-versus-Watch disagreements."
+/>
+
+These unmodified captures contain only synthetic data. The
+[training README](https://github.com/sleepypod/training#training-workspace)
+also includes screenshots and setup instructions.
 
 ## Reopen results and save models
 

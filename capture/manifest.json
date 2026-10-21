@@ -890,6 +890,28 @@
       "bytes": 164122,
       "width": 2304,
       "height": 888
+    },
+    {
+      "repository": "training",
+      "commit": "3687ae7cd0d6b12eee1e5b8ba6753d67271b2efc",
+      "source": "docs/images/training-overview.jpg",
+      "output": "training-overview.jpg",
+      "method": "Unmodified Chrome viewport capture through cua_repl; deterministic synthetic inputs and isolated synthetic-only catalog",
+      "sha256": "0b60e44bca86ee7ee420ca0b4675afc5c9bfcb25e716bc312699d3556b679123",
+      "bytes": 90703,
+      "width": 1425,
+      "height": 990
+    },
+    {
+      "repository": "training",
+      "commit": "3687ae7cd0d6b12eee1e5b8ba6753d67271b2efc",
+      "source": "docs/images/training-nights.jpg",
+      "output": "training-nights.jpg",
+      "method": "Unmodified Chrome viewport capture through cua_repl; deterministic synthetic inputs and isolated synthetic-only catalog",
+      "sha256": "253c642669e0d6360c96f958d5f2d0812693bcecb9e5ebc0c89201fc253854db",
+      "bytes": 88710,
+      "width": 1425,
+      "height": 990
     }
   ]
 }
