@@ -10,23 +10,40 @@ research workspace for sleep-stage models. The repository is public and anyone
 can clone it. The browser dashboard runs on your
 computer, alongside Python training with scikit-learn, NumPy, and SciPy.
 
-## Start training
+## Set up and train
 
-Install Node.js 24 and uv, then run these commands from the training checkout:
+You need a Mac or Linux computer on the same network as your pod, an Apple Watch
+that tracks sleep, and at least five nights of Watch sleep stages.
+
+1. **Install the tools.** With [Homebrew](https://brew.sh): `brew install node@24 git`.
+   The guided script offers to install [uv](https://docs.astral.sh/uv/), which brings its own Python.
+2. **Clone the repository:** `git clone https://github.com/sleepypod/training.git && cd training`.
+3. **Find your pod's address** in the sleepypod iOS app under Settings.
+4. **Export your Watch sleep data**, unless the iOS app already syncs it to the pod: in the
+   iPhone Health app, tap your profile picture, then **Export All Health Data**, and AirDrop
+   `export.zip` to the computer.
+5. **Run the guided script:**
+
+```bash
+scripts/quickstart.sh
+```
+
+It checks Node.js and uv, installs the pinned dependencies, confirms it can reach the pod,
+asks which side the Watch wearer sleeps on and where `export.zip` is, then trains. Pass
+`--pod`, `--side` and `--watch-export` to skip the questions, or `--dry-run` to check
+everything without training.
+
+To run the steps yourself instead:
 
 ```bash
 npm ci
 uv sync --locked
-uv run --locked python scripts/train.py --pod 192.168.1.88 --side left --dashboard --verbose
+uv run --locked python scripts/train.py --pod 192.168.1.88 --side left --dashboard --watch-export ~/Downloads/export.zip
 ```
 
-Replace the example IP with your pod's address. The pipeline reads completed
-sessions and imported Watch labels through the pod's local HTTP API without
-authentication. It does not require MCP or SSH. If Watch labels are not already
-on the pod, add `--watch-export data/export.zip`.
-
-Open the loopback URL printed by the command. Progress updates as data arrives
-and models are fitted. The dashboard stays open after training completes.
+The pipeline only reads from the pod, over its local HTTP API without authentication,
+and does not need MCP or SSH. Open the loopback URL it prints; progress updates as data
+arrives and models are fitted, and the dashboard stays open after training completes.
 
 ## Explore a run
 
@@ -79,7 +96,23 @@ Raw data and fitted artifacts stay in the ignored local `data/` directory.
 
 This research workflow does not upload or activate models. It uses retrospective
 whole-night features; its scores do not prove prospective or clinical validity.
-The [core personal-model workflow](/core/personal-stage-models/) is separate and
-includes a pod upload step.
 
-**Source reference:** [Training README](https://github.com/sleepypod/training/blob/e23c551/README.md) · [Training pipeline](https://github.com/sleepypod/training/blob/e23c551/scripts/train.py) · [Dashboard](https://github.com/sleepypod/training/blob/e23c551/scripts/dashboard.py)
+## Put a model on the pod
+
+Uploading is a separate, deliberate step, one side at a time:
+
+1. **Preview** the candidate with `POST /api/sleep-stages/model/preview`. The pod stages
+   recent nights with it and compares them with the rules, without storing anything.
+   Nights the model trained on score in-sample, higher than the report's held-out numbers.
+2. **Add** it to the side's model library with `POST /api/sleep-stages/models`. It is
+   stored but not selected.
+3. **Select** it with `PUT /api/sleep-stages/models/selected`; `"active": true` makes it
+   stage that side's nights. Switch back with the same call or the pod's Settings.
+
+The pod refuses models whose feature contract it does not know or whose embedded test
+vectors it does not reproduce. The
+[training README](https://github.com/sleepypod/training#use-a-trained-model-on-the-pod)
+has the exact commands. The [core personal-model workflow](/core/personal-stage-models/)
+trains and uploads in one step instead.
+
+**Source reference:** [Training README](https://github.com/sleepypod/training/blob/main/README.md) · [Quickstart script](https://github.com/sleepypod/training/blob/main/scripts/quickstart.sh) · [Training pipeline](https://github.com/sleepypod/training/blob/main/scripts/train.py) · [Dashboard](https://github.com/sleepypod/training/blob/main/scripts/dashboard.py)
