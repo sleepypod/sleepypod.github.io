@@ -5,8 +5,8 @@ description: 'Watch sleep-stage training, compare models and sleep timelines, an
 
 # ML training workspace
 
-The [sleepypod training app](https://github.com/sleepypod/training) is a local
-research workspace for sleep-stage models. The repository is public and anyone
+The [sleepypod training app](https://github.com/sleepypod/training/tree/8874faf632a252b6078e6d0f7dc9882bffa8d386) is a local
+research workspace for sleep, movement, and snore experiments. The repository is public and anyone
 can clone it. The browser dashboard runs on your
 computer, alongside Python training with scikit-learn, NumPy, and SciPy.
 
@@ -47,8 +47,12 @@ arrives and models are fitted, and the dashboard stays open after training compl
 
 ## Explore a run
 
+Use the **Sleep / Movement / Snore** switch above the sidebar to choose a research
+workflow. The run list shows only that kind. Sleep runs have five tabs:
+
 - **Overview:** pipeline progress, held-out scores, per-night results, and review checks.
 - **Nights:** aligned Pod, candidate, baseline, and Watch sleep stages, disagreement navigation, and stage-duration comparisons.
+- **Weeks:** stage minutes per night grouped into local ISO weeks, a source selector, and weekly averages with differences from Watch. Only intervals shared by every displayed source count; missing nights are gaps, not zero.
 - **Data:** label coverage, input distributions, and per-night summaries.
 - **Log:** detailed events, configuration, failures, and the candidate download.
 
@@ -76,7 +80,7 @@ predictions on the final model's own training data.
 />
 
 These unmodified captures contain only synthetic data. The
-[training README](https://github.com/sleepypod/training#training-workspace)
+[training README](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/README.md#training-workspace)
 also includes screenshots and setup instructions.
 
 ## Reopen results and save models
@@ -97,6 +101,55 @@ Raw data and fitted artifacts stay in the ignored local `data/` directory.
 This research workflow does not upload or activate models. It uses retrospective
 whole-night features; its scores do not prove prospective or clinical validity.
 
+## Movement experiments
+
+`scripts/movement.py session|train` labels a scripted session from timed cues,
+then compares a classifier built from raw piezo and capacitance with the pod's
+per-minute movement score. Run from the training repository after setup:
+
+```bash
+uv run --locked python scripts/movement.py session --side left --pod POD_IP --out data/movement/session-1.json
+# Wait about 45 minutes for the pod to write the data before training.
+uv run --locked python scripts/movement.py train --session data/movement/session-1.json --pod POD_IP --out data/runs/movement-001
+```
+
+The session cues stillness, arm and leg movements, turning over, and sitting up.
+macOS can speak the cues; `--cue print` prints them. A text schedule and stopwatch
+can also supply manually recorded cue times in the same session format. Align
+those times to the pod using known knocks; this is manual preparation, not an
+automatic knock-alignment mode in `movement.py`.
+
+The **Movement** view compares moving recall and false alarms while still, shows
+per-class recall and a confusion matrix, and aligns labels, predictions, and pod
+flags by session. The pod score has one value per minute and cannot identify
+movement types. Repeat `--session` to evaluate across sessions; one-session
+validation is optimistic, and deliberate cued movements are not natural sleep movements.
+
+## Snore-band research
+
+`scripts/piezo_bandwidth.py session|analyze|night` tests whether raw piezo carries
+energy in the 16–30 Hz and 60–100 Hz bands:
+
+```bash
+uv run --locked python scripts/piezo_bandwidth.py session --side left --pod POD_IP --out data/bandwidth/steps.json
+uv run --locked python scripts/piezo_bandwidth.py analyze --steps data/bandwidth/steps.json --pod POD_IP --out data/bandwidth/session
+uv run --locked python scripts/piezo_bandwidth.py night --start 2026-10-22T23:00-07:00 --end 2026-10-23T07:00-07:00 --pod POD_IP --out data/bandwidth/night
+```
+
+Replace the example night with your recording window. The session times empty-bed,
+pump, lying-still, humming, imitated-snore, and knock steps. Analyze after the pod's
+archives become available; if coverage ends early, retry into a fresh output directory.
+The **Snore** view shows the band gate and per-step energy, or a night's band energy,
+pump activity, coverage, and storage. These are vibration measurements, not detected snores.
+
+## Research findings
+
+Findings and their limitations live in the training repository's knowledge base:
+
+- [Light-sleep confusion](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/knowledge/evaluation/light-sleep-confusion-2026-10-21.md).
+- [Piezo bandwidth gate: both bands passed on one pod with imitated snoring](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/knowledge/evaluation/piezo-bandwidth-2026-10-22.md).
+- [Sequence decoding: the 10-night gains did not hold on 13 nights](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/knowledge/evaluation/sequence-decoding-2026-10-21.md).
+
 ## Put a model on the pod
 
 Uploading is a separate, deliberate step, one side at a time:
@@ -111,8 +164,10 @@ Uploading is a separate, deliberate step, one side at a time:
 
 The pod refuses models whose feature contract it does not know or whose embedded test
 vectors it does not reproduce. The
-[training README](https://github.com/sleepypod/training#use-a-trained-model-on-the-pod)
+[training README](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/README.md#use-a-trained-model-on-the-pod)
 has the exact commands. The [core personal-model workflow](/core/personal-stage-models/)
 trains and uploads in one step instead.
 
-**Source reference:** [Training README](https://github.com/sleepypod/training/blob/c5daa6a/README.md) · [Quickstart script](https://github.com/sleepypod/training/blob/c5daa6a/scripts/quickstart.sh) · [Training pipeline](https://github.com/sleepypod/training/blob/c5daa6a/scripts/train.py) · [Dashboard](https://github.com/sleepypod/training/blob/c5daa6a/scripts/dashboard.py)
+**Source reference:** [Training README](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/README.md) · [Quickstart script](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/scripts/quickstart.sh) · [Training pipeline](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/scripts/train.py) · [Dashboard](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/scripts/dashboard.py)
+
+**Research workflow sources:** [Movement script and session format](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/scripts/movement.py) · [Piezo bandwidth script](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/scripts/piezo_bandwidth.py) · [Clock alignment contract](https://github.com/sleepypod/training/blob/8874faf632a252b6078e6d0f7dc9882bffa8d386/docs/overnight-capture.md)
