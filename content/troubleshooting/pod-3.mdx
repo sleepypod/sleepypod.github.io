@@ -1,0 +1,58 @@
+---
+title: 'Pod 3 sensor and scheduler errors'
+description: 'Collect logs and narrow down missing sensor frames or unloaded schedules on Pod 3.'
+---
+
+# Pod 3 sensor and scheduler errors
+
+If **System → Health** reports “Piezo and Capacitance stalled” or “Scheduler stalled” after a reset, collect the startup evidence before restarting or reinstalling again. These incidents describe what Core can observe; they do not by themselves prove a failed cover or identify the underlying error.
+
+## Collect the evidence first
+
+Include the Core version, Pod 3 hardware variant (with or without an SD card), cover generation, firmware version, and incident time with timezone. Mention what was reset or reinstalled and whether temperature controls still work.
+
+In the web app:
+
+1. Open **Settings → Device → Sensor data source**. Record the firmware pipeline, selected source, last-frame age, and any fallback or override note. Pod 3 alone does not determine whether the firmware uses RAW files or NATS.
+2. Capture **System → Health**, including the incident details, and check **System → Sensors** for incoming frames.
+3. Open [System → Logs](/core/system/logs/), select **Core**, set the level to **All**, and clear the text filter. Use **Download** or **Copy**. Repeat for **Piezo Processor** and **Sleep Detector**.
+
+The web viewer saves the displayed lines, up to the latest 200 per service. For fuller startup and firmware evidence, use the [CLI support bundle](/core/system/logs/#collect-a-cli-support-bundle). If app logs are quiet, enable **Debug for 15 minutes** under **System → Storage → Data recording** before reproducing the problem. It cannot recover earlier suppressed messages.
+
+## Piezo and Capacitance stalled
+
+“No piezo frames since the core started” means Core has not observed a piezo frame in this process lifetime. A grouped piezo/capacitance incident can describe missing input to both pipelines; it is not a diagnosis of the Python processor or a requirement to recalibrate.
+
+Use the selected sensor source to choose the next check:
+
+- **NATS:** inspect source selection, last-frame age, and firmware logs. Missing `.RAW` files are expected on NATS-only firmware and do not establish a fault.
+- **RAW:** verify that the firmware is writing fresh files and that Core is reading the same location. On the standard path, run the following on the Pod:
+
+```bash
+ls -la /persistent/biometrics/*.RAW
+journalctl -u frank.service -n 200 --no-pager
+```
+
+Compare file timestamps and sizes over time. If the installation uses another location, use the configured path reported by `sp-status` and the support bundle. Check `RAW_DATA_DIR` against the firmware's actual data location before changing it.
+
+If frames reach Core but sleep or vitals remain empty, inspect the Piezo Processor and Sleep Detector logs and service state next. A working temperature control socket does not prove that sensor frames are arriving.
+
+For an older firmware or mixed-generation hub/cover setup, look for firmware bootloader errors such as `BL: Likely wrong Firmware address`. Preserve the logs and compare them with the [stock firmware update guide](/core/firmware-updates/) before choosing a repair.
+
+## Scheduler stalled
+
+“Enabled, but no jobs loaded — schedules failed to load” is the diagnostic label for scheduling being enabled with zero loaded jobs. It does not expose the exception or prove that the sensor incident caused the scheduling problem.
+
+1. Open [System → Scheduler](/core/system/scheduler/) and check loaded jobs and configured schedules.
+2. Verify the device clock, timezone, enabled days, and side. Core waits for a valid clock during startup.
+3. Collect the Core startup journal and look for scheduler, schedule-loading, or database errors. Include the full nearby context, not only the incident label.
+
+A fresh reset may have changed configuration. State whether schedules were recreated or restored. Investigate scheduler and sensor evidence separately until the logs show a shared cause.
+
+## Share a useful report
+
+Attach the log bundle or downloaded logs with the hardware/version details and incident time above. Review the files for private information before sharing; automatic redaction is not a guarantee that all log text is anonymous. See [report a useful issue](/troubleshooting/#report-a-useful-issue).
+
+---
+
+**Source reference:** [Incident conditions](https://github.com/sleepypod/core/blob/f8948b04/src/lib/dataPath.ts) · [Scheduler health](https://github.com/sleepypod/core/blob/f8948b04/src/lib/dataPathCollect.ts) · [Debugging runbook](https://github.com/sleepypod/core/blob/f8948b04/docs/DEBUGGING.md) · [Sensor source selection](https://github.com/sleepypod/core/blob/f8948b04/docs/nats-frame-readers.md)
