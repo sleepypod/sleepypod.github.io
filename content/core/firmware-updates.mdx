@@ -72,19 +72,33 @@ curl -is "https://update-api.8slp.net/v1/updates/pod3/1?deviceId=<id>&currentRev
 - When an update is available, the API returns `HTTP/1.1 302 Found` with a signed AWS CloudFront/S3 download URL in the `Location:` header pointing to `https://fw.8slp.net/pod3-updates/pod3/releases/<hash>.swu`.
 - Alternatively, public releases are indexed on the [Wayback Machine](http://web.archive.org/web/*/fw.8slp.net/pod3-updates/pod3/releases/*). For example, `77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu` contains ARM64 daemons with NATS JetStream support, STM32G0 cover firmware (`v5.5.9`), and hub thermal firmware (`v1.5.156`).
 
-### Step 3: Extract universal artifacts on your computer
+### Step 3: Extract artifacts on your computer
 
-Download the `.swu` file to your computer and extract the root filesystem archive:
+The paths and versions below describe release **`77af88bd8b941fed81786c09a9ac3cdb1e97b126`**, used for the hardware verification described above. They are not a manifest for every Pod 3 update. A missing `usr/lib64/libnats.so.3.11.0` does **not** by itself mean you need to download a public release.
+
+There are **two extraction layers**: the outer `.swu` package, then the root filesystem archive inside it. Extracting only the `.swu` does not unpack the root filesystem's `usr/` and `opt/` directories.
+
+On your computer, use a new, empty directory for each release so files from an earlier extraction cannot hide missing artifacts. Replace the example `.swu` filename with the file you actually downloaded:
 
 ```bash
-mkdir -p swu_extracted && cd swu_extracted
-# The .swu file is a standard cpio archive
+mkdir swu_extracted && cd swu_extracted
+# List the outer package, then extract it.
+cpio -it < ../77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu
 cpio -idmv < ../77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu
-# Extract the rootfs tarball
-tar -xzf eightsleep-nxp-image-*.tar.gz
+ls
 ```
 
-Locate the required universal artifacts:
+For the documented release, the inner archive is named `eightsleep-nxp-image-*.tar.gz`. Inspect `sw-description` to identify the payload, then use the **exact** archive filename, not a wildcard that could match multiple files. Replace `ROOTFS_ARCHIVE.tar.gz` below with that filename:
+
+```bash
+sed -n '1,200p' sw-description
+tar -tzf ROOTFS_ARCHIVE.tar.gz
+tar -xzf ROOTFS_ARCHIVE.tar.gz
+```
+
+If the payload is not the expected root filesystem tarball, stop here and identify its format before proceeding. These commands do not describe how to unpack every firmware payload type.
+
+Locate the required artifacts in the extracted root filesystem. The following table is specific to the documented release:
 
 | Path in archive                                            | Artifact description                                  |
 | ---------------------------------------------------------- | ----------------------------------------------------- |
@@ -95,9 +109,35 @@ Locate the required universal artifacts:
 | `usr/bin/nats-server` & `usr/bin/nats`                     | Static ARM64 NATS server and management CLI           |
 | `etc/nats.conf` & `lib/systemd/system/nats-server.service` | NATS service configuration and systemd unit           |
 
+#### Missing `usr/lib64` or `libnats.so.3.11.0`
+
+Before transferring anything, search the extraction directory:
+
+```bash
+find . \( -name 'sw-description' -o -name '*image*.tar*' \
+  -o -name 'libnats.so*' -o -name 'frankenfirmware' \
+  -o -name 'nats-server' -o -name 'nats' \) -print
+```
+
+- **Only the inner archive is present:** finish the second extraction above. A library inside that archive is not yet a file you can copy with `scp`.
+- **Artifacts appear under another directory prefix:** locate the extracted root filesystem and run the transfer commands from there. Check its `opt/eight/bin/frankenfirmware` and `usr/` tree together.
+- **A different library location or version appears:** record it along with the `.swu` filename. The remaining commands assume the table's paths and versions; they need to be checked against that package's daemon dependencies and the target Pod's library loader before use.
+- **No `libnats.so*` appears after successful root filesystem extraction:** inspect the archive listing to distinguish a missing package member from an extraction problem. Do not infer NATS support, an older firmware generation, or a hardware fault from the missing directory alone.
+
+Do not create a symlink to a nonexistent file, rename another library to `libnats.so.3.11.0`, or combine a daemon and library from different releases to satisfy the example commands. Obtain a compatible set of artifacts together after identifying the package and hardware; whether the download is public does not establish compatibility.
+
+For help, include the exact `.swu` filename/revision, the root filesystem archive name, any extraction errors, the search output above, and your hub model and cover generation. On the Pod, these read-only commands identify the board and CPU architecture:
+
+```bash
+cat /proc/device-tree/model; echo
+uname -m
+```
+
+The file list and `sw-description` are enough for an initial investigation; do not post a signed download URL or device ID. See [collecting logs](/core/system/logs/#collect-a-cli-support-bundle) if the Pod also reports sensor stalls.
+
 ### Step 4: Transfer artifacts to the Pod
 
-From your computer within the `swu_extracted` directory, transfer the extracted binaries, libraries, firmware images, and service units to their target paths on the Pod over port 8822.
+Proceed only after confirming the required artifacts and the hardware combination above. The commands below use the documented release’s paths and versions. From your computer within the extracted root filesystem directory (`swu_extracted` in the example), transfer the files to the Pod over port 8822.
 
 If you are re-running this step and `nats-server` is already running, stop it first (`ssh -p 8822 root@POD_IP "systemctl stop nats-server.service"`). Otherwise `scp` cannot overwrite the running binary and fails with `Text file busy`.
 
