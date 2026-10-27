@@ -1,0 +1,71 @@
+---
+type: Guide
+title: 'Water care and maintenance liquid'
+description: 'Refill and prime the water system, maintain the cleaning insert, and choose treatment for your Pod hardware.'
+sources:
+  - id: water-refill
+    resource: https://help.eightsleep.com/en_us/how-often-will-i-need-to-refill-the-water-reservoir-H1EpdK0Uv
+    title: Eight Sleep water reservoir and priming guide
+  - id: maintenance-insert
+    resource: https://www.eightsleep.com/product/pod-maintenance-insert
+    title: Eight Sleep Pod Maintenance Insert guidance
+  - id: priming-operation
+    resource: https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/server/routers/device.ts
+    title: Priming timing and operation
+  - id: priming-precautions
+    resource: https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/tools/control.ts
+    title: Priming precautions
+  - id: water-care
+    resource: https://github.com/sleepypod/ios/blob/d493041ab878c1c21620eb773980103084fd75f0/Sleepypod/Views/Status/WaterLevelSheet.swift
+    title: Water-care and circulation guidance
+---
+
+# Water care and maintenance liquid
+
+This guide covers **Pod 5 and earlier**. For Pod 6, use [the manufacturer’s direct-to-hub filling instructions](https://help.eightsleep.com/en_us/how-often-will-i-need-to-refill-the-water-reservoir-H1EpdK0Uv) and the maintenance instructions supplied with that system.
+
+Keep the water level topped up when the Pod reports it is low, prime after refilling to clear trapped air, and maintain the water treatment specified for your cover. Treatment keeps the water clean; priming keeps it circulating through the tubing.
+
+## Refill and prime
+
+1. **Check the water level.** Refill when the Pod reports low water. For **Pod 5 and earlier**, Eight Sleep’s current refill guide specifies **distilled water**. Fill to your hub’s marked fill line; Pod 6 uses a different filling procedure.[^water-refill]
+2. **Keep the bed empty and start a prime.** Priming pushes water through the cover and clears air pockets. Expect pump noise and vibration; a routine prime typically takes **2–5 minutes**.[^priming-operation][^priming-precautions]
+3. **Let the cycle finish.** Wait until the Pod no longer reports priming before starting another cycle. Initial setup may require several fills and primes; follow the setup instructions for your hardware.[^priming-operation][^water-refill]
+
+Prime after refilling, after an extended period without use, or when temperatures become uneven.[^water-care] You can schedule [daily priming](/core/settings/device/#daily-maintenance) for a time when nobody is in bed. Circulation does not replace the maintenance treatment.
+
+## BZK and maintenance liquid
+
+**Benzalkonium chloride (BZK)** is an antimicrobial ingredient in Eight Sleep’s maintenance solution, used to keep the water clean.[^maintenance-insert] The treatment you need depends on your hardware:
+
+| Hardware                                         | Water treatment                                                                                                                                             |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pod 3 or earlier with its original cover         | These covers do not support the newer interchangeable maintenance insert. Use maintenance instructions and a treatment product specified for that hardware. |
+| Pod 4 or Pod 5 cover with its maintenance insert | The insert supplies the treatment. Eight Sleep says to add **only water** to the tank and replace the insert every **6–8 months**.                          |
+| Mixed-generation hub and cover                   | Check the actual cover, water cord, and hub. The hub’s generation alone does not establish which treatment or insert is compatible.                         |
+
+For a liquid treatment, follow the product’s specified concentration, measured dose, and refill interval for your hardware. **There is no verified universal liquid BZK dose in the sources for this guide.** Do not estimate a dose or assume a generic BZK product is equivalent to the Pod maintenance solution.
+
+Hardware and insert guidance: Eight Sleep’s maintenance-insert instructions.[^maintenance-insert]
+
+## Replace a Pod 4 or Pod 5 maintenance insert
+
+Every **6–8 months**, follow the replacement instructions supplied with your insert:
+
+1. Locate the insert on the cover’s water cord.
+2. Press its release button and remove it; a few drops of water are normal.
+3. Remove the cap from the new insert and fit it into the cord’s adapter.[^maintenance-insert]
+
+Keep the current insert in place between replacements. Extra liquid treatment is not part of the manufacturer’s instructions for an insert-equipped system. See the [manufacturer’s illustrated replacement guide](https://www.eightsleep.com/product/pod-maintenance-insert).
+
+If heating or cooling remains weak after refilling and priming, check [water flow, pump status, and thermal diagnostics](/troubleshooting/core/#powered-but-not-heating-or-cooling) before adding more treatment.
+
+[^water-refill]: [Eight Sleep water reservoir and priming guide](https://help.eightsleep.com/en_us/how-often-will-i-need-to-refill-the-water-reservoir-H1EpdK0Uv). Checked October 26, 2026.
+
+[^maintenance-insert]: [Eight Sleep Pod Maintenance Insert guidance](https://www.eightsleep.com/product/pod-maintenance-insert). Checked October 26, 2026.
+
+[^priming-operation]: [Priming timing and operation](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/server/routers/device.ts).
+
+[^priming-precautions]: [Priming precautions](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/tools/control.ts).
+
+[^water-care]: [Water-care and circulation guidance](https://github.com/sleepypod/ios/blob/d493041ab878c1c21620eb773980103084fd75f0/Sleepypod/Views/Status/WaterLevelSheet.swift).

@@ -1,6 +1,14 @@
 ---
+type: Guide
 title: 'Device'
 description: 'Timezone, units, the auto power-off cap, pump protection, the sensor data source, daily maintenance, and the LED.'
+sources:
+  - resource: https://github.com/sleepypod/core/blob/0c2344c3/src/components/Settings/DeviceSettingsForm.tsx
+    title: 'Device settings form'
+  - resource: https://github.com/sleepypod/core/blob/0c2344c3/src/server/routers/settings.ts
+    title: 'Settings API'
+  - resource: https://github.com/sleepypod/core/blob/0c2344c3/src/server/routers/system.ts
+    title: 'Update trigger'
 ---
 
 import { Callout } from 'nextra/components'
@@ -79,6 +87,8 @@ A note appears under the rows when the chosen source does not match the firmware
 
 - **Daily reboot.** Restarts the Pod at the time you choose. Off by default; the default time is 03:00.
 - **Daily prime.** Circulates water to clear air from the lines at the time you choose. Off by default; the default time is 14:00. Choose a time when nobody is in bed.
+
+For refilling, priming, maintenance inserts, and liquid treatment, see [Water care and maintenance liquid](/core/water-care/).
 
 ## LED
 
