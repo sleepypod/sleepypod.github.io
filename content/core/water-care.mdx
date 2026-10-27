@@ -3,9 +3,9 @@ type: Guide
 title: 'Water care and maintenance liquid'
 description: 'Maintain the water circuit with dilute liquid BZK, measured dosing, and precautions for seals and tubing.'
 sources:
-  - id: water-care
-    resource: https://github.com/sleepypod/ios/blob/d493041ab878c1c21620eb773980103084fd75f0/Sleepypod/Views/Status/WaterLevelSheet.swift
-    title: Water-care guidance
+  - id: maintenance-insert
+    resource: https://www.eightsleep.com/product/pod-maintenance-insert
+    title: Eight Sleep maintenance insert composition and placement
   - id: community-regimen
     resource: https://www.reddit.com/r/EightSleep/comments/1il3gq5/
     title: Community report of liquid BZK use
@@ -31,13 +31,13 @@ sources:
 
 # Water care and maintenance liquid
 
-For **Pod 5 and earlier**, sleepypod favors **dilute liquid benzalkonium chloride (BZK, also called BAK or BKC)** added through the reservoir for water treatment.[^water-care] Measure it; do not pour in an unmeasured splash. This guide describes the available community dosing evidence and its limits. It does not establish that liquid treatment outperforms an insert or that inserts are ineffective.
+For **Pod 5 and earlier**, sleepypod favors **dilute liquid benzalkonium chloride (BZK, also called BAK or BKC)** added through the reservoir for water treatment. Measure it; do not pour in an unmeasured splash. This guide describes the available community dosing evidence and its limits. It does not establish that liquid treatment outperforms an insert or that inserts are ineffective.
 
 ## Product and measured dose
 
 Use a **ready-diluted, water-only BZK solution** with a clearly stated concentration. Do not substitute a fragranced cleaner, surgical scrub, or another product merely because it contains BZK. Do not buy 20%, 50%, or 80% concentrate to dilute at home.
 
-One community contributor reports using **140 mL of BAK 1:750 approximately every six months**, with two years of use in their machine. This is **one user's experience, not a validated Pod dose or service interval**.[^community-regimen] sleepypod's existing guidance recommends liquid BZK but does not specify a tested quantity.[^water-care]
+One community contributor reports using **140 mL of BAK 1:750 approximately every six months**, with two years of use in their machine. This is **one user's experience, not a validated Pod dose or service interval**.[^community-regimen]
 
 The reported product is Medical Chemical Corp **BAK 1:750**. Its printed Drug Facts label states **1.33 g/L BZK**, with water as the inactive ingredient. At that strength:
 
@@ -48,6 +48,22 @@ The reported product is Medical Chemical Corp **BAK 1:750**. Its printed Drug Fa
 Check the actual bottle label: the DailyMed page's structured strength field differs from its printed Drug Facts label. Resolve a conflicting concentration with the supplier before dosing. The product is labeled as a topical antiseptic; that label does not establish suitability or long-term seal compatibility inside a Pod.[^bzk-label]
 
 **Do not add this full amount on every top-up, increase it to clear a clog, or layer it over an unknown existing treatment or active insert.** The reported six-month practice does not demonstrate that the previous dose is gone.
+
+## Crystals versus liquid
+
+The community report puts the insert's BZK content at **186 mg in crystal form**.[^community-regimen] Eight Sleep confirms that its maintenance solution includes BZK, but its product page does not give that mass or a release-rate measurement.[^maintenance-insert]
+
+| Comparison           | Crystal insert                                     | Ready-diluted liquid                                       |
+| -------------------- | -------------------------------------------------- | ---------------------------------------------------------- |
+| BZK amount           | Reported 186 mg per insert                         | About 186 mg in 140 mL at 1.33 g/L                         |
+| Where it enters      | Insert on the cover's water cord                   | Reservoir during a refill                                  |
+| Delivery uncertainty | How much dissolves and reaches the water, and when | How much treated reserve water enters the circulating loop |
+
+**A small quantity of crystals is not inherently weaker than a large bottle of dilute liquid.** Most of the liquid is water. If the reported mass is correct and both doses fully dissolve and mix into the same water volume, their nominal BZK concentration is the same. This calculation does not establish equal performance over time.
+
+An insert **could under-deliver** if its contents do not dissolve or reach the circuit adequately; liquid **could under-deliver** if it stays in the reservoir. These are possible failure mechanisms, not measured findings about this hardware. Neither the amount in the package nor the replacement schedule establishes the active concentration in the cover months later.
+
+sleepypod's preference is for a measured liquid dose introduced during refill. There is not enough evidence here to quantify how ineffective an insert might be or claim that liquid lasts longer. A meaningful comparison would measure BZK in the circulating water after treatment and over time, alongside growth and material compatibility. **Do not compensate for suspected insert failure by adding extra BZK to an unknown existing dose.**
 
 ## Get treatment into the circulating water
 
@@ -83,8 +99,6 @@ There is no supported Pod-specific half-life here. Do not assume that an old dos
 
 Keep treatment in its labeled container, away from children and pets. Follow its handling instructions, avoid eye contact, and do not spray or mist it. If performance remains poor, check [water flow and thermal diagnostics](/troubleshooting/core/#powered-but-not-heating-or-cooling) instead of increasing the dose.
 
-[^water-care]: [Water-care guidance](https://github.com/sleepypod/ios/blob/d493041ab878c1c21620eb773980103084fd75f0/Sleepypod/Views/Status/WaterLevelSheet.swift). Recommends liquid BZK, without a measured dose.
-
 [^community-regimen]: [Community report of liquid BZK use](https://www.reddit.com/r/EightSleep/comments/1il3gq5/). Self-reported experience and discussion, not controlled testing.
 
 [^bzk-label]: [Medical Chemical Corp BAK 1:750 label](https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d1f06aa6-2264-4ac1-a9a4-8ca9be1c9ca8).
@@ -98,3 +112,5 @@ Keep treatment in its labeled container, away from children and pets. Follow its
 [^water-refill]: [Eight Sleep reservoir filling and setup priming](https://help.eightsleep.com/en_us/how-often-will-i-need-to-refill-the-water-reservoir-H1EpdK0Uv).
 
 [^priming-operation]: [Priming timing and operation](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/server/routers/device.ts).
+
+[^maintenance-insert]: [Eight Sleep maintenance insert composition and placement](https://www.eightsleep.com/product/pod-maintenance-insert). Confirms BZK and the water-cord location; does not specify active mass or release kinetics.
