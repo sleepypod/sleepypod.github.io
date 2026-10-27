@@ -1,0 +1,50 @@
+---
+title: 'Water care and maintenance liquid'
+description: 'Find BZK guidance in the iOS app and choose water care for your Pod hardware.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Water care and maintenance liquid
+
+**BZK means benzalkonium chloride.** This is the ingredient named in sleepypod’s iOS **Water Care** panel. Eight Sleep also identifies it as an active ingredient in its Pod maintenance solution. The ingredient name alone does not specify a suitable liquid product, concentration, or dose.
+
+## Find it in the iOS app
+
+Open **Status**, then tap the **water-level indicator** in the health card. This opens **Water & Priming**; scroll to **Water Care** to find **Benzalkonium Chloride (BZK)**. Availability and layout depend on your installed build.
+
+The app describes BZK as an antimicrobial and mentions adding liquid when refilling. It does **not** specify a product formulation, concentration, measured amount, or dosing interval. Treat that text as background information, not a mixing recipe.
+
+## Choose care by hardware
+
+The maintenance insert is part of the **cover’s water cord**. Check the hardware you actually have, especially if your hub and cover are from different generations.
+
+| Hardware                                         | Maintenance guidance                                                                                                                                                                                                                    |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pod 3 or earlier with its original cover         | Eight Sleep’s current insert page says older Pods do not support the interchangeable insert. It does not provide a liquid BZK replacement dose for these models. Follow instructions specific to your hardware and maintenance product. |
+| Pod 4 or Pod 5 cover with its maintenance insert | Eight Sleep specifies replacement every **6–8 months** and says no additional liquid other than water is needed in the tank. Follow the insert’s replacement instructions.                                                              |
+| Mixed-generation hub and cover                   | The insert guidance does not establish a maintenance regimen for every mixed pairing. Confirm compatibility for the actual cover, cord, and hub rather than choosing by the hub label alone.                                            |
+
+Source: [Eight Sleep’s Pod Maintenance Insert guidance](https://www.eightsleep.com/product/pod-maintenance-insert), checked October 26, 2026.
+
+## Refilling and priming
+
+Eight Sleep’s current refill guide specifies **distilled water for Pod 5 and earlier**. Pod 6 has different filling instructions, so do not transfer those instructions to an older hub. Follow your hardware’s fill-line instructions rather than estimating from the nominal water volume.
+
+Priming circulates water through the cover and clears trapped air after refilling. In Core, [Settings → Device → Daily prime](/core/settings/device/#daily-maintenance) schedules that circulation. Priming and water treatment serve different purposes; enabling daily prime does not supply or measure a maintenance chemical.
+
+Source: [Eight Sleep’s water reservoir and priming guide](https://help.eightsleep.com/en_us/how-often-will-i-need-to-refill-the-water-reservoir-H1EpdK0Uv), checked October 26, 2026.
+
+## How much liquid BZK should I add?
+
+The pinned sleepypod app source and manufacturer pages linked here do not establish a liquid BZK dose for an older Pod or a mixed-generation setup. A generic BZK product is not automatically equivalent to the manufacturer’s maintenance solution. Use a product and dose explicitly specified for your hardware; do not estimate an amount from the app’s wording.
+
+<Callout type="info">
+
+The app also flags hydrogen peroxide, bleach, and dehumidifier chemicals. Those labels are not a model-specific chemical compatibility specification. Use the current care instructions for your exact hardware and product rather than treating the app panel as a universal additive guide.
+
+</Callout>
+
+---
+
+**Pinned app sources:** [Water Care text](https://github.com/sleepypod/ios/blob/d493041ab878c1c21620eb773980103084fd75f0/Sleepypod/Views/Status/WaterLevelSheet.swift) · [Water-level entry point](https://github.com/sleepypod/ios/blob/d493041ab878c1c21620eb773980103084fd75f0/Sleepypod/Views/Status/HealthCircleView.swift)

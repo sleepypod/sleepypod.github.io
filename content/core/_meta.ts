@@ -16,6 +16,7 @@ export default {
   biometrics: 'Sleep',
   system: 'System',
   settings: 'Settings',
+  'water-care': 'Water care and maintenance liquid',
   '-- technical': { type: 'separator', title: 'How it works' },
   'autopilot-engine': 'Autopilot engine',
   'data-flow': 'Follow your data',
