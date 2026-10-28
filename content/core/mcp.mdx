@@ -113,6 +113,47 @@ To apply exactly what was previewed, pass the returned `candidateRuleset` as `ru
 
 Watch import accepts up to 2,000 records per array, with Unix-second timestamps and an explicit side. Repeated records are skipped. Check `stageError` for partial success. For a full Health export, use [Upload Apple Watch data](/core/biometrics/#explore-vitals-and-import-watch-data) instead of putting the archive in model context.
 
+## Personal stage models
+
+Available in core development revision `09e10015`; check your installed build.
+
+| Tool                     | Purpose                                                                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `get_stage_models`       | List a side's library, newest first, with IDs and selected/active flags.                                                             |
+| `preview_stage_model`    | Read-only comparison with Watch stages and the rules; stores nothing. Pass an inline model or omit it to preview the selected model. |
+| `add_stage_model`        | Store a model without selecting it. Identical uploads return the existing ID.                                                        |
+| `select_stage_model`     | Select a library ID, with an explicit `active` choice; returns the previous selection for restoration.                               |
+| `set_stage_model_active` | Turn the selected model on, or use `active: false` to return to the rules while keeping it selected.                                 |
+
+Preview defaults to seven recent nights (1–30 supported). Scores on the model's
+training nights are **in-sample**, not independent validation. Missing Watch labels
+mean no agreement score. Review the preview before approving selection or activation,
+one side at a time; activating changes the stages shown for stored nights too.
+
+Inline models are capped at **256 KB of JSON**. A full training forest is about
+1–2 MB: upload it over REST, without selecting it, then use the tools for library
+management. Replace `POD_IP`, the side, and the candidate path:
+
+```bash
+jq -n --slurpfile m candidate.json '{side:"left", model:$m[0]}' |
+  curl --fail-with-body -X POST http://POD_IP:3000/api/sleep-stages/models \
+    -H 'Content-Type: application/json' --data-binary @-
+```
+
+Keep the returned ID and inspect `get_stage_models`. To preview a large candidate
+before changing the selection, send the same model via
+`POST /api/sleep-stages/model/preview` with `side`, `model`, and `nights`.
+The MCP preview takes an inline model or the selected model, not an arbitrary library
+ID. After reviewing that preview, use `select_stage_model` with the uploaded ID and
+the intended `active` state. Subsequent previews can omit the model.
+
+Unknown feature contracts and models that fail their embedded test vectors are
+rejected. The older `PUT /api/sleep-stages/model` replaces the side's model and
+preserves its active state (inactive on first upload); it is deliberately not exposed through MCP. See
+[Personal stage models](/core/personal-stage-models/) for training and REST routes.
+
+**Pinned sources:** [MCP personal-model contract](https://github.com/sleepypod/core/blob/09e10015ea75dab14456bf0dd58cea120d73b2ff/src/mcp/README.md#personal-stage-models) · [Tool schemas and size limit](https://github.com/sleepypod/core/blob/09e10015ea75dab14456bf0dd58cea120d73b2ff/src/mcp/tools/stageModels.ts)
+
 ## Biometric calibration
 
 | Tool                            | Purpose                                                                                          |
