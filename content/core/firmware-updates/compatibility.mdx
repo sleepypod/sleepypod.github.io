@@ -1,0 +1,73 @@
+---
+title: 'Compatibility and releases'
+description: 'Verified hub and cover pairing, firmware artifacts, and platform architecture.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Compatibility and releases
+
+The recorded hardware verification covers **Pod 3 MT8365 F04 + Pod 4 STM32G0 cover**. See [Choose your hardware](/core/firmware-updates/#choose-your-hardware) for the scope of other pairings.
+
+<Callout type="warning">
+
+**Never flash a full `.swu` image to a MediaTek-based hub.**
+
+Stock Eight Sleep `.swu` packages (such as `3dd72bdefafbcfc202d6715fc45f9c7bbb3e02ff.swu`) are **full operating system image updates** containing a complete root filesystem archive (`eightsleep-nxp-image-imx8mm-var-dart-eight.tar.gz`). This image is compiled exclusively for the **NXP i.MX 8M Mini** platform (Variscite DART-MX8M-MINI SoM) used on Pod 4 and Pod 5 hubs.
+
+The **Pod 3 hub verified for this guide runs on a MediaTek MT8365 Pumpkin SBC** with a `5.15-mtk` kernel. Check your board before doing anything else:
+
+```bash
+ssh -p 8822 root@POD_IP "cat /proc/device-tree/model; echo"
+```
+
+If it prints `MT8365 Pumpkin`, your hub runs on a MediaTek SoC. Flashing the entire `.swu` file with `swupdate` or executing `update.sh` will overwrite partition tables and U-Boot, **permanently bricking the board**.
+
+**Rule:** Never flash or install a `.swu` file directly as an OS update on a Pod 3 hub. Instead, use [the manual extraction procedure](/core/firmware-updates/manual-update/) to stage only the required userspace binaries and microcontroller payload files (`.bbin`).
+
+</Callout>
+
+## Platform architecture: MediaTek MT8365 vs. NXP i.MX 8M Mini
+
+Understanding the separation between open hardware BSPs, closed Eight Sleep daemons, and sleepypod Core clarifies what can and cannot be updated:
+
+- **Proprietary Eight Sleep build layer (Closed):** Eight Sleep builds its official OS images using Yocto/OpenEmbedded, but their custom layers (`meta-eight`), build recipes, and userland applications (`Eight.Capybara`, `frankenfirmware`, and proprietary telemetry agents) are closed-source. You cannot reproduce or recompile official Eight Sleep OS images from source.
+- **MediaTek MT8365 Pumpkin BSP (Open):** The Pod 3 SBC is the open **Pumpkin i350** (MediaTek Genio 350). MediaTek maintains official open-source Yocto BSP layers ([`meta-mediatek-bsp`](https://gitlab.com/mediatek/aiot/bsp/meta-mediatek-bsp) and `meta-rity` for machine `pumpkin-i350` / `mt8365-pumpkin`) and `5.15-mtk` kernel source trees.
+- **Minimal requirements for sleepypod:** sleepypod Core only needs standard Linux userspace tools (systemd, Node.js, Python 3 with `uv`, and `nats-server`). The only proprietary Eight Sleep binary required to interface with the bed microcontrollers is `frankenfirmware`, which runs as a standalone 64-bit ARM Linux binary communicating over standard Linux serial ports (`/dev/ttyS1` and `/dev/ttyS2`).
+
+## Choosing artifacts: Pod 3 releases vs. latest firmware
+
+When selecting which files to extract and transfer, note which components are SoC-dependent versus hardware-universal:
+
+| Artifact                                                  | Sourcing guidance                                                  | Compatibility notes                                                                                                                                                                                                                                                                                                                                         |
+| :-------------------------------------------------------- | :----------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `firmware-sensor-g0.bbin` & `firmware-sensor-g0-usb.bbin` | **Pod 3 bridge release or latest Pod 4/Pod 5 release**             | Runs entirely on the cover's STM32G0 microcontroller (`pn 20600-0001-I12`, hardware `0812`), independent of the hub's Linux SoC. Both `v5.5.9` and latest `v5.5.22.0` work seamlessly on a Pod 3 hub paired with a Pod 4 cover.                                                                                                                             |
+| `firmware-frozen.bbin`                                    | **Pod 3 bridge release or verified backwards-compatible release**  | Runs on the hub's onboard thermal controller STM32. Version `v1.5.156` and newer `v1.6.114` (from modern SWUs) have both been tested and verified on Pod 3 MT8365 hubs (`pn 20500`, hardware revision `0x0504` / `F04`, `is_pod6=0`). Do not flash unverified thermal binaries that drop support for revision `0x0504`.                                     |
+| `frankenfirmware`                                         | **Pod 3 bridge release or latest release with `F03`/`F04` config** | ARM64 ELF binary. Modern versions (compiled against glibc 2.33 on Yocto Hardknott) run cleanly on Pod 3's glibc 2.35 (Yocto Kirkstone). Dynamic shared libraries (`libnats.so.3.11`, `libsystemd`, `libudev`, `libstdc++`, `glibc`) resolve directly. It queries `machine.json` for `hwRev: F03` or `F04` to dynamically map `/dev/ttyS1` and `/dev/ttyS2`. |
+| `Eight.Capybara`                                          | **Do not update / omit**                                           | Compiled .NET daemon. Modern builds attempt to initialize Pod 4/5 SMBus power controllers (`0x2C`) and fail on Pod 3 (`SMBus write block data operation failed. Error code: 6`). sleepypod Core replaces Capybara completely; leave stock Capybara untouched or disabled.                                                                                   |
+| `nats-server`, `nats`, `libnats.so.3.11.0`, `nats.conf`   | **Any recent ARM64 release or standard package**                   | Generic 64-bit ARM Linux message bus binaries and configuration.                                                                                                                                                                                                                                                                                            |
+
+<Callout type="info">
+
+**Why `frankenfirmware` works across releases, but `Eight.Capybara` does not:**
+
+**`frankenfirmware` runs cleanly:** When executed on a Pod 3 hub, `frankenfirmware` reads `/opt/eight/config/machine.json`, finds the matching section for the hub's hardware revision (`F03` or `F04`), and dynamically maps the MediaTek serial ports:
+
+```text
+INF: DeviceInfo.cpp getPorts | Using machine config for hwRev F04 (device hwRev: F04)
+# (or 'hwRev F03' on F03 revisions)
+INF: main.cpp | sensor path: /dev/ttyS2 frozen path: /dev/ttyS1
+DBG: raw_nats_worker.h tryInitJs | successfully connected to jetstream!
+```
+
+Every dynamic dependency (`libnats.so.3.11`, `libsystemd`, `libudev`, `libstdc++`, `glibc`) resolves immediately against the Pod 3's glibc 2.35.
+
+**`Eight.Capybara` fails hardware initialization:** `Eight.Capybara` is a compiled .NET binary that expects Pod 4/Pod 5 hardware. On Pod 3, it attempts to write to an SMBus power controller at address `0x2C` (`probe ack 0x2C=False`) and crashes after three failed retries.
+
+**sleepypod does not need Capybara:** sleepypod Core replaces all functionality of `Eight.Capybara` (mobile app webhooks, cloud telemetry, schedules). sleepypod speaks directly to `frankenfirmware` via `/deviceinfo/dac.sock` and local NATS JetStream, so you do not need or want an updated Capybara daemon.
+
+</Callout>
+
+## Sources and verification scope
+
+**Source reference:** [`sp-status` output format](https://github.com/sleepypod/core/blob/9bbc7232924fd2b18c7176c259556151aecc6412/scripts/bin/sp-status) · [Root SSH key resolution in the Core installer](https://github.com/sleepypod/core/blob/9bbc7232924fd2b18c7176c259556151aecc6412/scripts/lib/ssh-helpers) · [free-sleep firmware reset and slot check](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md) · [Archived Pod 3 `.swu` releases](http://web.archive.org/web/*/fw.8slp.net/pod3-updates/pod3/releases/*). Stream limits, subject rates, serial port mapping, and the Slot B `sshd` configuration were verified on an MT8365 Pod 3 hub (`pn 20500`, hardware revision `0x0504`) with a Pod 4 cover (`pn 20600-0001-I12`, hardware `0812`), using artifacts extracted from releases `77af88bd8b941fed81786c09a9ac3cdb1e97b126` (`v1.5.156`, `v5.5.9`) and `3dd72bdefafbcfc202d6715fc45f9c7bbb3e02ff` (`v1.6.114`, `v5.5.22.0`).

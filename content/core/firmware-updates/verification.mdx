@@ -1,0 +1,82 @@
+---
+title: 'Verification and troubleshooting'
+description: 'Check the firmware update, NATS telemetry, UART mapping, and hardware health.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Verification and troubleshooting
+
+These checks accompany the [Pod 3 hub + Pod 4 cover update](/core/firmware-updates/manual-update/). Expected versions and timings below describe the recorded hardware verification.
+
+Check the system status on the Pod (`/usr/local/bin/sp-status`, or `sp-status` in an interactive shell):
+
+```bash
+/usr/local/bin/sp-status
+```
+
+Confirm that the sensor pipeline reports `NATS JetStream`:
+
+```text
+pipeline:    NATS JetStream (new firmware, April 2026+)
+nats-server: active (port 4222 open)
+jetstream:   /persistent/jetstream present (<size>)
+jetstream-uploader.service: <state>
+raw stream:  present (subject raw.>)
+```
+
+Confirm messages are arriving with the NATS CLI:
+
+```bash
+nats stream subjects raw
+```
+
+You should see these subjects. Rates were measured on a working Pod 3 hub with a Pod 4 cover:
+
+- `raw.sens.piezo`: about 1 message per second, each carrying a batch of piezo samples
+- `raw.sens.capsense`: capacitive presence grid, 2 messages per second
+- `raw.sens.bedtemp`: bed surface temperatures, roughly every 10 seconds
+- `raw.frz.temp`, `raw.frz.water`, `raw.frz.health`, `raw.frz.therm`: hub cooling loop, reservoir, and thermal controller status, roughly every 10 seconds
+
+`raw` is capped at 512MB (`--max-bytes`), so once it fills, old messages are discarded and the per-subject counts stop growing. To check that data is still arriving, watch a subject live with `nats sub raw.sens.capsense`.
+
+Verify hardware health and sensor data delivery via the local HTTP API:
+
+```bash
+# Verify DAC socket connectivity and thermal loop latency
+curl -s http://localhost:3000/api/health/hardware
+# Expect: {"status":"ok","socketPath":"/deviceinfo/dac.sock","latencyMs":0.15}
+
+# Verify biometrics stream age and NATS delivery
+curl -s http://localhost:3000/api/system/sensor-source
+# Expect: {"stream":{"source":"nats","lastFrameAgeMs":21,"lastFrameType":"capSense"}}
+```
+
+Finally, check `/persistent/sleepypod-data/biometrics.db` to confirm that `cap_sense_frames` and `bed_temp` rows are incrementing in real time:
+
+```bash
+python3 -c "import sqlite3; c=sqlite3.connect('/persistent/sleepypod-data/biometrics.db').cursor(); print('Capsense frames:', c.execute('SELECT count(*) FROM cap_sense_frames').fetchone()[0]); print('Bed temp samples:', c.execute('SELECT count(*) FROM bed_temp').fetchone()[0])"
+```
+
+### Troubleshooting subsystem errors
+
+- **`A dependency job for frank.service failed`:**
+  Check `systemctl status capybara.service` and `journalctl -u capybara -n 50 --no-pager`. If `capybara` dumped core or exited with an error, inspect `/opt/eight/config/machine.json`. Confirm that `sensorPort` and `frozenPort` are declared at both the root level and inside the nested `F03` and `F04` blocks as shown in [Step 6](/core/firmware-updates/manual-update/#step-6-configure-uart-mapping-metadata-stubs-and-stage-cover-firmware-pod-3-hub--pod-4-cover).
+- **`[thermostat] left heat-on rejected - no peripheral connected` (or cover not detected):**
+  Check your device label with `cat /deviceinfo/device-label`. If the hardware revision is `F03` (e.g., `20500-0003-F03-...`) and `/opt/eight/config/machine.json` only contains `"F04"`, `frankenfirmware` falls back to default NXP i.MX 8M Mini ports (`/dev/ttymxc0`) and never connects to the cover on `/dev/ttyS2`. Add the `"F03"` block to `machine.json` with `"sensorPort": "/dev/ttyS2"` and `"frozenPort": "/dev/ttyS1"`. (Note: setting `sensorSideOverrides` with `"force_f04"` has no effect as the daemon ignores unknown override keys).
+- **Log flooding with `frozen.cpp:927 updateCaviaConfig|[frozen] get_cavia_info() failed: [json.exception.parse_error.101]`:**
+  Confirm that `/deviceinfo/capybara.run_info` exists and contains `{}`. Because `/deviceinfo` is an in-memory `tmpfs`, ensure the systemd drop-in `/etc/systemd/system/frank.service.d/capybara-runinfo.conf` is in place to recreate the stub on boot. (Note: creating `cavia.json` has no effect because `frankenfirmware` explicitly polls `/deviceinfo/capybara.run_info`).
+- **Serial handshake stalls or frozen controller does not initialize:**
+  If `journalctl -u frank -f` does not show `Firmware initialized` within 60–90 seconds after restarting `frank.service`, or if `/dev/ttyS1` stops responding, perform a clean hardware reboot (`reboot`). Software service restarts alone cannot toggle the physical STM32 NRST lines when a microcontroller is stuck in an unhandled UART state.
+- **Biometrics streaming, but cooling or heating commands fail:**
+  Check whether the stock `dac.service` is running and competing for the DAC socket:
+  ```bash
+  systemctl status dac.service
+  ```
+  If active, mask it so sleepypod Core owns `/deviceinfo/dac.sock`:
+  ```bash
+  systemctl mask --now dac.service
+  systemctl restart sleepypod.service
+  ```
+
+[Source references and hardware verification scope](/core/firmware-updates/compatibility/#sources-and-verification-scope).

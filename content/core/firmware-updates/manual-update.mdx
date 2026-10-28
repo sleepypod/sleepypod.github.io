@@ -1,0 +1,370 @@
+---
+title: 'Pod 3 hub + Pod 4 cover update'
+description: 'Manually update subsystems on the verified MediaTek Pod 3 hub and STM32G0 Pod 4 cover.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Pod 3 hub + Pod 4 cover update
+
+<Callout type="warning">
+
+**Hardware scope: Pod 3 MT8365 F04 hub + Pod 4 STM32G0 cover.** Confirm the board and revisions against [Compatibility and releases](/core/firmware-updates/compatibility/) before proceeding. Never install the full NXP `.swu` image on the MediaTek hub. F03 mapping is included, but the recorded flash verification is F04.
+
+</Callout>
+
+This method extracts 64-bit ARM binaries for the verified hardware combination and STM32 microcontroller firmware from an official `.swu` release and stages them directly on your rooted Pod.
+
+This procedure replaces selected subsystem files without installing a complete stock operating system. It does not intentionally change your SSH keys or masked update services. That narrower scope does not guarantee compatibility or recovery: use only the verified hardware combination and keep the backups below.
+
+## Step 1: Back up the existing pod state
+
+Connect to your Pod over SSH as `root` (port 8822) and back up the current daemon and firmware directory:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  if [ ! -e /opt/eight/bin/frankenfirmware.bak ]; then cp -a /opt/eight/bin/frankenfirmware /opt/eight/bin/frankenfirmware.bak; fi && \
+  if [ ! -e /opt/eight/lib/subsystem_updates.bak ]; then cp -a /opt/eight/lib/subsystem_updates /opt/eight/lib/subsystem_updates.bak; fi && \
+  if [ -f /opt/eight/config/machine.json ] && [ ! -e /opt/eight/config/machine.json.bak ]; then cp -a /opt/eight/config/machine.json /opt/eight/config/machine.json.bak; fi && \
+  mkdir -p /opt/eight/backup_nats && \
+  for f in /usr/bin/nats-server /usr/bin/nats /usr/lib64/libnats.so.3.11.0 /etc/nats.conf /etc/systemd/system/nats-server.service; do
+    if [ -e \"\$f\" ] && [ ! -e \"/opt/eight/backup_nats/\$(basename \"\$f\")\" ]; then cp -a \"\$f\" /opt/eight/backup_nats/; fi
+  done && \
+  if [ ! -e /opt/eight/backup_nats/was-enabled ]; then systemctl is-enabled nats-server.service > /opt/eight/backup_nats/was-enabled 2>/dev/null || true; fi
+"
+```
+
+Keep these backups available on the Pod. If you need to revert any changes, see [Roll back subsystem files](/core/firmware-updates/rollback/).
+
+## Step 2: Acquire the update archive
+
+Firmware updates are distributed as `.swu` packages through Eight Sleep's update API (`update-api.8slp.net`).
+
+You can check the API directly using your device ID and current revision hash:
+
+```bash
+curl -is "https://update-api.8slp.net/v1/updates/pod3/1?deviceId=<id>&currentRev=<rev>"
+```
+
+- When an update is available, the API returns `HTTP/1.1 302 Found` with a signed AWS CloudFront/S3 download URL in the `Location:` header pointing to `https://fw.8slp.net/pod3-updates/pod3/releases/<hash>.swu`.
+- Alternatively, public releases are indexed on the [Wayback Machine](http://web.archive.org/web/*/fw.8slp.net/pod3-updates/pod3/releases/*). For example, `77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu` contains ARM64 daemons with NATS JetStream support, STM32G0 cover firmware (`v5.5.9`), and hub thermal firmware (`v1.5.156`).
+- Newer releases (such as `3dd72bdefafbcfc202d6715fc45f9c7bbb3e02ff.swu`) provide updated microcontroller firmware, including STM32G0 cover firmware `v5.5.22.0` and hub thermal firmware `v1.6.114`.
+
+<Callout type="info">
+
+**Release vs. delta archives:** Always use a full release archive containing `/releases/` in its URL path. Full releases contain the complete root filesystem tarball (`eightsleep-nxp-image-*.tar.gz`). Incremental or delta update packages do not include the rootfs and will be missing `libnats` and system binaries.
+
+</Callout>
+
+Review [artifact compatibility](/core/firmware-updates/compatibility/#choosing-artifacts-pod-3-releases-vs-latest-firmware) before extracting or transferring files.
+
+## Step 3: Extract artifacts on your computer
+
+There are **two extraction layers**: the outer `.swu` package, then the root filesystem archive inside it. Extracting only the `.swu` does not unpack the root filesystem's `usr/`, `lib/`, and `opt/` directories.
+
+On your computer, use a new, empty directory for each release so files from an earlier extraction cannot hide missing artifacts. Replace the example `.swu` filename with the file you actually downloaded:
+
+```bash
+mkdir swu_extracted && cd swu_extracted
+# List the outer package, then extract it.
+cpio -it < ../77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu
+cpio -idmv < ../77af88bd8b941fed81786c09a9ac3cdb1e97b126.swu
+ls
+```
+
+For the documented release, the inner archive is named `eightsleep-nxp-image-*.tar.gz`. Inspect `sw-description` to identify the payload, then use the **exact** archive filename, not a wildcard that could match multiple files. Replace `ROOTFS_ARCHIVE.tar.gz` below with that filename:
+
+```bash
+sed -n '1,200p' sw-description
+tar -tzf ROOTFS_ARCHIVE.tar.gz
+tar -xzf ROOTFS_ARCHIVE.tar.gz
+```
+
+Locate the required artifacts in the extracted root filesystem:
+
+| Path in archive                                               | Artifact description                                                        | Target path on Pod                        |
+| :------------------------------------------------------------ | :-------------------------------------------------------------------------- | :---------------------------------------- |
+| `opt/eight/bin/frankenfirmware`                               | ARM64 daemon with NATS JetStream and STM32G0 support                        | `/opt/eight/bin/frankenfirmware`          |
+| `opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin`     | STM32G0 Pod 4 cover firmware (`v5.5.9` or `v5.5.22.0`, ~137 KB)             | `/opt/eight/lib/subsystem_updates/`       |
+| `opt/eight/lib/subsystem_updates/firmware-sensor-g0-usb.bbin` | Optional: USB cover sensor variant (~145 KB)                                | `/opt/eight/lib/subsystem_updates/`       |
+| `opt/eight/lib/subsystem_updates/firmware-frozen.bbin`        | Hub thermal controller firmware (`v1.5.156` ~120 KB, or `v1.6.114` ~138 KB) | `/opt/eight/lib/subsystem_updates/`       |
+| `lib/libnats.so.3.11.0`                                       | C NATS shared library (located in `lib/` or `usr/lib/`, not `usr/lib64/`)   | `/usr/lib64/libnats.so.3.11.0`            |
+| `usr/bin/nats-server` & `usr/bin/nats`                        | Static ARM64 NATS server and management CLI                                 | `/usr/bin/`                               |
+| `etc/nats.conf` & `lib/systemd/system/nats-server.service`    | NATS service configuration and systemd unit                                 | `/etc/nats.conf` & `/etc/systemd/system/` |
+
+### Locating `libnats.so.3.11.0`
+
+In Yocto/OpenEmbedded root filesystem tarballs, shared libraries are placed under `lib/` or `usr/lib/`, rather than `usr/lib64/`. The target Pod 3 system's library loader uses `/usr/lib64/libnats.so.3.11.0`.
+
+Before transferring anything, search the extraction directory:
+
+```bash
+find . \( -name 'sw-description' -o -name '*image*.tar*' \
+  -o -name 'libnats.so*' -o -name 'frankenfirmware' \
+  -o -name 'nats-server' -o -name 'nats' \) -print
+```
+
+- **Only the inner archive is present:** finish extracting `ROOTFS_ARCHIVE.tar.gz`. A library inside that archive is not yet a file you can copy with `scp`.
+- **`libnats.so.3.11.0` is in `lib/` or `usr/lib/`:** this is expected. Copy it to `/usr/lib64/` on the Pod as shown in Step 4.
+- **No `libnats.so*` appears after root filesystem extraction:** inspect the archive listing to distinguish an extraction issue from a delta/patch SWU that does not contain the root filesystem.
+
+### Pre-flight artifact validation
+
+Before copying files to the Pod, validate that the extracted binaries and firmware payloads match expected architectures and versions. In both the `file` check below and the Step 4 `scp` command, replace `lib/libnats.so.3.11.0` with the path reported by `find` (for example, `usr/lib/libnats.so.3.11.0`).
+
+```bash
+# 1. Verify ARM64 ELF architecture across userland binaries and libraries
+file opt/eight/bin/frankenfirmware lib/libnats.so.3.11.0 usr/bin/nats-server usr/bin/nats
+# Expected: ELF 64-bit LSB executable/shared object, ARM aarch64
+
+# 2. Confirm NATS JetStream and STM32G0 support in frankenfirmware
+strings opt/eight/bin/frankenfirmware | grep -E "raw\.sens|firmware-sensor-g0"
+
+# 3. Confirm libnats dynamic linkage in frankenfirmware
+objdump -p opt/eight/bin/frankenfirmware 2>/dev/null | grep NEEDED | grep libnats || \
+  readelf -d opt/eight/bin/frankenfirmware 2>/dev/null | grep libnats
+# Expected: NEEDED libnats.so.3.11
+
+# 4. Check cover firmware version (STM32G0)
+# Subsystem .bbin files store version components in TLV headers at offset 29 (length at offset 28)
+python3 -c "b=open('opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin','rb').read(34); print('v' + '.'.join(str(x) for x in b[29:29+b[28]]))"
+# Expected: v5.5.9.0 or v5.5.22.0
+# Alternatively using od: od -An -j 29 -N 4 -t u1 opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin
+
+# 5. Check hub thermal controller firmware version (Pod 3 hub MCU)
+python3 -c "b=open('opt/eight/lib/subsystem_updates/firmware-frozen.bbin','rb').read(34); print('v' + '.'.join(str(x) for x in b[29:29+b[28]]))"
+# Expected: v1.5.156 or v1.6.114
+# Alternatively using od: od -An -j 29 -N 3 -t u1 opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+```
+
+## Step 4: Transfer artifacts to the Pod
+
+From your computer within the extracted root filesystem directory (`swu_extracted`), transfer the files to the Pod over port 8822.
+
+<Callout type="default">
+
+**Legacy SCP protocol:** Use `scp -O` (the legacy protocol flag). Newer OpenSSH clients default to SFTP, which can be rejected by the Pod's embedded dropbear/sshd server.
+
+</Callout>
+
+If you are re-running this step and `nats-server` is already running, stop it first (`ssh -p 8822 root@POD_IP "systemctl stop nats-server.service"`). Otherwise `scp` cannot overwrite the running binary and fails with `Text file busy`.
+
+```bash
+# Transfer the updated frankenfirmware daemon to staging in /tmp/
+scp -O -P 8822 opt/eight/bin/frankenfirmware root@POD_IP:/tmp/frankenfirmware
+
+# Transfer the microcontroller cover firmware images to subsystem updates
+scp -O -P 8822 \
+  opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin \
+  opt/eight/lib/subsystem_updates/firmware-sensor-g0-usb.bbin \
+  root@POD_IP:/opt/eight/lib/subsystem_updates/
+
+# Optional: transfer the hub thermal controller firmware (reflashes hub MCU on restart)
+scp -O -P 8822 opt/eight/lib/subsystem_updates/firmware-frozen.bbin \
+  root@POD_IP:/opt/eight/lib/subsystem_updates/
+
+# Use the libnats source path reported by find in Step 3 (lib/ or usr/lib/)
+scp -O -P 8822 lib/libnats.so.3.11.0 root@POD_IP:/usr/lib64/
+
+# Transfer the NATS server and management CLI to /usr/bin/
+scp -O -P 8822 usr/bin/nats-server usr/bin/nats root@POD_IP:/usr/bin/
+
+# Transfer NATS configuration and systemd service unit
+scp -O -P 8822 etc/nats.conf root@POD_IP:/etc/nats.conf
+scp -O -P 8822 lib/systemd/system/nats-server.service root@POD_IP:/etc/systemd/system/nats-server.service
+
+# Ensure correct file permissions on the Pod
+ssh -p 8822 root@POD_IP "
+  chmod 644 /opt/eight/lib/subsystem_updates/*.bbin && \
+  chown root:root /opt/eight/lib/subsystem_updates/*.bbin
+"
+```
+
+<Callout type="info">
+
+**Hub controller firmware:** Staging `firmware-frozen.bbin` in `/opt/eight/lib/subsystem_updates/` causes `frank` to reflash the hub's onboard thermal controller MCU upon restarting. Both `v1.5.156` and `v1.6.114` have been tested and verified on a Pod 3 hub (`pn 20500`, hardware revision `0504`). If you only want to update cover support or NATS telemetry without reflashing the hub controller, omit copying `firmware-frozen.bbin`.
+
+</Callout>
+
+## Step 5: Install and start NATS JetStream
+
+On the Pod, configure the library loader, start the NATS service, and provision the `raw` JetStream stream:
+
+```bash
+# Link the shared library and update loader cache
+ssh -p 8822 root@POD_IP "
+  ln -sf /usr/lib64/libnats.so.3.11.0 /usr/lib64/libnats.so.3.11 && \
+  ldconfig
+"
+
+# Set permissions and start nats-server
+ssh -p 8822 root@POD_IP "
+  chmod +x /usr/bin/nats-server /usr/bin/nats && \
+  mkdir -p /persistent/jetstream && \
+  systemctl daemon-reload && \
+  systemctl enable --now nats-server.service
+"
+
+# Wait for the server, then provision the 'raw' stream frankenfirmware publishes to (skipped if it already exists)
+ssh -p 8822 root@POD_IP "
+  for i in 1 2 3 4 5 6 7 8 9 10; do nats account info >/dev/null 2>&1 && break; sleep 1; done
+  nats stream info raw >/dev/null 2>&1 || \
+    nats stream add raw --subjects 'raw.>' --storage file --retention limits --max-age 24h --max-bytes 512MB --discard old --defaults
+"
+```
+
+## Step 6: Configure UART mapping, metadata stubs, and stage cover firmware (Pod 3 hub + Pod 4 cover)
+
+<Callout type="info">
+
+**Hardware scope:** This step applies specifically when pairing a **Pod 3 hub with a Pod 4 cover**.
+
+If you are updating a Pod 3 hub paired with its original Pod 3 cover (STM32F0/F1), do **not** overwrite `firmware-sensor.bbin` with the G0 binary or change `machine.json`—retain the stock port mapping and cover firmware so the original microcontroller can initialize normally.
+
+</Callout>
+
+When connecting a Pod 4 cover to a Pod 3 MediaTek Pumpkin board, configure the hardware serial port routing in `/opt/eight/config/machine.json`:
+
+- `/dev/ttyS2` connects to the **cover sensor port** (`pn 20600`, Pod 4 cover, 921,600 baud).
+- `/dev/ttyS1` connects to the **hub thermal controller** (`pn 20500`, water/TEC/pump controller, 38,400 baud).
+
+<Callout type="warning">
+
+**Hub revision compatibility (`F03` vs. `F04`) and `capybara`:** Pod 3 hubs were manufactured in both **`F03`** and **`F04`** hardware revisions (inspect your hub label with `cat /deviceinfo/device-label`, e.g. `20500-0003-F03-...` or `20500-0003-F04-...`). `frankenfirmware` inspects this label at boot and searches `machine.json` for a matching section. If an `F03` hub only has `F04` defined, `frankenfirmware` falls back to default NXP i.MX 8M Mini UART ports (`/dev/ttymxc0`), leaving the cover disconnected and causing `Thermostat.cpp` to reject temperature commands (`[thermostat] %s heat-on rejected - no peripheral connected`). Additionally, legacy `capybara.service` parses UART paths from the root level of `machine.json` and ignores nested blocks. If root keys are missing, `capybara` dumps core on startup and triggers `A dependency job for frank.service failed`. Defining both root keys and both `"F03"` and `"F04"` blocks satisfies all Pod 3 hub revisions and background services. (Note: setting `sensorSideOverrides` with `"force_f04"` or `"hwRev"` is unnecessary; `frankenfirmware` ignores those keys).
+
+</Callout>
+
+<Callout type="default">
+
+**Silencing `updateCaviaConfig` parse error spam:** Updated `frankenfirmware` polls `/deviceinfo/capybara.run_info` every second. On Pod 3, stock Capybara does not write this file. When missing, `frozen.cpp:927 updateCaviaConfig` throws `[json.exception.parse_error.101]` and spams `journalctl -u frank` with 60 errors per minute. (Writing to `cavia.json` has no effect because `frankenfirmware` reads `/deviceinfo/capybara.run_info`). Deploying an empty JSON object `{}` to `/deviceinfo/capybara.run_info` and persisting it across reboots with a `frank.service` systemd drop-in completely silences this log spam.
+
+</Callout>
+
+Write the multi-revision configuration, metadata stub, and stage `firmware-sensor-g0.bbin` into the fallback locations:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  set -e
+  mkdir -p /opt/eight/config
+
+  # 1. Write machine.json covering root keys, F03, and F04 revisions
+  cat > /opt/eight/config/machine.json << 'EOF'
+{
+  \"sensorPort\": \"/dev/ttyS2\",
+  \"frozenPort\": \"/dev/ttyS1\",
+  \"F03\": {
+    \"sensorPort\": \"/dev/ttyS2\",
+    \"frozenPort\": \"/dev/ttyS1\"
+  },
+  \"F04\": {
+    \"sensorPort\": \"/dev/ttyS2\",
+    \"frozenPort\": \"/dev/ttyS1\"
+  }
+}
+EOF
+
+  # Preserve metadata once, including whether each file was absent.
+  for f in /etc/systemd/system/frank.service.d/capybara-runinfo.conf /deviceinfo/capybara.run_info; do
+    saved=\"/opt/eight/backup_firmware_metadata\$f\"
+    if [ ! -f \"\$saved.saved\" ]; then
+      mkdir -p \"\$(dirname \"\$saved\")\"
+      if [ -e \"\$f\" ] || [ -L \"\$f\" ]; then cp -a \"\$f\" \"\$saved\"; fi
+      touch \"\$saved.saved\"
+    fi
+  done
+
+  # 2. Prevent updateCaviaConfig parse error spam across reboots
+  mkdir -p /etc/systemd/system/frank.service.d
+  cat > /etc/systemd/system/frank.service.d/capybara-runinfo.conf << 'EOF'
+[Service]
+ExecStartPre=/bin/sh -c '[ -s /deviceinfo/capybara.run_info ] || echo \"{}\" > /deviceinfo/capybara.run_info'
+EOF
+  echo '{}' > /deviceinfo/capybara.run_info
+  systemctl daemon-reload
+
+  # 3. Copy the G0 firmware into the fallback locations for the Pod 4 cover
+  cp /opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin /opt/eight/lib/subsystem_updates/firmware-sensor-legacy.bbin
+  cp /opt/eight/lib/subsystem_updates/firmware-sensor-g0.bbin /opt/eight/lib/subsystem_updates/firmware-sensor.bbin
+"
+```
+
+## Step 7: Deploy updated `frankenfirmware` and trigger flash
+
+`frankenfirmware` (`frank.service`) performs an automatic in-system programming (ISP) handshake. On startup, it inspects the TLV headers of the `.bbin` files in `/opt/eight/lib/subsystem_updates/` against the running firmware version reported by each STM32 microcontroller over UART. If a file on disk differs or is newer, `frank` commands the microcontroller into bootloader mode, erases flash, streams the firmware blocks, verifies CRC, and jumps to the new application firmware.
+
+Stop the background service, preserve a timestamped backup, place the new binary, and restart:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  if [ ! -f /tmp/frankenfirmware ]; then echo 'Error: /tmp/frankenfirmware missing; re-run the Step 4 scp' >&2; exit 1; fi && \
+  systemctl stop frank.service && \
+  cp -a /opt/eight/bin/frankenfirmware /opt/eight/bin/frankenfirmware.bak-\$(date +%Y%m%d) && \
+  cp /tmp/frankenfirmware /opt/eight/bin/frankenfirmware && \
+  chmod +x /opt/eight/bin/frankenfirmware && \
+  systemctl start frank.service
+"
+```
+
+<Callout type="default">
+
+**Clean hardware reboot for UART synchronization:** While `systemctl restart frank.service` triggers the update, microcontrollers that were in intermediate UART states or operating at different baud rates may fail to complete the initial handshake over `/dev/ttyS1`. If `frank` stalls or does not report `Firmware initialized` within 60–90 seconds, initiate a clean reboot:
+
+```bash
+ssh -p 8822 root@POD_IP "reboot"
+```
+
+An OS reboot forces the MediaTek MT8365 kernel GPIO lines to toggle the physical STM32 NRST lines, guaranteeing a clean, synchronous bootloader handshake for both microcontrollers upon startup.
+
+</Callout>
+
+Monitor the firmware flash progress in real time with `journalctl -u frank -f`.
+
+**Expected Sensor Flash Timeline (`v5.5.9` → `v5.5.22`):**
+
+```text
+frank[...]: INF:... stateBootloaderUseFwInfo|[sensor] current sensor FW version: 5.5.9
+frank[...]: INF:... stateBootloaderUseFwInfo|[sensor] Update to FW: 5.5.22
+frank[...]: DBG:... handleCommand|[sensor] -> BL: ... [fwu] start erase
+frank[...]: DBG:... handleCommand|[sensor] -> BL: ... [fwu] ready for new fw
+...
+frank[...]: DBG:... handleCommand|[sensor] -> BL: ... FW update complete
+frank[...]: DBG:... handleCommand|[sensor] -> FW: ... [sys] g0 v5.5.22.0 running beep boop bop
+```
+
+**Expected Thermal Controller Flash Timeline (`v1.5.156` → `v1.6.114`):**
+
+```text
+frank[...]: INF:... stateBootloaderUseFwInfo|[frozen] current frozen FW version: 1.5.156
+frank[...]: INF:... stateBootloaderUseFwInfo|[frozen] Update to FW: 1.6.114
+frank[...]: DBG:... handleCommand|[frozen] -> BL: Start Erase
+frank[...]: DBG:... handleCommand|[frozen] -> BL: Ready for new FW
+...
+frank[...]: INF:... updateStop|update stop
+frank[...]: DBG:... handleCommand|[frozen] -> BL: FW update complete
+frank[...]: INF:... updateHandleStopResponse|update GOOD
+frank[...]: DBG:... handleCommand|[frozen] -> BL: Jumping to FW
+frank[...]: DBG:... handleCommand|[frozen] -> FW: [frozen] hwrev=0x0504, is_pod6=0, pod6_ferrites=0
+frank[...]: DBG:... handleCommand|[frozen] -> FW: Firmware initialized v1.6.114
+```
+
+## Step 8: Restart sleepypod biometrics services
+
+Once the microcontrollers boot their new application firmwares, restart the sleepypod processing stack to connect to NATS:
+
+```bash
+ssh -p 8822 root@POD_IP "
+  systemctl restart \
+    sleepypod-piezo-processor.service \
+    sleepypod-sleep-detector.service \
+    sleepypod-environment-monitor.service \
+    sleepypod-cover-buttons.service \
+    sleepypod-calibrator.service \
+    sleepypod.service
+"
+```
+
+## Next: verify the update
+
+Continue with [Verification and troubleshooting](/core/firmware-updates/verification/) before considering any Slot B changes.
+
+[Source references and hardware verification scope](/core/firmware-updates/compatibility/#sources-and-verification-scope).

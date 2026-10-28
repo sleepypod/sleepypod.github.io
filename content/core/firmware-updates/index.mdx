@@ -1,0 +1,59 @@
+---
+title: 'Stock firmware'
+description: 'Choose a firmware guide by hub platform, hardware revision, and cover generation.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Stock firmware
+
+sleepypod runs as userspace software on top of the Pod's underlying embedded Linux operating system. The sleepypod biometrics pipeline communicates with the bed via stock background daemons (`frankenfirmware`) and two onboard microcontroller subsystems:
+
+1. **Hub thermal controller (`frozen`):** An STM32 microcontroller connected over `/dev/ttyS1` (at 38,400 baud) controlling pumps, TECs (thermoelectric coolers), digital potentiometers (AD5258), solenoid valves, and thermistor telemetry.
+2. **Cover sensor controller (`sensor`):** An STM32 microcontroller connected over `/dev/ttyS2` (at 921,600 baud) sampling capacitive presence grids (FDC), piezo sleep waveforms, accelerometers (LIS), and cover climate (SHT40).
+
+While sleepypod Core updates itself with `sp-update`, the underlying stock firmware daemons and microcontroller binaries are not updated by sleepypod. Usually you do not need to touch stock firmware. However, there are scenarios where updating the stock subsystems is necessary.
+
+## When an update is needed
+
+- **Cross-generation hardware pairings:** For example, pairing a Pod 3 hub with a Pod 4 cover (`pn 20600-0001-I12`, hardware `0812`). Stock Pod 3 firmware only supports older STM32F0/F1 cover microcontrollers (`0x08005000` flash base). The Pod 4 cover uses an STM32G0 microcontroller with bootloader `v2.0.3.0` (`0x08008000` flash base). Older firmware repeatedly sends a jump command to the wrong address, putting the cover into an infinite reboot loop (`BL: Likely wrong Firmware address 8005000`). Updating to STM32G0 cover firmware (`v5.5.9` or `v5.5.22.0`) allows the cover to boot and stream biometrics.
+- **Missing NATS JetStream telemetry:** Older hub firmware streams sensor data exclusively through legacy `.RAW` files on disk. Modern Eight Sleep firmware publishes CBOR frames directly to a local `nats-server` JetStream message bus (`raw.sens.*` and `raw.frz.*`), including batched piezo samples, a 2 Hz capacitive presence grid, and bed surface temperatures.
+- **Hub thermal controller features:** Updating `firmware-frozen.bbin` to version `v1.5.156` or `v1.6.114` adds `raw.frz.health` and `raw.frz.therm` telemetry for pump flow rates, fan RPMs, and TEC thermal power. Version `v1.6.114` adds support for newer hardware while maintaining backward compatibility with Pod 3 hardware revision `0x0504` (`F04`, `is_pod6=0`).
+
+<Callout type="warning">
+
+**Never flash a full `.swu` image to a MediaTek-based hub.**
+
+Stock Eight Sleep `.swu` packages (such as `3dd72bdefafbcfc202d6715fc45f9c7bbb3e02ff.swu`) are **full operating system image updates** containing a complete root filesystem archive (`eightsleep-nxp-image-imx8mm-var-dart-eight.tar.gz`). This image is compiled exclusively for the **NXP i.MX 8M Mini** platform (Variscite DART-MX8M-MINI SoM) used on Pod 4 and Pod 5 hubs.
+
+The **Pod 3 hub verified for this guide runs on a MediaTek MT8365 Pumpkin SBC** with a `5.15-mtk` kernel. Check your board before doing anything else:
+
+```bash
+ssh -p 8822 root@POD_IP "cat /proc/device-tree/model; echo"
+```
+
+If it prints `MT8365 Pumpkin`, your hub runs on a MediaTek SoC. Flashing the entire `.swu` file with `swupdate` or executing `update.sh` will overwrite partition tables and U-Boot, **permanently bricking the board**.
+
+**Rule:** Never flash or install a `.swu` file directly as an OS update on a Pod 3 hub. Instead, use [the manual extraction procedure](/core/firmware-updates/manual-update/) to stage only the required userspace binaries and microcontroller payload files (`.bbin`).
+
+</Callout>
+
+## Choose your hardware
+
+Choose by **hub platform and revision, then cover generation**. A Pod model name or the release download channel alone does not establish compatibility.
+
+| Hub                                                  | Cover                                        | Guidance                                                                                                                                                                                    |
+| ---------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pod 3, MediaTek MT8365, `pn 20500`, `F04` / `0x0504` | Pod 4, `pn 20600-0001-I12`, `0812` / STM32G0 | The hardware combination verified in this guide. Start with [compatibility](/core/firmware-updates/compatibility/), then follow the [manual update](/core/firmware-updates/manual-update/). |
+| Pod 3, `F03`                                         | Pod 4                                        | The procedure includes F03 UART configuration, but the recorded flash verification is for F04. Do not treat the mapping as verification of every firmware payload on F03.                   |
+| Pod 3                                                | Original Pod 3, STM32F0/F1                   | Keep the original cover firmware and port mapping. Do not apply the G0 fallback substitutions. This section does not provide a separately verified end-to-end update for this pairing.      |
+| Pod 4 or Pod 5, or any other hub/cover combination   | Any                                          | No manual update procedure is verified here. The use of artifacts from newer releases does not establish support for updating those hubs.                                                   |
+
+## Firmware guides
+
+- [Compatibility and releases](/core/firmware-updates/compatibility/): platform details, tested artifacts, and source references.
+- [Pod 3 hub + Pod 4 cover update](/core/firmware-updates/manual-update/): backups, extraction, installation, and flashing in order.
+- [Verification and troubleshooting](/core/firmware-updates/verification/): check hardware health and live sensor data.
+- [Roll back subsystem files](/core/firmware-updates/rollback/): restore the saved daemon, configuration, and payload files.
+- [Synchronize Slot B](/core/firmware-updates/backup-slot/): optional maintenance for the verified eMMC layout only.
+- [Return to stock with official OTA](/core/firmware-updates/factory-reset/): factory reset limitations and loss of root access.

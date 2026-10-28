@@ -1,0 +1,99 @@
+---
+title: 'Roll back subsystem files'
+description: 'Restore backed-up firmware daemon files, configuration, and service metadata.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Roll back subsystem files
+
+Use the backups from the [manual update](/core/firmware-updates/manual-update/#step-1-back-up-the-existing-pod-state). Restoring files is not a verified microcontroller downgrade or a full factory reset.
+
+If you encounter issues or wish to revert to stock daemons:
+
+```bash
+ssh -p 8822 root@POD_IP 'sh -s' <<'REMOTE'
+  set -e
+
+  # Use the fixed backup paired with subsystem_updates.bak.
+  # Timestamped backups may already contain updated firmware.
+  BACKUP_BIN="/opt/eight/bin/frankenfirmware.bak"
+
+  # Verify required backups exist before changing services
+  if [ -z "$BACKUP_BIN" ] || [ ! -f "$BACKUP_BIN" ] || [ ! -d /opt/eight/lib/subsystem_updates.bak ]; then
+    echo 'Error: backups missing; aborting rollback' >&2
+    exit 1
+  fi
+
+  # Stop the firmware daemon
+  systemctl stop frank.service
+
+  # Disable NATS service if installed
+  if systemctl list-unit-files nats-server.service >/dev/null 2>&1 || [ -f /etc/systemd/system/nats-server.service ]; then
+    systemctl disable --now nats-server.service
+  fi
+
+  # Restore frankenfirmware
+  cp -a "$BACKUP_BIN" /opt/eight/bin/frankenfirmware
+
+  # Safely stage and restore subsystem_updates
+  rm -rf /opt/eight/lib/subsystem_updates.restoring
+  cp -a /opt/eight/lib/subsystem_updates.bak /opt/eight/lib/subsystem_updates.restoring
+  rm -rf /opt/eight/lib/subsystem_updates
+  mv /opt/eight/lib/subsystem_updates.restoring /opt/eight/lib/subsystem_updates
+
+  # Restore machine.json if backup exists
+  if [ -f /opt/eight/config/machine.json.bak ]; then
+    cp -a /opt/eight/config/machine.json.bak /opt/eight/config/machine.json
+  else
+    rm -f /opt/eight/config/machine.json
+  fi
+
+  # Clean up installed NATS files, systemd drop-ins, and restore pre-existing NATS files if any existed
+  rm -f /usr/bin/nats-server /usr/bin/nats /usr/lib64/libnats.so.3.11.0 /usr/lib64/libnats.so.3.11 /etc/nats.conf /etc/systemd/system/nats-server.service
+  # Restore only the metadata files changed by Step 6; leave other overrides intact.
+  for f in /etc/systemd/system/frank.service.d/capybara-runinfo.conf /deviceinfo/capybara.run_info; do
+    saved="/opt/eight/backup_firmware_metadata$f"
+    if [ -f "$saved.saved" ]; then
+      if [ -e "$saved" ] || [ -L "$saved" ]; then
+        mkdir -p "$(dirname "$f")"
+        cp -a "$saved" "$f"
+      else
+        rm -f "$f"
+      fi
+    fi
+  done
+  if [ -d /opt/eight/backup_nats ]; then
+    if [ -f /opt/eight/backup_nats/nats-server ]; then
+      cp -a /opt/eight/backup_nats/nats-server /usr/bin/
+    fi
+    if [ -f /opt/eight/backup_nats/nats ]; then
+      cp -a /opt/eight/backup_nats/nats /usr/bin/
+    fi
+    if [ -f /opt/eight/backup_nats/libnats.so.3.11.0 ]; then
+      cp -a /opt/eight/backup_nats/libnats.so.3.11.0 /usr/lib64/
+      ldconfig
+    fi
+    if [ -f /opt/eight/backup_nats/nats.conf ]; then
+      cp -a /opt/eight/backup_nats/nats.conf /etc/nats.conf
+    fi
+    if [ -f /opt/eight/backup_nats/nats-server.service ]; then
+      cp -a /opt/eight/backup_nats/nats-server.service /etc/systemd/system/
+    fi
+  fi
+  ldconfig
+  systemctl daemon-reload
+
+  # Re-enable nats-server if it was enabled before Step 1
+  if [ "$(cat /opt/eight/backup_nats/was-enabled 2>/dev/null)" = enabled ]; then
+    systemctl enable --now nats-server.service
+  fi
+
+  # Restart frank to restore stock behavior
+  systemctl start frank.service
+REMOTE
+```
+
+**Microcontroller rollback behavior (untested):** Restoring the old `frankenfirmware` and `/opt/eight/lib/subsystem_updates/` does not by itself revert firmware already running on the microcontrollers. `frank` may reflash a microcontroller with the restored `.bbin` images when it starts, but this downgrade path has not been verified. An STM32G0 Pod 4 cover cannot boot stock STM32F0/F1 firmware, so after a rollback expect the cover to return to its bootloader loop unless you replace it with a native Pod 3 cover.
+
+[Source references and hardware verification scope](/core/firmware-updates/compatibility/#sources-and-verification-scope).
