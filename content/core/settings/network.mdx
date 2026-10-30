@@ -24,8 +24,59 @@ The row shows **local only** when internet access is blocked and **allowed** whe
 
 Updates download new code, so they need internet access. If access is blocked, [Updates](/core/settings/updates/) offers to allow it temporarily and blocks it again when the update finishes.
 
-Core is built for a trusted home network. Its local controls do not require a password. Never forward the Pod's ports to the internet. The [System dashboard](/core/system/) shows whether the firewall rules are **In place**.
+Core is built for a trusted home network. Its local controls do not require a password. Never forward the Pod's ports to the internet. The [System dashboard](/core/system/) shows **Blocking** when the firewall is on.
+
+## How the firewall works
+
+The Pod still runs Eight Sleep's stock firmware services next to sleepypod, and those services keep trying to reach Eight Sleep's servers. sleepypod blocks them in three layers. Each one covers a gap the others leave.
+
+### 1. Firewall rules
+
+**Local only** installs firewall rules on the Pod. The Pod can send traffic only to:
+
+- private network addresses (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), which covers your home network
+- time servers (NTP, UDP port 123), so the clock stays correct
+- itself (loopback)
+- replies on connections that are already open
+
+All other outbound traffic is dropped. Turning internet access off in Settings also drops inbound traffic from outside your home network. This is the main block. It is off while **Internet access** is allowed, and an update opens it briefly to download new code.
+
+### 2. Blocked Eight Sleep domains
+
+Whether internet access is allowed or not, the Pod treats Eight Sleep's domain names as unreachable.
+
+- **Every `8slp.net` name:** on Pods that include `dnsmasq`, a small DNS resolver on the Pod answers every `8slp.net` name, plus Eight Sleep's log endpoint `kinesis.us-east-1.amazonaws.com`, with an unreachable address. Lookups for anything else are forwarded to your router as usual. If that resolver stops, the Pod switches straight back to your router's DNS, so a failure never leaves the Pod unable to look up names. If the resolver can't start, for example because another service already uses port 53, only the known names below are blocked. `internet-control status` (see [Check the firewall on your Pod](#check-the-firewall-on-your-pod)) shows which layer is active.
+- **Known names:** on every Pod, `/etc/hosts` lists the exact names the stock firmware is known to use: the sensor upload, device API and firmware update hosts, plus the log endpoint.
+
+This layer is what keeps the stock firmware from uploading data or pulling an Eight Sleep firmware update while internet access is allowed.
+
+### 3. Stock telemetry turned off
+
+Installs and updates turn off Eight Sleep's log shipper (`vector`) and metrics agent (`telegraf`), so they stop retrying. Without this, `vector` would keep sending the Pod's system logs to Eight Sleep's servers and store up to 256 MB of unsent logs on the Pod's flash storage. The sensor firmware that sleepypod relies on stays running.
+
+### Why your DNS server still sees Eight Sleep lookups
+
+If you run a network-wide DNS filter such as AdGuard Home or Pi-hole, you may see the Pod look up `raw-api-upload.8slp.net` or `kinesis.us-east-1.amazonaws.com` many times. This stops once the blocked domains are in place, because the Pod answers those lookups itself. Until then, a lookup is not a connection:
+
+- DNS requests go to a server on your home network, which the firewall allows.
+- In local-only mode, the connection that would follow goes to the internet, which the firewall drops. With internet access allowed, the blocked domains above are what stop it.
+- The stock service then retries, so the same name appears over and over.
+
+Blocking these names in your DNS filter as well is safe.
+
+### Check the firewall on your Pod
+
+Connect over [SSH](/core/root-access/) and run:
+
+```bash
+sudo iptables -S OUTPUT; sudo iptables -S SLEEPYPOD-BLOCK 2>/dev/null         # local only: OUTPUT ends in "-j DROP", or jumps to SLEEPYPOD-BLOCK, which does
+curl -s -m 5 -o /dev/null -w "%{http_code}\n" https://1.1.1.1 || echo blocked # prints "blocked" when local only
+grep -c 8slp /etc/hosts                                                       # number of blocked Eight Sleep names
+systemctl is-enabled vector                                                   # "masked" when the log shipper is off
+```
+
+For a summary of every layer, run `sudo /home/dac/sleepypod-core/scripts/internet-control status`.
 
 ---
 
-**Source reference:** [Internet card](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/InternetToggleCard.tsx) · [Internet access API](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/system.ts)
+**Source reference:** [Internet card](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/InternetToggleCard.tsx) · [Internet access API](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/system.ts) · [Firewall and name blocking](https://github.com/sleepypod/core/blob/991d8e1c/scripts/internet-control) · [Stock telemetry](https://github.com/sleepypod/core/blob/991d8e1c/scripts/lib/telemetry-helpers) · [Firewall status](https://github.com/sleepypod/core/blob/991d8e1c/src/hardware/iptablesCheck.ts)
