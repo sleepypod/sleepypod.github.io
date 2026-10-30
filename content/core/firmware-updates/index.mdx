@@ -14,6 +14,22 @@ sleepypod runs as userspace software on top of the Pod's underlying embedded Lin
 
 While sleepypod Core updates itself with `sp-update`, the underlying stock firmware daemons and microcontroller binaries are not updated by sleepypod. Usually you do not need to touch stock firmware. However, there are scenarios where updating the stock subsystems is necessary.
 
+## Stock updates are off
+
+sleepypod turns off Eight Sleep's automatic firmware updater (`swupdate`) and its connectivity watchdog (`defibrillator`, `eight-kernel`) on every install and update, unless you've chosen to allow firmware updates (below). A stock over-the-air update replaces the whole operating system. Newer Eight Sleep firmware may also remove root access, which would remove sleepypod and leave no way to reinstall it. The watchdog can repeatedly reboot a Pod that can't reach the internet, which is the normal state once internet access is blocked.
+
+Firmware updates are a deliberate choice, never something that happens in the background. Check or change the setting over [SSH](/core/root-access/):
+
+```bash
+sudo /home/dac/sleepypod-core/scripts/internet-control firmware-updates status  # "blocked" by default
+sudo /home/dac/sleepypod-core/scripts/internet-control firmware-updates allow   # turn the stock updater and watchdog back on
+sudo /home/dac/sleepypod-core/scripts/internet-control firmware-updates block   # turn it off again
+```
+
+**allow** also starts the watchdog (`defibrillator`). If internet access is blocked, it reboots the Pod about every five minutes, so allow internet access first, or run **block** once the update finishes. `eight-kernel` stays off either way.
+
+sleepypod remembers an explicit **allow** and doesn't turn the updater off again on later updates. Before allowing it, read [Return to stock with official OTA](/core/firmware-updates/factory-reset/): root access after an official update is not guaranteed.
+
 ## When an update is needed
 
 - **Cross-generation hardware pairings:** For example, pairing a Pod 3 hub with a Pod 4 cover (`pn 20600-0001-I12`, hardware `0812`). Stock Pod 3 firmware only supports older STM32F0/F1 cover microcontrollers (`0x08005000` flash base). The Pod 4 cover uses an STM32G0 microcontroller with bootloader `v2.0.3.0` (`0x08008000` flash base). Older firmware repeatedly sends a jump command to the wrong address, putting the cover into an infinite reboot loop (`BL: Likely wrong Firmware address 8005000`). Updating to STM32G0 cover firmware (`v5.5.9` or `v5.5.22.0`) allows the cover to boot and stream biometrics.
@@ -57,3 +73,7 @@ Choose by **hub platform and revision, then cover generation**. A Pod model name
 - [Roll back subsystem files](/core/firmware-updates/rollback/): restore the saved daemon, configuration, and payload files.
 - [Synchronize Slot B](/core/firmware-updates/backup-slot/): optional maintenance for the verified eMMC layout only.
 - [Return to stock with official OTA](/core/firmware-updates/factory-reset/): factory reset limitations and loss of root access.
+
+---
+
+**Source reference:** [Firmware updates switch](https://github.com/sleepypod/core/blob/29afbb74/scripts/internet-control) · [Masked stock services](https://github.com/sleepypod/core/blob/29afbb74/scripts/lib/telemetry-helpers) · [Startup repair](https://github.com/sleepypod/core/blob/29afbb74/scripts/bin/sp-maintenance)

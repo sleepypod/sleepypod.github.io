@@ -3,6 +3,8 @@ title: 'Network'
 description: 'Choose whether the Pod can reach the internet or stays on your local network only.'
 ---
 
+import { Callout } from 'nextra/components'
+
 # Network
 
 **Settings → Network** controls whether the Pod can reach the internet. **Local only** blocks internet traffic with firewall rules and keeps local traffic working, so the app, the iOS app, the Dial, HomeKit, MQTT, and backups on your network continue to work.
@@ -43,26 +45,42 @@ All other outbound traffic is dropped. Turning internet access off in Settings a
 
 ### 2. Blocked Eight Sleep domains
 
-Whether internet access is allowed or not, the Pod treats Eight Sleep's domain names as unreachable.
+Whether internet access is allowed or not, the Pod treats Eight Sleep's domain names as if they don't exist.
 
-- **Every `8slp.net` name:** on Pods that include `dnsmasq`, a small DNS resolver on the Pod answers every `8slp.net` name, plus Eight Sleep's log endpoint `kinesis.us-east-1.amazonaws.com`, with an unreachable address. Lookups for anything else are forwarded to your router as usual. If that resolver stops, the Pod switches straight back to your router's DNS, so a failure never leaves the Pod unable to look up names. If the resolver can't start, for example because another service already uses port 53, only the known names below are blocked. `internet-control status` (see [Check the firewall on your Pod](#check-the-firewall-on-your-pod)) shows which layer is active.
-- **Known names:** on every Pod, `/etc/hosts` lists the exact names the stock firmware is known to use: the sensor upload, device API and firmware update hosts, plus the log endpoint.
+On Pods that include `dnsmasq`, a small DNS resolver on the Pod answers every `8slp.net` name, plus Eight Sleep's log endpoint `kinesis.us-east-1.amazonaws.com`, with "no such domain" (`NXDOMAIN`). Lookups for anything else are forwarded to your router as usual. If that resolver stops, the Pod switches straight back to your router's DNS, so a failure never leaves the Pod unable to look up names. Pods without `dnsmasq`, or where the resolver can't start because another service already uses port 53, rely on the firewall alone. `internet-control status` (see [Check the firewall on your Pod](#check-the-firewall-on-your-pod)) shows which layer is active.
 
-This layer is what keeps the stock firmware from uploading data or pulling an Eight Sleep firmware update while internet access is allowed.
+This layer keeps the stock firmware from uploading data while internet access is allowed.
 
-### 3. Stock telemetry turned off
+<Callout type="warning">
+  Never point Eight Sleep names at `0.0.0.0` or another address in `/etc/hosts`. On Linux, `0.0.0.0`
+  reaches the Pod itself. Some Pod firmware then connects to its own port, fails, and retries every
+  few milliseconds, filling the log and memory until the web interface stops responding and the red
+  light turns on. sleepypod 3.6.0 and 3.6.1 added such entries to `/etc/hosts`, and their DNS layer
+  answered `0.0.0.0` too; 3.6.2 and later remove both. If your Pod is affected, run `sudo
+  /home/dac/sleepypod-core/scripts/internet-control hosts-unblock` and `sudo
+  /home/dac/sleepypod-core/scripts/internet-control dns-unblock`, keep internet access blocked, and
+  update. `hosts-unblock` only removes sleepypod's own entries: check `grep -n 8slp /etc/hosts`
+  afterwards and delete any line you added yourself.
+</Callout>
 
-Installs and updates turn off Eight Sleep's log shipper (`vector`) and metrics agent (`telegraf`), so they stop retrying. Without this, `vector` would keep sending the Pod's system logs to Eight Sleep's servers and store up to 256 MB of unsent logs on the Pod's flash storage. The sensor firmware that sleepypod relies on stays running.
+### 3. Stock services turned off
+
+Installs and updates turn off the stock services that sleepypod doesn't need:
+
+- Eight Sleep's log shipper (`vector`) and metrics agent (`telegraf`). Without this, `vector` would keep sending the Pod's system logs to Eight Sleep's servers and store up to 256 MB of unsent logs on the Pod's flash storage.
+- The stock firmware updater (`swupdate`) and connectivity watchdog (`defibrillator`, `eight-kernel`). A stock update can remove root access and sleepypod, and the watchdog can repeatedly reboot a Pod that can't reach the internet. They stay off unless you allow firmware updates; see [Firmware updates](/core/firmware-updates/#stock-updates-are-off).
+
+The sensor firmware that sleepypod relies on stays running.
 
 ### Why your DNS server still sees Eight Sleep lookups
 
-If you run a network-wide DNS filter such as AdGuard Home or Pi-hole, you may see the Pod look up `raw-api-upload.8slp.net` or `kinesis.us-east-1.amazonaws.com` many times. This stops once the blocked domains are in place, because the Pod answers those lookups itself. Until then, a lookup is not a connection:
+If you run a network-wide DNS filter such as AdGuard Home or Pi-hole, you may see the Pod look up `raw-api-upload.8slp.net` or `kinesis.us-east-1.amazonaws.com` many times. This stops once the Pod's own resolver is blocking those names, because the Pod answers them itself. Until then, a lookup is not a connection:
 
 - DNS requests go to a server on your home network, which the firewall allows.
-- In local-only mode, the connection that would follow goes to the internet, which the firewall drops. With internet access allowed, the blocked domains above are what stop it.
+- In local-only mode, the connection that would follow goes to the internet, which the firewall drops.
 - The stock service then retries, so the same name appears over and over.
 
-Blocking these names in your DNS filter as well is safe.
+You can block these names in your DNS filter as well, but set it to answer `NXDOMAIN` or `REFUSED`, not `0.0.0.0` or "Null IP", for the reason in the warning above. In AdGuard Home this is **Settings → DNS settings → Blocking mode**.
 
 ### Check the firewall on your Pod
 
@@ -71,12 +89,13 @@ Connect over [SSH](/core/root-access/) and run:
 ```bash
 sudo iptables -S OUTPUT; sudo iptables -S SLEEPYPOD-BLOCK 2>/dev/null         # local only: OUTPUT ends in "-j DROP", or jumps to SLEEPYPOD-BLOCK, which does
 curl -s -m 5 -o /dev/null -w "%{http_code}\n" https://1.1.1.1 || echo blocked # prints "blocked" when local only
-grep -c 8slp /etc/hosts                                                       # number of blocked Eight Sleep names
-systemctl is-enabled vector                                                   # "masked" when the log shipper is off
+nslookup foo.8slp.net 127.0.0.1                                               # "NXDOMAIN" when the Pod's resolver blocks Eight Sleep names
+grep -c 8slp /etc/hosts                                                       # must print 0
+systemctl is-enabled vector swupdate                                          # "masked" for each, unless you allowed firmware updates
 ```
 
 For a summary of every layer, run `sudo /home/dac/sleepypod-core/scripts/internet-control status`.
 
 ---
 
-**Source reference:** [Internet card](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/InternetToggleCard.tsx) · [Internet access API](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/system.ts) · [Firewall and name blocking](https://github.com/sleepypod/core/blob/991d8e1c/scripts/internet-control) · [Stock telemetry](https://github.com/sleepypod/core/blob/991d8e1c/scripts/lib/telemetry-helpers) · [Firewall status](https://github.com/sleepypod/core/blob/991d8e1c/src/hardware/iptablesCheck.ts)
+**Source reference:** [Internet card](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/InternetToggleCard.tsx) · [Internet access API](https://github.com/sleepypod/core/blob/4cc76838/src/server/routers/system.ts) · [Firewall and name blocking](https://github.com/sleepypod/core/blob/29afbb74/scripts/internet-control) · [Stock telemetry](https://github.com/sleepypod/core/blob/29afbb74/scripts/lib/telemetry-helpers) · [Firewall status](https://github.com/sleepypod/core/blob/29afbb74/src/hardware/iptablesCheck.ts)
