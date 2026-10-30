@@ -39,13 +39,13 @@ The Pod still runs Eight Sleep's stock firmware services next to sleepypod, and 
 - itself (loopback)
 - replies on connections that are already open
 
-All other traffic, inbound or outbound, is dropped. This is the main block. It is off while **Internet access** is allowed, and an update opens it briefly to download new code.
+All other outbound traffic is dropped. Turning internet access off in Settings also drops inbound traffic from outside your home network. This is the main block. It is off while **Internet access** is allowed, and an update opens it briefly to download new code.
 
 ### 2. Blocked Eight Sleep domains
 
 Whether internet access is allowed or not, the Pod treats Eight Sleep's domain names as unreachable.
 
-- **Every `8slp.net` name:** on Pods that include `dnsmasq`, a small DNS resolver on the Pod answers every `8slp.net` name, plus Eight Sleep's log endpoint `kinesis.us-east-1.amazonaws.com`, with an unreachable address. Lookups for anything else are forwarded to your router as usual. If that resolver stops, the Pod switches straight back to your router's DNS, so a failure never leaves the Pod unable to look up names.
+- **Every `8slp.net` name:** on Pods that include `dnsmasq`, a small DNS resolver on the Pod answers every `8slp.net` name, plus Eight Sleep's log endpoint `kinesis.us-east-1.amazonaws.com`, with an unreachable address. Lookups for anything else are forwarded to your router as usual. If that resolver stops, the Pod switches straight back to your router's DNS, so a failure never leaves the Pod unable to look up names. If the resolver can't start, for example because another service already uses port 53, only the known names below are blocked. `internet-control status` (see [Check the firewall on your Pod](#check-the-firewall-on-your-pod)) shows which layer is active.
 - **Known names:** on every Pod, `/etc/hosts` lists the exact names the stock firmware is known to use: the sensor upload, device API and firmware update hosts, plus the log endpoint.
 
 This layer is what keeps the stock firmware from uploading data or pulling an Eight Sleep firmware update while internet access is allowed.
@@ -59,7 +59,7 @@ Installs and updates turn off Eight Sleep's log shipper (`vector`) and metrics a
 If you run a network-wide DNS filter such as AdGuard Home or Pi-hole, you may see the Pod look up `raw-api-upload.8slp.net` or `kinesis.us-east-1.amazonaws.com` many times. This stops once the blocked domains are in place, because the Pod answers those lookups itself. Until then, a lookup is not a connection:
 
 - DNS requests go to a server on your home network, which the firewall allows.
-- The connection that would follow goes to the internet, which the firewall drops.
+- In local-only mode, the connection that would follow goes to the internet, which the firewall drops. With internet access allowed, the blocked domains above are what stop it.
 - The stock service then retries, so the same name appears over and over.
 
 Blocking these names in your DNS filter as well is safe.
@@ -69,7 +69,7 @@ Blocking these names in your DNS filter as well is safe.
 Connect over [SSH](/core/root-access/) and run:
 
 ```bash
-sudo iptables -L OUTPUT -n | tail -2                                          # last rule is DROP when local only
+sudo iptables -S OUTPUT; sudo iptables -S SLEEPYPOD-BLOCK 2>/dev/null         # local only: OUTPUT ends in "-j DROP", or jumps to SLEEPYPOD-BLOCK, which does
 curl -s -m 5 -o /dev/null -w "%{http_code}\n" https://1.1.1.1 || echo blocked # prints "blocked" when local only
 grep -c 8slp /etc/hosts                                                       # number of blocked Eight Sleep names
 systemctl is-enabled vector                                                   # "masked" when the log shipper is off
