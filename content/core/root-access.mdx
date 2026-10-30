@@ -226,7 +226,7 @@ systemctl disable --now swupdate-progress swupdate swupdate.socket defibrillator
 systemctl mask swupdate-progress swupdate swupdate.socket defibrillator eight-kernel
 ```
 
-Some firmware revisions lack some of these units; distinguish “unit not found” from a failure to stop an installed unit. Keep a record of what was enabled before changing it. This opts out of the vendor's automatic update path. The upstream free-sleep takeover also disables additional runtime services; do not apply its entire service list blindly to a sleepypod installation, which still needs the firmware hardware-control process.
+Some firmware revisions lack some of these units; distinguish “unit not found” from a failure to stop an installed unit. Keep a record of what was enabled before changing it. This opts out of the vendor's automatic update path. Do this before the Pod first goes online: the sleepypod installer and every later update mask these units too, but only once sleepypod is installed. See [Firmware updates](/core/firmware-updates/#stock-updates-are-off) to opt back in. The upstream free-sleep takeover also disables additional runtime services; do not apply its entire service list blindly to a sleepypod installation, which still needs the firmware hardware-control process.
 
 ## 8. Join Wi-Fi and install sleepypod
 
