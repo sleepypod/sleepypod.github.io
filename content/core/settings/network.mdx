@@ -55,9 +55,12 @@ This layer keeps the stock firmware from uploading data while internet access is
   Never point Eight Sleep names at `0.0.0.0` or another address in `/etc/hosts`. On Linux, `0.0.0.0`
   reaches the Pod itself. Some Pod firmware then connects to its own port, fails, and retries every
   few milliseconds, filling the log and memory until the web interface stops responding and the red
-  light turns on. sleepypod 3.6.0 and 3.6.1 added such entries; later versions remove them. If `grep
-  -c 8slp /etc/hosts` prints anything other than `0`, run `sudo
-  /home/dac/sleepypod-core/scripts/internet-control hosts-unblock`.
+  light turns on. sleepypod 3.6.0 and 3.6.1 added such entries to `/etc/hosts`, and their DNS layer
+  answered `0.0.0.0` too; 3.6.2 and later remove both. If your Pod is affected, run `sudo
+  /home/dac/sleepypod-core/scripts/internet-control hosts-unblock` and `sudo
+  /home/dac/sleepypod-core/scripts/internet-control dns-unblock`, keep internet access blocked, and
+  update. `hosts-unblock` only removes sleepypod's own entries: check `grep -n 8slp /etc/hosts`
+  afterwards and delete any line you added yourself.
 </Callout>
 
 ### 3. Stock services turned off
@@ -65,7 +68,7 @@ This layer keeps the stock firmware from uploading data while internet access is
 Installs and updates turn off the stock services that sleepypod doesn't need:
 
 - Eight Sleep's log shipper (`vector`) and metrics agent (`telegraf`). Without this, `vector` would keep sending the Pod's system logs to Eight Sleep's servers and store up to 256 MB of unsent logs on the Pod's flash storage.
-- The stock firmware updater (`swupdate`) and connectivity watchdog (`defibrillator`, `eight-kernel`). A stock update can remove root access and sleepypod, and the watchdog reboots a Pod that can't reach the internet. Firmware updates are opt-in; see [Firmware updates](/core/firmware-updates/#stock-updates-are-off).
+- The stock firmware updater (`swupdate`) and connectivity watchdog (`defibrillator`, `eight-kernel`). A stock update can remove root access and sleepypod, and the watchdog can repeatedly reboot a Pod that can't reach the internet. They stay off unless you allow firmware updates; see [Firmware updates](/core/firmware-updates/#stock-updates-are-off).
 
 The sensor firmware that sleepypod relies on stays running.
 
@@ -88,7 +91,7 @@ sudo iptables -S OUTPUT; sudo iptables -S SLEEPYPOD-BLOCK 2>/dev/null         # 
 curl -s -m 5 -o /dev/null -w "%{http_code}\n" https://1.1.1.1 || echo blocked # prints "blocked" when local only
 nslookup foo.8slp.net 127.0.0.1                                               # "NXDOMAIN" when the Pod's resolver blocks Eight Sleep names
 grep -c 8slp /etc/hosts                                                       # must print 0
-systemctl is-enabled vector swupdate                                          # "masked" for each
+systemctl is-enabled vector swupdate                                          # "masked" for each, unless you allowed firmware updates
 ```
 
 For a summary of every layer, run `sudo /home/dac/sleepypod-core/scripts/internet-control status`.
