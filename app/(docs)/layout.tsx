@@ -24,6 +24,10 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
             <a href="/">
               Back to home <LinkArrow />
             </a>
+            {' · '}
+            <a href="https://seedypod.github.io/">
+              Sibling project: seedypod <LinkArrow direction="external" />
+            </a>
           </span>
         </Footer>
       }

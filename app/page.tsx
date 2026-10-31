@@ -295,6 +295,9 @@ export default function Home() {
           <a href="https://discord.gg/UMmv5R6MXa">
             Join the Discord <LinkArrow direction="external" />
           </a>
+          <a href="https://seedypod.github.io/">
+            Sibling project: seedypod <LinkArrow direction="external" />
+          </a>
           <Link href="/privacy/">Privacy</Link>
         </nav>
       </footer>
