@@ -18,7 +18,9 @@ pnpm exec playwright install chromium
 pnpm check
 ```
 
-`pnpm check` verifies media, builds `out/`, creates its Pagefind index, checks TypeScript, and runs desktop/mobile browser tests against a static file server. There is no Next.js server in production.
+`pnpm check` verifies media, builds `out/`, creates its Pagefind index and `out/search-index.json`, checks TypeScript, and runs desktop/mobile browser tests against a static file server. There is no Next.js server in production.
+
+`scripts/build-search-index.mjs` writes `/search-index.json` for the Core web app's command palette: one entry per visible guide with its path, title, section, description, h2/h3 anchors read from the built HTML, and frontmatter `keywords`. Set `searchable: false` in a page's frontmatter to leave it out.
 
 ## Guide map
 

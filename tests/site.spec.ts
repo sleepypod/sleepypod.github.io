@@ -73,6 +73,28 @@ test('search finds an indexed product guide', async ({ page }) => {
   await page.keyboard.press('Enter')
   await expect(page).toHaveURL(/core\/(integrations|settings\/homekit)/)
 })
+test('docs search index paths and anchors resolve', async ({ page, request }) => {
+  test.setTimeout(120000)
+  const response = await request.get('/search-index.json')
+  expect(response.status()).toBe(200)
+  const index: {
+    version: number
+    base: string
+    pages: { path: string; headings: { anchor: string }[] }[]
+  } = await response.json()
+  expect(index.version).toBe(1)
+  expect(index.base).toBe('https://sleepypod.github.io')
+  expect(index.pages.length).toBeGreaterThan(0)
+  expect(index.pages.map((p) => p.path)).toContain('/getting-started/')
+  for (const { path: route, headings } of index.pages) {
+    expect((await page.goto(route))?.status(), route).toBe(200)
+    const missing = await page.evaluate(
+      (ids) => ids.filter((id) => !document.getElementById(id)),
+      headings.map((h) => h.anchor),
+    )
+    expect(missing, route).toEqual([])
+  }
+})
 test('videos decode and play to the end', async ({ page }) => {
   test.setTimeout(150000)
   for (const route of [
