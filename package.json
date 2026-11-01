@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && pagefind --site out --output-path out/_pagefind",
+    "build": "next build && pagefind --site out --output-path out/_pagefind && node scripts/build-search-index.mjs",
     "typecheck": "tsc --noEmit",
     "media:import": "node scripts/import-media.mjs",
     "media:enclosure": "node scripts/import-enclosure.mjs",
