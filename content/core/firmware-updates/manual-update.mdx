@@ -232,6 +232,8 @@ When connecting a Pod 4 cover to a Pod 3 MediaTek Pumpkin board, configure the h
 
 **Hub revision compatibility (`F03` vs. `F04`) and `capybara`:** Pod 3 hubs were manufactured in both **`F03`** and **`F04`** hardware revisions (inspect your hub label with `cat /deviceinfo/device-label`, e.g. `20500-0003-F03-...` or `20500-0003-F04-...`). `frankenfirmware` inspects this label at boot and searches `machine.json` for a matching section. If an `F03` hub only has `F04` defined, `frankenfirmware` falls back to default NXP i.MX 8M Mini UART ports (`/dev/ttymxc0`), leaving the cover disconnected and causing `Thermostat.cpp` to reject temperature commands (`[thermostat] %s heat-on rejected - no peripheral connected`). Additionally, legacy `capybara.service` parses UART paths from the root level of `machine.json` and ignores nested blocks. If root keys are missing, `capybara` dumps core on startup and triggers `A dependency job for frank.service failed`. Defining both root keys and both `"F03"` and `"F04"` blocks satisfies all Pod 3 hub revisions and background services. (Note: setting `sensorSideOverrides` with `"force_f04"` or `"hwRev"` is unnecessary; `frankenfirmware` ignores those keys).
 
+If your label shows a revision other than `F03` or `F04`, see [Community-reported hub revisions](/core/firmware-updates/community-revisions/) before running this step.
+
 </Callout>
 
 <Callout type="default">
