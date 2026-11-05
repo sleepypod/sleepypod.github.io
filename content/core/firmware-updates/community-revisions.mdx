@@ -9,7 +9,7 @@ import { Callout } from 'nextra/components'
 
 <Callout type="warning">
 
-**Not maintainer-verified.** The [manual update](/core/firmware-updates/manual-update/) covers `F03` and `F04` hubs. The revisions on this page come from community reports on a single unit each. Read the report, keep your [backups](/core/firmware-updates/manual-update/#step-1-back-up-the-existing-pod-state), and verify the result on your own hardware.
+**Not maintainer-verified.** The [manual update](/core/firmware-updates/manual-update/) includes the `F03` port mapping, but its recorded flash verification covers only `F04` hubs. The revisions on this page come from community reports on a single unit each. Read the report, keep your [backups](/core/firmware-updates/manual-update/#step-1-back-up-the-existing-pod-state), and verify the result on your own hardware.
 
 </Callout>
 
@@ -22,16 +22,28 @@ ssh -p 8822 root@POD_IP "cat /deviceinfo/device-label"
 # Example: 20500-0003-F08-...
 ```
 
-The revision is the third dash-separated field (`F08` above). If it is `F03` or `F04`, follow the manual update without changes.
+The revision is the third dash-separated field (`F08` above). If it is `F04`, follow the manual update without changes. If it is `F03`, the manual update already includes your port mapping, but its flash verification covers only `F04`.
 
 ## Add a block for your revision
 
-In the [Step 6](/core/firmware-updates/manual-update/#step-6-configure-uart-mapping-metadata-stubs-and-stage-cover-firmware-pod-3-hub--pod-4-cover) `machine.json`, add a block named after your revision next to `F03` and `F04`. Keep the root-level keys, because `capybara.service` reads only those:
+In the [Step 6](/core/firmware-updates/manual-update/#step-6-configure-uart-mapping-metadata-stubs-and-stage-cover-firmware-pod-3-hub--pod-4-cover) `machine.json`, add a block named after your revision after `F04`. Add a comma after the closing brace of the `F04` block, and keep the root-level keys, because `capybara.service` reads only those:
 
 ```json
-"F08": {
+{
   "sensorPort": "/dev/ttyS2",
-  "frozenPort": "/dev/ttyS1"
+  "frozenPort": "/dev/ttyS1",
+  "F03": {
+    "sensorPort": "/dev/ttyS2",
+    "frozenPort": "/dev/ttyS1"
+  },
+  "F04": {
+    "sensorPort": "/dev/ttyS2",
+    "frozenPort": "/dev/ttyS1"
+  },
+  "F08": {
+    "sensorPort": "/dev/ttyS2",
+    "frozenPort": "/dev/ttyS1"
+  }
 }
 ```
 
@@ -39,10 +51,10 @@ In the Step 6 `ssh` command, the JSON sits inside a double-quoted string, so esc
 
 ## Confirm the mapping
 
-After restarting `frank.service`, confirm that the daemon picked your block and the expected ports:
+After restarting `frank.service`, confirm that the daemon picked your block and the expected ports. The command reads only the current run of the service, so log lines from before the change do not appear:
 
 ```bash
-ssh -p 8822 root@POD_IP "journalctl -u frank -b --no-pager | grep -E 'Using machine config|sensor path'"
+ssh -p 8822 root@POD_IP 'journalctl --no-pager _SYSTEMD_INVOCATION_ID="$(systemctl show -p InvocationID --value frank.service)" | grep -E "Using machine config|sensor path"'
 # Expected:
 # INF: DeviceInfo.cpp getPorts | Using machine config for hwRev F08 (device hwRev: F08)
 # INF: main.cpp | sensor path: /dev/ttyS2 frozen path: /dev/ttyS1
