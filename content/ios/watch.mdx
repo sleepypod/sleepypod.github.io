@@ -1,0 +1,83 @@
+---
+title: 'Apple Watch'
+description: 'Set the bed, stop the alarm and record overnight wrist movement from the sleepypod Apple Watch app.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Apple Watch
+
+The Watch app opens on bed control. The movement recorder is the next page down. If an alarm is vibrating, the alarm screen replaces both. The Watch has no direct connection to the Pod: every request goes through the sleepypod app on your paired iPhone, so open it on the iPhone once before using the Watch.
+
+<Callout type="info">
+  Bed control, the alarm screen and Send to pod arrived in TestFlight build 1.6.0. The **Movement**
+  button on the bed screen is in development revision `00c3cce`; on earlier builds, swipe up from
+  the bed screen to reach the recorder. The screenshots come from the Watch simulator with sample
+  data and no paired iPhone.
+</Callout>
+
+<div className="watch-grid">
+  <WatchFrame
+    src="/media/ios-watch-bed.png"
+    alt="Watch bed screen with a 68° target, the bed at 75° and cooling, and a Turn off button"
+    caption="Bed: Crown sets the target."
+  />
+  <WatchFrame
+    src="/media/ios-watch-movement.png"
+    alt="Watch movement screen set to record for 9 hours with a red Record button"
+    caption="Movement: Crown sets the length."
+  />
+  <WatchFrame
+    src="/media/ios-watch-alarm.png"
+    alt="Watch alarm screen with Stop and Snooze 5 min buttons"
+    caption="Alarm: stop or snooze."
+  />
+</div>
+
+## Bed
+
+- **Target:** turn the Digital Crown to set the temperature. The line underneath shows the bed's own temperature and whether it is cooling, warming or holding.
+- **Power:** **Turn on** or **Turn off** applies to the selected side. While the bed is off, the Crown does not change the target.
+- **Side:** the button at the top left picks left, right or both sides. The title shows the side's name from the iPhone app.
+
+The screen refreshes every 15 seconds while it is open. If the iPhone is out of reach, a note under the power button says so.
+
+## Alarm
+
+While an alarm vibrates on your side, the Watch shows only **Stop** and **Snooze 5 min**. The screen checks every 5 seconds, so an alarm stopped from the iPhone or the bed clears it shortly after.
+
+## Record movement
+
+The recorder logs wrist movement overnight. sleepypod uses it as labels for the Pod's movement classifier and in [Compare with Apple Watch](/ios/using-the-app/#read-the-watch-comparison).
+
+<div className="watch-grid">
+  <WatchFrame
+    src="/media/ios-watch-bed-recording.png"
+    alt="Watch bed screen with a red record button at the top right while a recording runs"
+    caption="Movement button turns red while recording."
+  />
+  <WatchFrame
+    src="/media/ios-watch-recording.png"
+    alt="Watch movement screen recording, with a countdown and a Stop button"
+    caption="Countdown to the planned end."
+  />
+  <WatchFrame
+    src="/media/ios-watch-send.png"
+    alt="Watch movement screen showing 9 hours recorded and a Send to pod button"
+    caption="In the morning: Send to pod."
+  />
+</div>
+
+1. On the bed screen, tap **Movement** at the top right, or swipe up to the next page. The Crown sets the bed temperature on the bed screen, so it does not move between pages there.
+2. Turn the Crown to set the length (1–12 hours, 9 by default), then tap **Record**. The first recording asks for Motion & Fitness permission.
+3. You can close the app. While the recording runs, the **Movement** button on the bed screen shows a red dot.
+4. If you get up early, tap **Stop**. What was recorded up to then is kept. A recording stopped in its first minute is discarded.
+5. In the morning the app opens on the recorder. Tap **Send to pod**. The Watch sends the movement to the iPhone, which passes it to the Pod along with the night's heart rate, HRV, breathing and sleep stages from Apple Health.
+
+The **i** button on the recorder explains what is recorded. It also has **Include raw 50 Hz**, which adds the raw accelerometer samples to the file, and **Resend last 2 nights**, which sends the Health readings again.
+
+If the recorder says recording isn't available, allow Motion & Fitness for sleepypod in the Watch's Settings.
+
+---
+
+**Source reference:** [Watch app at 00c3cce](https://github.com/sleepypod/ios/tree/00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b/SleepypodWatch) · [Watch movement format](https://github.com/sleepypod/ios/blob/00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b/docs/watch-motion-format.md)
