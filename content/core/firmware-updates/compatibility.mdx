@@ -1,6 +1,6 @@
 ---
 title: 'Compatibility and releases'
-description: 'Verified hub and cover pairing, firmware artifacts, and platform architecture.'
+description: 'Verified hub and cover pairing, firmware artifacts, sensor data paths by firmware, and platform architecture.'
 ---
 
 import { Callout } from 'nextra/components'
@@ -68,6 +68,39 @@ Every dynamic dependency (`libnats.so.3.11`, `libsystemd`, `libudev`, `libstdc++
 
 </Callout>
 
+## Sensor data by firmware
+
+Firmware updates have changed how sensor readings reach Core more than once. The Pod generation does not tell you which path a hub uses; the firmware build does. Find yours with `sp-status` (the `rat_version` line) and compare it with this table.
+
+| Firmware                                                  | How sensor readings arrive                                                                      | NATS subjects                                             |
+| :-------------------------------------------------------- | :---------------------------------------------------------------------------------------------- | :-------------------------------------------------------- |
+| `.RAW` firmware (for example `8df35cc8` on a Pod 5 J55)   | `.RAW` files. No `nats-server` and no `/persistent/jetstream`.                                  | None                                                      |
+| NATS firmware (April 2026 onward, for example `ca35aafa`) | Local NATS JetStream stream `raw`, stored in `/persistent/jetstream`.                           | `raw.sens.*`, `raw.frz.*`, and the `raw.log` firmware log |
+| EmmcWear firmware (`4b7552d5`, built 3 November 2026)     | Local NATS under a new prefix. The update adds an `EmmcWear` flag to cut eMMC reads and writes. | `rawmem.sens.*`, `rawmem.frz.*`                           |
+
+<Callout type="warning">
+
+**EmmcWear firmware (`4b7552d5`) leaves biometrics empty on older Core builds.**
+
+Core builds before [core#917](https://github.com/sleepypod/core/pull/917) read only `raw.*` subjects. On `4b7552d5` the readings move to `rawmem.*`, so Core receives nothing even though heating, cooling, and the web UI work normally. The signs are:
+
+- The Core journal logs `[natsSource] no frames received 60s after subscribing`.
+- **Settings → Device → Sensor data source** shows **No frames** or **Stalled**.
+- **Calibrate all** fails because piezo and bed-temperature samples stay at zero.
+
+Update Core to a build that includes core#917, then run **Calibrate all** with the bed empty once readings appear in **System → Sensors**.
+
+</Callout>
+
+Core builds with core#917 subscribe to both prefixes and choose one per reading type (`sens.piezo`, `frz.temp`, and so on). `raw` always wins: `rawmem` feeds a reading type only when `raw` has not delivered it within 30 seconds of startup. A hub that publishes `raw` keeps exactly the data path it had before, and a firmware that publishes both prefixes never feeds a reading in twice. The journal records each choice:
+
+```bash
+journalctl -u sleepypod -n 500 --no-pager | grep 'natsSource\] reading'
+# [natsSource] reading sens.piezo from rawmem.sens.piezo
+```
+
+The `rawmem` prefix was found on a community Pod 5 (J55) on 8 November 2026 and confirmed over SSH. It has not yet been checked on every hub generation. If your hub has empty biometrics on firmware not listed here, include the `rat_version` and the `natsSource` journal lines when you report it.
+
 ## Sources and verification scope
 
-**Source reference:** [`sp-status` output format](https://github.com/sleepypod/core/blob/9bbc7232924fd2b18c7176c259556151aecc6412/scripts/bin/sp-status) · [Root SSH key resolution in the Core installer](https://github.com/sleepypod/core/blob/9bbc7232924fd2b18c7176c259556151aecc6412/scripts/lib/ssh-helpers) · [free-sleep firmware reset and slot check](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md) · [Archived Pod 3 `.swu` releases](http://web.archive.org/web/*/fw.8slp.net/pod3-updates/pod3/releases/*). Stream limits, subject rates, serial port mapping, and the Slot B `sshd` configuration were verified on an MT8365 Pod 3 hub (`pn 20500`, hardware revision `0x0504`) with a Pod 4 cover (`pn 20600-0001-I12`, hardware `0812`), using artifacts extracted from releases `77af88bd8b941fed81786c09a9ac3cdb1e97b126` (`v1.5.156`, `v5.5.9`) and `3dd72bdefafbcfc202d6715fc45f9c7bbb3e02ff` (`v1.6.114`, `v5.5.22.0`).
+**Source reference:** [`sp-status` output format](https://github.com/sleepypod/core/blob/9bbc7232924fd2b18c7176c259556151aecc6412/scripts/bin/sp-status) · [Root SSH key resolution in the Core installer](https://github.com/sleepypod/core/blob/9bbc7232924fd2b18c7176c259556151aecc6412/scripts/lib/ssh-helpers) · [free-sleep firmware reset and slot check](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md) · [Archived Pod 3 `.swu` releases](http://web.archive.org/web/*/fw.8slp.net/pod3-updates/pod3/releases/*) · [`rawmem` subject support (core#917)](https://github.com/sleepypod/core/pull/917). Stream limits, subject rates, serial port mapping, and the Slot B `sshd` configuration were verified on an MT8365 Pod 3 hub (`pn 20500`, hardware revision `0x0504`) with a Pod 4 cover (`pn 20600-0001-I12`, hardware `0812`), using artifacts extracted from releases `77af88bd8b941fed81786c09a9ac3cdb1e97b126` (`v1.5.156`, `v5.5.9`) and `3dd72bdefafbcfc202d6715fc45f9c7bbb3e02ff` (`v1.6.114`, `v5.5.22.0`).

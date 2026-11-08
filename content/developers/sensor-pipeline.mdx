@@ -10,7 +10,7 @@ Firmware can emit CBOR RAW files or publish sensor records through local NATS. D
 
 The source selector probes for NATS with a bounded startup grace period. A successful protocol greeting selects NATS; missing traffic is a health signal, not a reason to run both sources. If NATS is unavailable, RAW processing remains available. After bounded reconnect failures the process exits so systemd can restart and repeat source selection.
 
-NATS sensor consumers subscribe to `raw.sens.>` and `raw.frz.>` and decode each message as CBOR. They use live subscriptions, not durable JetStream replay. Restart therefore does not backfill historical frames. Calibrator builds a bounded live buffer and waits for enough samples. Cover-button NATS events and durable backfill remain separate follow-up work in the pinned source.
+NATS sensor consumers subscribe to `raw.sens.>` and `raw.frz.>`, and since [core#917](https://github.com/sleepypod/core/pull/917) also to `rawmem.sens.>` and `rawmem.frz.>`, which EmmcWear firmware `4b7552d5` uses. Each reading type is fed by one prefix: `raw` always wins, and `rawmem` is used only for a reading type `raw` has not delivered within 30 seconds of startup ([sensor data by firmware](/core/firmware-updates/compatibility/#sensor-data-by-firmware)). Consumers decode each message as CBOR. They use live subscriptions, not durable JetStream replay. Restart therefore does not backfill historical frames. Calibrator builds a bounded live buffer and waits for enough samples. Cover-button NATS events and durable backfill remain separate follow-up work in the pinned source.
 
 ## Processing stages
 
