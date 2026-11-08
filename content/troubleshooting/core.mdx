@@ -51,7 +51,7 @@ Never build on the Pod. See [Core development](/developers/core/#never-build-on-
 
 1. Check the selected side and date. For live measurements, confirm the bed is occupied.
 2. Open **Settings → Device → Sensor data source**. It names the firmware pipeline (NATS or .RAW), the source Core chose at startup, and the age of the last frame, and it explains a fallback or an override. For module state use **System → Health**, and for live input use **Sensors**.
-3. On NATS firmware, confirm fresh frames and output rows; an absent RAW archive is not an ingestion failure. Calibrator may need time to collect its initial live sample window. If no frames arrive at all and the Core journal logs `[natsSource] no frames received`, compare your firmware with [sensor data by firmware](/core/firmware-updates/compatibility/#sensor-data-by-firmware). EmmcWear firmware `4b7552d5` publishes on `rawmem` subjects, which older Core builds do not read.
+3. On NATS firmware, confirm fresh frames and output rows; an absent RAW archive is not an ingestion failure. Calibrator may need time to collect its initial live sample window. If no frames arrive at all and the Core journal logs `[natsSource] no frames received`, compare your firmware with [sensor data by firmware](/core/firmware-updates/compatibility/#sensor-data-by-firmware). EmmcWear firmware `4b7552d5` publishes on `rawmem` subjects, which older Core builds do not read. On newer builds, the card's **Publishing prefixes** row marks any prefix Core does not read, and **Subject prefix** lets you pin it.
 4. On RAW firmware, check the hot directory and firmware journal:
 
 ```bash
