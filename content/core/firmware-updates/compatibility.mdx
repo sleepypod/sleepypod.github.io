@@ -94,7 +94,7 @@ If a later firmware moves the readings to yet another prefix, you don't need a n
 
 </Callout>
 
-Core builds with core#917 subscribe to both prefixes and choose one per reading type (`sens.piezo`, `frz.temp`, and so on). `raw` always wins: `rawmem` feeds a reading type only when `raw` has not delivered it within 30 seconds of startup. A hub that publishes `raw` keeps exactly the data path it had before, and a firmware that publishes both prefixes never feeds a reading in twice. The journal records each choice:
+Core builds with core#917 subscribe to both prefixes and choose one per reading type (`sens.piezo`, `frz.temp`, and so on). `raw` always wins: `rawmem` feeds a reading type only when `raw` has not delivered it within 30 seconds of Core subscribing to NATS, or when `raw` has gone silent on it for 60 seconds. A hub that publishes `raw` keeps exactly the data path it had before, and a firmware that publishes both prefixes never feeds a reading in twice. The journal records each choice:
 
 ```bash
 journalctl -u sleepypod -n 500 --no-pager | grep 'natsSource\] reading'
