@@ -69,18 +69,30 @@ When protection turns a side off, the Temp screen shows a banner. **Re-enable** 
 
 ## Sensor data source
 
-This card is read-only. It tells you which firmware pipeline the Pod is on and whether sensor frames are reaching Core, which is the first thing to check when biometrics are empty.
+This card tells you which firmware pipeline the Pod is on and whether sensor frames are reaching Core, which is the first thing to check when biometrics are empty. On NATS firmware it also shows which NATS subjects Core reads, and lets you change them.
 
-- **Firmware.** How the Pod's firmware hands sensor data to Core. Newer firmware (April 2026 and later) publishes to a local **NATS JetStream** server. Older firmware writes **.RAW** files, either on a tmpfs through a `frank.sh` shim or a `frank.service` drop-in, or straight to `/persistent`.
+- **Firmware.** How the Pod's firmware hands sensor data to Core. Newer firmware (April 2026 and later) publishes to a local **NATS JetStream** server. Older firmware writes **.RAW** files, either on a tmpfs through a `frank.sh` shim or a `frank.service` drop-in, or straight to `/persistent`. EmmcWear firmware (`4b7552d5`) still uses NATS but under new `rawmem` subjects. On Core builds without [core#917](https://github.com/sleepypod/core/pull/917) this card then shows **No frames**. See [sensor data by firmware](/core/firmware-updates/compatibility/#sensor-data-by-firmware).
 - **Reading from.** The source Core chose when the service started: **NATS stream** or **.RAW files**. Core detects this itself, once per start, so after a firmware update it needs a restart to detect again. **Check for updates** in [Updates](/core/settings/updates/) rebuilds and restarts Core on your current channel. **Restart service** on this page also restarts it, but in Core v3.0 it runs the **main** channel updater, so skip it on **dev** (see the warning under Reconnect and Restart service).
 - **Last frame.** How long ago the newest sensor frame arrived, and its type. **Live** means frames are flowing. **Stalled** means nothing has arrived for over a minute.
+
+Core builds that include [core#918](https://github.com/sleepypod/core/pull/918) add three rows. **Subjects** and **Publishing prefixes** appear while Core is reading NATS. **Subject prefix** also appears when Core reads .RAW files on NATS firmware, for example when an override forces .RAW.
+
+- **Subjects.** Whether Core picks the subject prefix itself (`auto`) or reads one you chose (`pinned`), and which prefix feeds each reading type, for example `raw: sens.capsense, sens.piezo · rawmem: frz.temp`.
+- **Publishing prefixes.** The prefixes the firmware publishes sensor (`sens.*`) readings under, up to 16, and how recently, for example `raw 2s ago · rawv2 (not read) 1s ago`. A prefix marked **(not read)** is one Core does not subscribe to.
+- **Subject prefix.** Choose **Auto**, **raw**, **rawmem**, or **Custom…**. **Auto** reads `raw` and `rawmem`, preferring `raw` for each reading type. Pin a prefix only if the firmware publishes somewhere else. A custom prefix takes letters, digits, `_` or `-`, up to 32 characters, with no dots or wildcards.
+
+If no frames arrive and the firmware publishes under a prefix Core doesn't read, the card says so: "Firmware publishes under rawv2, which this pod doesn't read. Set the subject prefix to rawv2."
+
+After you change the prefix, the live sensor stream re-subscribes straight away. The biometrics modules read the prefix when they start, so the card offers **Restart biometrics modules**. That restarts the piezo processor, sleep detector, and environment monitor. The calibrator picks up the change on its next restart.
 
 A note appears under the rows when the chosen source does not match the firmware, or when an environment override (`PIEZO_SENSOR_SOURCE` or `PIEZO_NATS_DISABLED`) is forcing a source. On a development machine without a Pod the card shows no firmware.
 
 <Callout type="info">
-  There is no switch here on purpose. Core picks one source per start and never runs both at once,
-  so a toggle would need a restart to take effect. The same information is in the [System
-  dashboard](/core/system/) under **Health**, and on the Pod in `sp-status`.
+  There is no switch between .RAW files and NATS. Core picks one source per start and never runs
+  both at once, so a toggle would need a restart to take effect. The subject prefix control only
+  changes which NATS subjects Core reads. The same information is in the [System
+  dashboard](/core/system/) under **Health**, and on the Pod in `sp-status`. An agent can read it
+  and change the prefix through [MCP](/core/mcp/#sensor-data-source).
 </Callout>
 
 ## Daily maintenance
