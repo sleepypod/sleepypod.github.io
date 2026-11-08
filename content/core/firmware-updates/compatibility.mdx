@@ -90,7 +90,7 @@ Core builds before [core#917](https://github.com/sleepypod/core/pull/917) read o
 
 Update Core to a build that includes core#917, then run **Calibrate all** with the bed empty once readings appear in **System → Sensors**.
 
-If a later firmware moves the readings to yet another prefix, you don't need a new Core build. With [core#918](https://github.com/sleepypod/core/pull/918), **Settings → Device → Sensor data source** lists every prefix the firmware publishes and lets you pin one. An agent connected over [MCP](/core/mcp/#sensor-data-source) can do the same with `get_sensor_source` and `set_device_settings`.
+If a later firmware moves the readings to yet another prefix, you don't need a new Core build. With [core#918](https://github.com/sleepypod/core/pull/918), **Settings → Device → Sensor data source** lists the prefixes the firmware publishes sensor (`sens.*`) readings under, up to 16, and lets you pin one. Prefixes that carry only freezer (`frz.*`) readings are not listed; if only those readings are missing, inspect the NATS subjects on the Pod. An agent connected over [MCP](/core/mcp/#sensor-data-source) can do the same with `get_sensor_source` and `set_device_settings`.
 
 </Callout>
 

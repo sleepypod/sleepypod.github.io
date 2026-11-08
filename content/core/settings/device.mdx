@@ -75,10 +75,10 @@ This card tells you which firmware pipeline the Pod is on and whether sensor fra
 - **Reading from.** The source Core chose when the service started: **NATS stream** or **.RAW files**. Core detects this itself, once per start, so after a firmware update it needs a restart to detect again. **Check for updates** in [Updates](/core/settings/updates/) rebuilds and restarts Core on your current channel. **Restart service** on this page also restarts it, but in Core v3.0 it runs the **main** channel updater, so skip it on **dev** (see the warning under Reconnect and Restart service).
 - **Last frame.** How long ago the newest sensor frame arrived, and its type. **Live** means frames are flowing. **Stalled** means nothing has arrived for over a minute.
 
-On NATS firmware, Core builds that include [core#918](https://github.com/sleepypod/core/pull/918) add three rows:
+Core builds that include [core#918](https://github.com/sleepypod/core/pull/918) add three rows. **Subjects** and **Publishing prefixes** appear while Core is reading NATS. **Subject prefix** also appears when Core reads .RAW files on NATS firmware, for example when an override forces .RAW.
 
 - **Subjects.** Whether Core picks the subject prefix itself (`auto`) or reads one you chose (`pinned`), and which prefix feeds each reading type, for example `raw: sens.capsense, sens.piezo · rawmem: frz.temp`.
-- **Publishing prefixes.** Every prefix the firmware is publishing sensor data under, and how recently, for example `raw 2s ago · rawv2 (not read) 1s ago`. A prefix marked **(not read)** is one Core does not subscribe to.
+- **Publishing prefixes.** The prefixes the firmware publishes sensor (`sens.*`) readings under, up to 16, and how recently, for example `raw 2s ago · rawv2 (not read) 1s ago`. A prefix marked **(not read)** is one Core does not subscribe to.
 - **Subject prefix.** Choose **Auto**, **raw**, **rawmem**, or **Custom…**. **Auto** reads `raw` and `rawmem`, preferring `raw` for each reading type. Pin a prefix only if the firmware publishes somewhere else. A custom prefix takes letters, digits, `_` or `-`, up to 32 characters, with no dots or wildcards.
 
 If no frames arrive and the firmware publishes under a prefix Core doesn't read, the card says so: "Firmware publishes under rawv2, which this pod doesn't read. Set the subject prefix to rawv2."
