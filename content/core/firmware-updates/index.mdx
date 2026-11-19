@@ -47,7 +47,19 @@ cat /proc/cmdline | grep -o 'rootfs_[ab]'        # the slot you are running from
 sudo fw_printenv current_slot boot_a_success retry_boot_a boot_b_success retry_boot_b
 ```
 
-`boot_<running slot>_success=1` means the slot is confirmed. If it is `0`, the countdown is live; confirming it is one write (`sudo fw_setenv boot_a_success 1 retry_boot_a 5`, substituting your slot). sleepypod's installer will do this itself in a future release.
+How to read it, for a Pod running from `rootfs_a`:
+
+| Value | Meaning |
+|---|---|
+| `current_slot=a` | matches the running slot; if it differs, the bootloader will switch on the next boot |
+| `boot_a_success=1` | slot A is confirmed; the bootloader never counts down and never writes the environment at boot |
+| `boot_a_success=0` | the countdown is live; `retry_boot_a` is the number of boots left before the switch |
+| `retry_boot_a=5` | full budget; anything lower means boots have already been counted |
+| `ustate=0` | Eight Sleep's update state is "OK" |
+
+A healthy, confirmed Pod shows `boot_a_success=1`, `retry_boot_a=5`, `boot_b_success=1`, `retry_boot_b=5`, `ustate=0`.
+
+If `boot_<running slot>_success` is `0`, confirming it is one write (`sudo fw_setenv boot_a_success 1 retry_boot_a 5`, substituting your slot). sleepypod's installer will do this itself in a future release. Confirming also removes a second hazard: while a slot is unconfirmed the bootloader rewrites the environment on every boot, into a single copy with no backup, so a power cut during boot is exactly when that environment is most likely to be corrupted. A confirmed slot has nothing to write.
 
 A firewall on the Pod does not change any of this, and it protects only while its own rules are loaded. It cannot tell you when it has stopped working: a daemon stuck on a dropped packet looks the same as one that got through. Treat on-Pod blocking as a convenience layer, not a guarantee.
 
