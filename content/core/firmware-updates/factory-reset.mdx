@@ -19,10 +19,10 @@ Do not assume that you can regain root access or reinstall sleepypod afterward. 
 
 </Callout>
 
-For matched hardware returning to stock, first confirm that Slot B is untouched. **If Slot B was synchronized or its state is unknown, stop: do not continue to app pairing under this procedure.** A reset into modified Slot B is not a verified stock-restoration method. If you need to keep root access, use [the manual subsystem update](/core/firmware-updates/manual-update/) only for a supported subsystem update.
+For matched hardware returning to stock, a hardware factory reset restores the factory image whether or not you synchronized Slot B. **It also erases the `persist` partition: your settings, biometrics, and HomeKit pairing.** If you need to keep root access, use [the manual subsystem update](/core/firmware-updates/manual-update/) only for a supported subsystem update.
 
 1. **Perform a hardware factory reset:**
-   Follow the firmware reset photos for your model in [free-sleep's installation guide](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md). If Slot B remains untouched, the hub boots from its factory backup partition and resets network settings. If you previously synchronized Slot B, a factory reset boots that modified environment instead of pristine factory stock.
+   Follow the firmware reset photos for your model in [free-sleep's installation guide](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md). The hub boots a recovery image that reformats both root filesystem slots and the `persist` partition, reinstalls the factory image from the `firmware` partition into both slots, and resets network settings. Slot B is not the factory backup, so synchronizing it does not change what the reset restores.
 2. **Pair with the official Eight Sleep app:**
    Pair the Pod to the official mobile app over Wi-Fi. Allow the hub to connect to Eight Sleep's servers and download official over-the-air (OTA) updates until all firmware and subsystem updates finish applying.
 
