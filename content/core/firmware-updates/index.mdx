@@ -49,13 +49,13 @@ sudo fw_printenv current_slot boot_a_success retry_boot_a boot_b_success retry_b
 
 How to read it, for a Pod running from `rootfs_a`:
 
-| Value | Meaning |
-|---|---|
-| `current_slot=a` | matches the running slot; if it differs, the bootloader will switch on the next boot |
+| Value              | Meaning                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| `current_slot=a`   | matches the running slot; if it differs, the bootloader will switch on the next boot           |
 | `boot_a_success=1` | slot A is confirmed; the bootloader never counts down and never writes the environment at boot |
-| `boot_a_success=0` | the countdown is live; `retry_boot_a` is the number of boots left before the switch |
-| `retry_boot_a=5` | full budget; anything lower means boots have already been counted |
-| `ustate=0` | Eight Sleep's update state is "OK" |
+| `boot_a_success=0` | the countdown is live; `retry_boot_a` is the number of boots left before the switch            |
+| `retry_boot_a=5`   | full budget; anything lower means boots have already been counted                              |
+| `ustate=0`         | Eight Sleep's update state is "OK"                                                             |
 
 A healthy, confirmed Pod shows `boot_a_success=1`, `retry_boot_a=5`, `boot_b_success=1`, `retry_boot_b=5`, `ustate=0`.
 
