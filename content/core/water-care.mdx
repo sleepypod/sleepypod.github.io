@@ -1,0 +1,127 @@
+---
+type: Guide
+title: 'Water care and maintenance liquid'
+description: 'Maintain the water circuit with dilute liquid BZK, measured dosing, and precautions for seals and tubing.'
+sources:
+  - id: liquid-price
+    resource: https://mfimedical.com/products/antiseptic-bzk-benzalkonium-chloride-bak-1-750-topical-liquid-1-gal-bottle
+    title: MFI Medical BAK 1:750 gallon listing
+  - id: maintenance-insert
+    resource: https://www.eightsleep.com/product/pod-maintenance-insert
+    title: Eight Sleep maintenance insert composition and placement
+  - id: community-regimen
+    resource: https://www.reddit.com/r/EightSleep/comments/1il3gq5/
+    title: Community report of liquid BZK use
+  - id: bzk-label
+    resource: https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d1f06aa6-2264-4ac1-a9a4-8ca9be1c9ca8
+    title: Medical Chemical Corp BAK 1:750 label
+  - id: bzk-stability
+    resource: https://med-chem.com/wp-content/uploads/2021/11/1451B-1.pdf
+    title: Medical Chemical Corp BAK 1:750 safety data sheet
+  - id: shelf-life
+    resource: https://novonordiskpharmatech.com/solutions/benzalkonium-chloride-faq/
+    title: Novo Nordisk Pharmatech BZK shelf-life information
+  - id: seal-compatibility
+    resource: https://rubberfab.com/wp-content/uploads/dlm_uploads/2023/10/Chemical-Resistance-List-2020.pdf
+    title: Rubber Fab elastomer chemical resistance chart
+  - id: water-refill
+    resource: https://help.eightsleep.com/en_us/how-often-will-i-need-to-refill-the-water-reservoir-H1EpdK0Uv
+    title: Eight Sleep reservoir filling and setup priming
+  - id: priming-operation
+    resource: https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/server/routers/device.ts
+    title: Priming timing and operation
+---
+
+# Water care and maintenance liquid
+
+For **Pod 5 and earlier**, some sleepypod community members use **dilute liquid benzalkonium chloride (BZK, also called BAK or BKC)** added through the reservoir for water treatment. Measure it; do not pour in an unmeasured splash. This guide describes the available community dosing evidence and its limits. It does not establish that liquid treatment outperforms an insert or that inserts are ineffective.
+
+## Product and measured dose
+
+Use a **ready-diluted, water-only BZK solution** with a clearly stated concentration. Do not substitute a fragranced cleaner, surgical scrub, or another product merely because it contains BZK. Do not buy 20%, 50%, or 80% concentrate to dilute at home.
+
+One community contributor reports using **140 mL of BAK 1:750 approximately every six months**, with two years of use in their machine. This is **one user's experience, not a validated Pod dose or service interval**.[^community-regimen]
+
+The reported product is Medical Chemical Corp **BAK 1:750**. Its printed Drug Facts label states **1.33 g/L BZK**, with water as the inactive ingredient. At that strength:
+
+- **140 mL supplies about 186 mg of BZK.**
+- **140 mL is about 4.7 US fl oz**, not exactly 5 fl oz.
+- A product labeled exactly **0.13% w/v** supplies about **182 mg** in 140 mL.
+
+The product is labeled as a topical antiseptic; that label does not establish suitability or long-term seal compatibility inside a Pod.[^bzk-label]
+
+**Do not add this full amount on every top-up, increase it to clear a clog, or layer it over an unknown existing treatment or active insert.** The reported six-month practice does not demonstrate that the previous dose is gone.
+
+## Cost: insert versus liquid
+
+**Cost is the clearest difference.** Eight Sleep lists a replacement insert at **$40**.[^maintenance-insert] MFI Medical lists a US gallon of the cited BAK 1:750 liquid at **$19.88**.[^liquid-price] At 140 mL per portion, 3,785 mL provides about 27 portions: **roughly $0.74 of liquid per portion**, compared with $40 for an insert. Prices checked October 26, 2026; shipping and tax are extra.
+
+That is about **54 times the product cost** for the insert at similar reported BZK mass. The liquid requires buying the bottle upfront, measuring, and managing delivery during refill. The per-portion calculation excludes waste: follow the bottle's expiration date rather than treating a gallon as a guaranteed 13-year supply. This is a purchase-cost comparison, not proof of equal protection or a recommendation to re-dose every six months.
+
+### Active amount and delivery
+
+The community report puts the insert's BZK content at **186 mg in crystal form**.[^community-regimen] Eight Sleep confirms that its maintenance solution includes BZK, but its product page does not give that mass or a release-rate measurement.[^maintenance-insert]
+
+| Comparison           | Crystal insert                                     | Ready-diluted liquid                                       |
+| -------------------- | -------------------------------------------------- | ---------------------------------------------------------- |
+| BZK amount           | Reported 186 mg per insert                         | About 186 mg in 140 mL at 1.33 g/L                         |
+| Where it enters      | Insert on the cover's water cord                   | Reservoir during a refill                                  |
+| Delivery uncertainty | How much dissolves and reaches the water, and when | How much treated reserve water enters the circulating loop |
+
+**A small quantity of crystals is not inherently weaker than a large bottle of dilute liquid.** Most of the liquid is water. If the reported mass is correct and both doses fully dissolve and mix into the same water volume, their nominal BZK concentration is the same. This calculation does not establish equal performance over time.
+
+An insert **could under-deliver** if its contents do not dissolve or reach the circuit adequately; liquid **could under-deliver** if it stays in the reservoir. These are possible failure mechanisms, not measured findings about this hardware. Neither the amount in the package nor the replacement schedule establishes the active concentration in the cover months later.
+
+Some sleepypod community members prefer a measured liquid dose introduced during refill, chiefly because of the cost difference. There is not enough evidence here to quantify how ineffective an insert might be or claim that liquid lasts longer. A meaningful comparison would measure BZK in the circulating water after treatment and over time, alongside growth and material compatibility. **Do not compensate for suspected insert failure by adding extra BZK to an unknown existing dose.**
+
+## Get treatment into the circulating water
+
+Adding liquid to a full reserve tank does not establish that it reaches the cover. The community discussion disputes how much reserve water a routine prime exchanges.[^community-regimen]
+
+When changing treatment, use the draining and refilling procedure supplied for your hardware. Account for liquid left in the cover and hub. Introduce the measured treatment during refill, when water is actually being drawn from the reservoir, and fill with distilled water to the marked line.[^water-refill] Do not mix BZK with peroxide, bleach, soap, or other cleaners; the BAK label specifically warns that soap and detergent destroy its germicidal properties.[^bzk-label]
+
+Keep the bed empty during priming. A routine prime typically takes **2–5 minutes**; wait for it to finish before starting another.[^priming-operation] Daily priming is useful maintenance, but is not evidence that an entire reservoir dose has entered the loop.
+
+### Reservoir size is not circuit volume
+
+The manufacturer's setup guide says to have **about 2 L of distilled water** and expect **2–3 primes** for Pod 5 and earlier. It does not specify that every prime consumes a full 2 L reservoir, or establish the total circulating volume.[^water-refill] Multiplying these numbers into a claimed 4–6 L circuit would be unreliable.
+
+For illustration only, 186 mg distributed evenly through 2 L, 4 L, or 6 L would be approximately **93, 47, or 31 mg/L (ppm)** respectively. These are dilution calculations, **not verified Pod capacities or recommended target concentrations**. A usable volume estimate requires measured water added during a documented refill, accounting for retained water and the reserve left outside the circulating loop.
+
+## How long does BZK last?
+
+**Do not assume BZK disappears after six months.** The BAK 1:750 safety data sheet describes it as stable under normal conditions; it gives no measured lifetime inside a heated Pod circuit.[^bzk-stability]
+
+Distinguish three things:
+
+- **Bottle shelf life:** follow your product's expiration date and storage instructions. One BZK manufacturer documents five years for its own products; that is not an expiry period for every dilute BZK bottle.[^shelf-life]
+- **Chemical remaining in the system:** chemical stability does not mean the amount stays constant through draining, refilling, or contamination. Soap can also inactivate the treatment.[^bzk-label]
+- **Effective protection:** none of these sources establishes how long a particular Pod dose suppresses growth. Bottle shelf life cannot establish a six-month maintenance interval.
+
+There is no supported Pod-specific half-life here. Do not assume that an old dose has become harmless water, or repeatedly add a full dose on the assumption that nothing remains. Record the product, concentration, amount, and refill date.
+
+## Do not use peroxide or other additives
+
+**Do not use hydrogen peroxide in the sleepypod water-care regimen.** Peroxide can damage incompatible rubber seals and tubing. The effect depends on the elastomer and concentration: supplier compatibility tables give different ratings for different rubbers, so it would be inaccurate to claim that peroxide aggressively destroys every rubber material.[^seal-compatibility]
+
+**Do not use bleach, humidifier/dehumidifier treatments, generic “anti-growth” additives, desiccants, or household cleaners.** Their full formulations have not been established as compatible with this circuit. Incompatible chemicals can damage seals; extra ingredients or particles introduce additional uncertainty. A BZK ingredient listing alone does not prove compatibility. Liquid BZK also lacks a verified lifetime compatibility study for every Pod generation.
+
+Keep treatment in its labeled container, away from children and pets. Follow its handling instructions, avoid eye contact, and do not spray or mist it. If performance remains poor, check [water flow and thermal diagnostics](/troubleshooting/core/#powered-but-not-heating-or-cooling) instead of increasing the dose.
+
+[^community-regimen]: [Community report of liquid BZK use](https://www.reddit.com/r/EightSleep/comments/1il3gq5/). Self-reported experience and discussion, not controlled testing.
+
+[^bzk-label]: [Medical Chemical Corp BAK 1:750 label](https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d1f06aa6-2264-4ac1-a9a4-8ca9be1c9ca8).
+
+[^bzk-stability]: [Medical Chemical Corp BAK 1:750 safety data sheet](https://med-chem.com/wp-content/uploads/2021/11/1451B-1.pdf), revised January 18, 2021, section X.
+
+[^shelf-life]: [Novo Nordisk Pharmatech BZK shelf-life information](https://novonordiskpharmatech.com/solutions/benzalkonium-chloride-faq/).
+
+[^seal-compatibility]: [Rubber Fab elastomer chemical resistance chart](https://rubberfab.com/wp-content/uploads/dlm_uploads/2023/10/Chemical-Resistance-List-2020.pdf). Material-specific screening data, not Pod lifetime testing.
+
+[^water-refill]: [Eight Sleep reservoir filling and setup priming](https://help.eightsleep.com/en_us/how-often-will-i-need-to-refill-the-water-reservoir-H1EpdK0Uv).
+
+[^priming-operation]: [Priming timing and operation](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/server/routers/device.ts).
+
+[^maintenance-insert]: [Eight Sleep maintenance insert composition and placement](https://www.eightsleep.com/product/pod-maintenance-insert). Confirms BZK and the water-cord location; does not specify active mass or release kinetics.
+
+[^liquid-price]: [MFI Medical BAK 1:750 gallon listing](https://mfimedical.com/products/antiseptic-bzk-benzalkonium-chloride-bak-1-750-topical-liquid-1-gal-bottle). Listed at $19.88, checked October 26, 2026.

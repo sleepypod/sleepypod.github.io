@@ -33,6 +33,53 @@ The installer configures the journal in RAM. Copy or download logs before reboot
 
 **Open console** shows raw output from the Pod's firmware. Switch between **Logs** and **Frames**, filter by type, **Pause** or **Resume**, and **Clear** the view. Use it to check the firmware is sending data at all.
 
+## Collect a CLI support bundle
+
+For startup failures or [Pod 3 sensor and scheduler incidents](/troubleshooting/pod-3/), collect a bundle before another reboot. Connect from your computer using the installed SSH key:
+
+```bash
+ssh -p 8822 root@POD_IP
+```
+
+Then run on the Pod:
+
+```bash
+sp-info
+sp-status
+sp-bundle-logs
+```
+
+`sp-info` prints hardware, firmware, and Core build context. The bundle includes service journals, the firmware journal, a combined app/firmware timeline, service state, and sensor routing diagnostics. It writes `/tmp/sleepypod-bundle-<timestamp>.tar.gz` by default and redacts known secrets. Keep redaction enabled and review the contents before sharing.
+
+Copy the generated file to your computer using its exact filename. Run this from your computer, replacing `TIMESTAMP` with the value printed on the Pod:
+
+```bash
+scp -P 8822 root@POD_IP:/tmp/sleepypod-bundle-TIMESTAMP.tar.gz .
+```
+
+For a quick text capture of the last hour, run on the Pod:
+
+```bash
+sp-logs --firmware --since '1 hour ago'
+```
+
+Without a time window, `sp-logs --firmware` follows Core and firmware messages live. A bundle defaults to the current boot. To select an incident window from retained journals, use explicit timestamps with a timezone:
+
+```bash
+sp-bundle-logs --since '2026-10-24 17:00:00 UTC' --until '2026-10-24 17:30:00 UTC'
+```
+
+Replace those example times with the actual incident window. A time window can search retained boots, but cannot recover RAM-backed journals lost in a reboot.
+
+If the installed version lacks these helper commands or options, collect the journals directly:
+
+```bash
+journalctl -u sleepypod.service -u frank.service --since '1 hour ago' --no-pager
+journalctl -u sleepypod-piezo-processor.service -u sleepypod-sleep-detector.service --since '1 hour ago' --no-pager
+```
+
+The firmware console above provides live firmware output; the CLI captures the `frank.service` journal and startup history for a support handoff.
+
 ---
 
-**Source reference:** [Recording controls](https://github.com/sleepypod/core/blob/3a6741cb/src/components/System/DataRecordingCard.tsx) · [Log viewer](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/SystemLogViewer.tsx) · [Firmware console](https://github.com/sleepypod/core/blob/4cc76838/src/components/Sensors/FirmwareLogConsole.tsx)
+**Source reference:** [Support bundle](https://github.com/sleepypod/core/blob/f8948b04/scripts/bin/sp-bundle-logs) · [CLI logs](https://github.com/sleepypod/core/blob/f8948b04/scripts/bin/sp-logs) · [Build context](https://github.com/sleepypod/core/blob/f8948b04/scripts/bin/sp-info) · [Recording controls](https://github.com/sleepypod/core/blob/3a6741cb/src/components/System/DataRecordingCard.tsx) · [Log viewer](https://github.com/sleepypod/core/blob/4cc76838/src/components/status/SystemLogViewer.tsx) · [Firmware console](https://github.com/sleepypod/core/blob/4cc76838/src/components/Sensors/FirmwareLogConsole.tsx)
