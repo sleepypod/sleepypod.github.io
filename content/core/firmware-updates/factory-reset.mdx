@@ -1,0 +1,35 @@
+---
+title: 'Return to stock with official OTA'
+description: 'Factory reset and official OTA limitations for matched hub and cover hardware.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Return to stock with official OTA
+
+<Callout type="error">
+
+**Root access after OTA is not guaranteed.**
+
+Factory reset and pairing with the official app can install newer vendor firmware. The pinned root-access instructions describe particular hardware and firmware; they do not establish that the same serial/UART procedure works after every future update.
+
+Do not assume that you can regain root access or reinstall sleepypod afterward. This guide has no verified firmware-version evidence establishing a permanent UART lockout, so it does not claim that a particular update patches that method.
+
+**Do not use this method if you plan to keep root access or run sleepypod.** Only follow these steps if you are returning the device permanently to stock operation and will only use the official Eight Sleep service.
+
+</Callout>
+
+For matched hardware returning to stock, first confirm that Slot B is untouched. **If Slot B was synchronized or its state is unknown, stop: do not continue to app pairing under this procedure.** A reset into modified Slot B is not a verified stock-restoration method. If you need to keep root access, use [the manual subsystem update](/core/firmware-updates/manual-update/) only for a supported subsystem update.
+
+1. **Perform a hardware factory reset:**
+   Follow the firmware reset photos for your model in [free-sleep's installation guide](https://github.com/throwaway31265/free-sleep/blob/e5172139874a274d1ced12c8da052ab2cbaa286d/INSTALLATION.md). If Slot B remains untouched, the hub boots from its factory backup partition and resets network settings. If you previously synchronized Slot B, a factory reset boots that modified environment instead of pristine factory stock.
+2. **Pair with the official Eight Sleep app:**
+   Pair the Pod to the official mobile app over Wi-Fi. Allow the hub to connect to Eight Sleep's servers and download official over-the-air (OTA) updates until all firmware and subsystem updates finish applying.
+
+<Callout type="info">
+
+**Hardware limitation:** Official OTA may not update cross-generation pairings, such as a Pod 3 hub with a Pod 4 cover. This guide has not verified that server behavior. For the supported cross-generation pairing, see [the manual subsystem update](/core/firmware-updates/manual-update/).
+
+</Callout>
+
+[Source references and hardware verification scope](/core/firmware-updates/compatibility/#sources-and-verification-scope).

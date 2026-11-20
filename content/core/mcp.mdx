@@ -93,10 +93,34 @@ The server is intent-shaped, not endpoint-shaped. Each tool describes something 
 | "What's controlling the bed tonight?"                           | `get_automations`     |
 | "Pause all automations" / "Make a rule that cools when HR > 60" | `manage_automation`   |
 | "Something's wrong" / "Is the bed actually cooling?"            | `diagnose_pod`        |
+| "Why are my biometrics empty?" / "Is sensor data arriving?"     | `get_sensor_source`   |
 | "Show me the logs"                                              | `get_logs`            |
 | "Clear the pump alert" / "Restart the piezo service" / "Update" | `pod_maintenance`     |
 
 Temperatures accept your unit (`F` or `C`, defaulting to the device setting) and are converted to the 55–110°F hardware setpoint. Errors come back as readable text with the Core error code, so the assistant can explain "pump stall guard tripped" instead of retrying.
+
+## Sensor data source
+
+`get_sensor_source` reports where Core reads raw sensor frames from. It returns three blocks:
+
+- `firmware`: the firmware generation.
+- `stream`: whether Core reads .RAW files or NATS, and the age of the last frame.
+- `nats`: only while Core is reading NATS, on builds that include [core#918](https://github.com/sleepypod/core/pull/918):
+  - `mode` (`auto` or `pinned`) and `configuredPrefix`
+  - `subscribedSubjects`
+  - `sources`, the prefix feeding each reading type, for example `{ "sens.piezo": "rawmem" }`
+  - message counters
+  - `observedPrefixes`: the prefixes seen publishing `<prefix>.sens.*` (up to 16), with `subscribed: false` for one Core does not read
+
+This is how an agent fixes a firmware that moves its data to a new prefix, without anyone patching code:
+
+1. Biometrics are empty, or the stream shows no frames.
+2. `get_sensor_source` shows no frames arriving, and `observedPrefixes` lists a prefix with `subscribed: false`.
+3. `set_device_settings` with `natsSubjectPrefix` set to that prefix. `null` returns to auto.
+4. The live stream re-subscribes at once. The biometrics modules read the prefix at startup, so the reply tells the agent to restart them with `pod_maintenance restart_service`. The agent must get your confirmation before each restart: the tool does not ask by itself, although it is marked destructive, so most hosts show an approval prompt.
+5. `get_sensor_source` again to confirm frames are arriving.
+
+The server tells agents to check `get_sensor_source` before changing anything when live data or biometrics are empty. See [sensor data by firmware](/core/firmware-updates/compatibility/#sensor-data-by-firmware) for the prefixes known so far.
 
 ## Sleep-stage rules
 
@@ -157,4 +181,4 @@ Developer and installer surfaces stay REST-only: raw hardware opcodes, raw senso
 
 ---
 
-**Source reference:** [MCP server README and intent catalogue](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/README.md) · [Server and prompts](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/server.ts) · [HTTP endpoint and origin check](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/app/api/mcp/route.ts)
+**Source reference:** [MCP server README and intent catalogue](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/README.md) · [Server and prompts](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/src/mcp/server.ts) · [HTTP endpoint and origin check](https://github.com/sleepypod/core/blob/f8948b04586542fab1817aadc72b65a9c2988f8c/app/api/mcp/route.ts) · [Sensor source tool and subject prefix setting (core#918)](https://github.com/sleepypod/core/pull/918)
