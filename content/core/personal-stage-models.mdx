@@ -7,7 +7,7 @@ description: 'Train a sleep-stage model from your own nights with the Apple Watc
 
 A personal stage model is a classifier trained on your own nights: the Pod's heart rate, HRV, breathing, and movement are the inputs, and the stages your Apple Watch recorded on the same nights are the labels. It is scored with Cohen's kappa (κ) against the Watch on nights it never saw, beside two baselines: the Pod's [sleep-stage rules](/core/settings/sleep-stages/) and the bundled challenger model that ships in the iOS app.
 
-This is a development preview. The Pod side is pinned to core development revision `14a7cda7` and the phone side to iOS development revision `3fe45f1a`, both on `dev` as of October 20, 2026. Neither side is on `main` yet; availability depends on your installed build.
+This is a development preview. The Pod side is pinned to core development revision `09e10015` and the phone side to iOS development revision `3fe45f1a`, from the development branches; availability depends on your installed build.
 
 ## Explore models in the training workspace
 
@@ -66,17 +66,17 @@ Useful flags:
 | `--work DIR`                        | Working directory (default `./personal-models`)                    |
 | `--keep-snapshot`                   | Keep the database snapshot after the run; it is deleted by default |
 
-**Footprint.** A run leaves the dataset and the exported models, about 0.8 MB, in the work directory. The database snapshot is about 75 MB and is deleted after the run unless you pass `--keep-snapshot`. The Pod keeps one model row per side, replaced on every upload; a depth 8 forest is about 2 MB.
+**Footprint.** A run leaves the dataset and the exported models, about 0.8 MB, in the work directory. The database snapshot is about 75 MB and is deleted after the run unless you pass `--keep-snapshot`. The Pod keeps a model library per side and one selected model. The script’s legacy upload replaces the selection and preserves its active state (a first upload defaults to inactive). A depth 8 forest is about 2 MB.
 
 ## What the Pod does with it
 
-The Pod stores the model and evaluates it with its own TypeScript, computing the same feature contracts from a night's vitals and movement. Three routes under `/api`:
+The Pod stores the model and evaluates it with its own TypeScript, computing the same feature contracts from a night's vitals and movement. Routes under `/api`:
 
-| Method | Path                          | Purpose                                                                                                                                                                                            |
-| ------ | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET    | `/sleep-stages/model`         | The side's stored model and when it was uploaded                                                                                                                                                   |
-| PUT    | `/sleep-stages/model`         | Store a model for a side, or `null` to remove it. The Pod refuses a model that names an unknown feature contract or fails any of its own test vectors, so a converter mismatch is caught at upload |
-| POST   | `/sleep-stages/model/preview` | Stage recent nights with the stored model (or one sent inline) and score it against the Watch beside the side's rules on the same nights                                                           |
+| Method | Path                          | Purpose                                                                                                                                                                                                                                                      |
+| ------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GET    | `/sleep-stages/model`         | The side's selected model, upload time, and active flag                                                                                                                                                                                                      |
+| PUT    | `/sleep-stages/model`         | Replace the selected model, preserving its active state (inactive on first upload), or `null` to remove it. The Pod refuses a model that names an unknown feature contract or fails any of its own test vectors, so a converter mismatch is caught at upload |
+| POST   | `/sleep-stages/model/preview` | Stage recent nights with the stored model (or one sent inline) and score it against the Watch beside the side's rules on the same nights                                                                                                                     |
 
 ```bash
 curl --fail -X POST http://POD_IP:3000/api/sleep-stages/model/preview \
@@ -85,7 +85,24 @@ curl --fail -X POST http://POD_IP:3000/api/sleep-stages/model/preview \
 
 Preview scores are in-sample when the previewed nights were also in the training set, which they are after a normal run: the earlier depth 4 contract B forest that scored κ 0.20 leave-one-night-out reached κ 0.33 when the Pod previewed its own training nights. Treat the preview as a check that the Pod evaluates the model the same way the Mac did, not as independent validation; the held-out κ from training is the number to compare.
 
-The stored model is scored beside the rules; it does not replace the Pod's live classifier. The classifier is pinned to the hashed biometrics manifest through the [profile system](/core/settings/biometric-calibration/), and switching engines there is a migration of its own. Nights in [Sleep](/core/biometrics/) keep using the saved rules.
+The selected model can stage the side's nights when active. The saved rules remain
+available and are the fallback for nights the model cannot stage. Turning the model
+off returns to the rules without removing the selection; stage reads identify the
+source with `stagedBy`.
+
+For a candidate that should not replace the selection immediately, use the library:
+
+| Method | Path                            | Purpose                                                |
+| ------ | ------------------------------- | ------------------------------------------------------ |
+| GET    | `/sleep-stages/models`          | List a side's models and selected/active flags.        |
+| POST   | `/sleep-stages/models`          | Add `{side, model}` without selecting; returns an ID.  |
+| PUT    | `/sleep-stages/models/selected` | Select `{side, id, active}` after reviewing a preview. |
+| PUT    | `/sleep-stages/model/active`    | Set `{side, active}`; `false` returns to the rules.    |
+
+For agent-assisted library management and the full-forest curl upload, see
+[MCP personal stage models](/core/mcp/#personal-stage-models). Inline MCP models
+have a 256 KB limit; full forests go through the REST upload. Training with
+`--no-upload` lets you review and add a candidate before selecting or activating it.
 
 ## On the iPhone
 
@@ -108,4 +125,6 @@ sleepypod is not a medical device. Stage estimates, from the rules or from a per
 
 ---
 
-**Source reference:** [Training script](https://github.com/sleepypod/core/blob/14a7cda7/scripts/train-personal-models.py) · [Model routes](https://github.com/sleepypod/core/blob/14a7cda7/src/server/routers/sleepStages.ts) · [Pod evaluator](https://github.com/sleepypod/core/blob/14a7cda7/src/lib/personal-stage-model.ts) · [Calibration research](https://github.com/sleepypod/core/blob/14a7cda7/docs/research/sleep-stage-calibration/README.md) · [iOS design](https://github.com/sleepypod/ios/blob/3fe45f1a/docs/design/on-device-stage-training.md) · [Portable model on iOS](https://github.com/sleepypod/ios/blob/3fe45f1a/Sleepypod/Services/PortableStageModel.swift) · [Stage models screen](https://github.com/sleepypod/ios/blob/3fe45f1a/Sleepypod/Views/Data/StageComparisonView.swift)
+**Source reference:** [Training script](https://github.com/sleepypod/core/blob/14a7cda7/scripts/train-personal-models.py) · [Model routes](https://github.com/sleepypod/core/blob/09e10015ea75dab14456bf0dd58cea120d73b2ff/src/server/routers/sleepStages.ts) · [Pod evaluator](https://github.com/sleepypod/core/blob/14a7cda7/src/lib/personal-stage-model.ts) · [Calibration research](https://github.com/sleepypod/core/blob/14a7cda7/docs/research/sleep-stage-calibration/README.md) · [iOS design](https://github.com/sleepypod/ios/blob/3fe45f1a/docs/design/on-device-stage-training.md) · [Portable model on iOS](https://github.com/sleepypod/ios/blob/3fe45f1a/Sleepypod/Services/PortableStageModel.swift) · [Stage models screen](https://github.com/sleepypod/ios/blob/3fe45f1a/Sleepypod/Views/Data/StageComparisonView.swift)
+
+**Activation source:** [Selected-model default](https://github.com/sleepypod/core/blob/09e10015ea75dab14456bf0dd58cea120d73b2ff/src/db/schema.ts#L127-L135)

@@ -30,6 +30,41 @@ sudo /home/dac/sleepypod-core/scripts/internet-control firmware-updates block   
 
 sleepypod remembers an explicit **allow** and doesn't turn the updater off again on later updates. Before allowing it, read [Return to stock with official OTA](/core/firmware-updates/factory-reset/): root access after an official update is not guaranteed.
 
+### Why turning updates off on the Pod is not enough
+
+Everything above lives in the root filesystem the Pod is running from. The hub keeps two of them (Slot A and Slot B), plus a factory image on the `firmware` partition. Only the running slot has the updater masked and the name blocking installed. The other slot and the factory image are stock: updater on, watchdog on, no blocking.
+
+Three ways the Pod ends up booting one of them:
+
+- **An unconfirmed slot.** Every stock update marks the slot it installed into as unconfirmed (`boot_<slot>_success=0`, `retry_boot_<slot>=5` in the U-Boot environment). Eight Sleep's watchdog (`defibrillator`) is what confirms it after a successful boot. If that watchdog is turned off before it has done so, which is the normal case when you root a Pod right after an update, the slot stays unconfirmed and the bootloader counts down one retry per boot. After five boots or power cuts it switches to the other slot. That slot connects to Eight Sleep, installs the current firmware over the slot you rooted, and reboots into it. From the outside this looks like "updates were off, the power went out, and the Pod updated itself".
+- **The factory-reset button.** Holding it at power-on boots a recovery image that reformats both slots **and the `persist` partition** (your settings, biometrics, HomeKit pairing), reinstalls the factory image into both, and resets the slot counters. The result is a stock Pod with updates on.
+- **A failed boot.** The same retry logic applies if the running slot ever fails to start five times for any other reason.
+
+Check your Pod's state over SSH (read-only):
+
+```bash
+cat /proc/cmdline | grep -o 'rootfs_[ab]'        # the slot you are running from
+sudo fw_printenv current_slot boot_a_success retry_boot_a boot_b_success retry_boot_b
+```
+
+How to read it, for a Pod running from `rootfs_a`:
+
+| Value              | Meaning                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| `current_slot=a`   | matches the running slot; if it differs, the bootloader will switch on the next boot           |
+| `boot_a_success=1` | slot A is confirmed; the bootloader never counts down and never writes the environment at boot |
+| `boot_a_success=0` | the countdown is live; `retry_boot_a` is the number of boots left before the switch            |
+| `retry_boot_a=5`   | full budget; anything lower means boots have already been counted                              |
+| `ustate=0`         | Eight Sleep's update state is "OK"                                                             |
+
+A healthy, confirmed Pod shows `boot_a_success=1`, `retry_boot_a=5`, `boot_b_success=1`, `retry_boot_b=5`, `ustate=0`.
+
+If `boot_<running slot>_success` is `0`, confirming it is one write (`sudo fw_setenv boot_a_success 1 retry_boot_a 5`, substituting your slot). sleepypod's installer will do this itself in a future release. Confirming also removes a second hazard: while a slot is unconfirmed the bootloader rewrites the environment on every boot, into a single copy with no backup, so a power cut during boot is exactly when that environment is most likely to be corrupted. A confirmed slot has nothing to write.
+
+A firewall on the Pod does not change any of this, and it protects only while its own rules are loaded. It cannot tell you when it has stopped working: a daemon stuck on a dropped packet looks the same as one that got through. Treat on-Pod blocking as a convenience layer, not a guarantee.
+
+**The only protection that survives a slot switch or a factory reset is on your network.** Block `8slp.net` (the whole zone) at your router, Pi-hole, or AdGuard Home so that no slot, stock or not, can reach Eight Sleep's update service. If you later choose to allow a stock update, lift that block for the duration and restore it afterwards. See [Synchronize Slot B](/core/firmware-updates/backup-slot/) for the optional, higher-risk step of carrying your configuration into the other slot.
+
 ## When an update is needed
 
 - **Cross-generation hardware pairings:** For example, pairing a Pod 3 hub with a Pod 4 cover (`pn 20600-0001-I12`, hardware `0812`). Stock Pod 3 firmware only supports older STM32F0/F1 cover microcontrollers (`0x08005000` flash base). The Pod 4 cover uses an STM32G0 microcontroller with bootloader `v2.0.3.0` (`0x08008000` flash base). Older firmware repeatedly sends a jump command to the wrong address, putting the cover into an infinite reboot loop (`BL: Likely wrong Firmware address 8005000`). Updating to STM32G0 cover firmware (`v5.5.9` or `v5.5.22.0`) allows the cover to boot and stream biometrics.

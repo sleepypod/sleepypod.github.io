@@ -912,6 +912,72 @@
       "bytes": 88710,
       "width": 1425,
       "height": 990
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b",
+      "source": "docs/images/watch-bed.png",
+      "output": "ios-watch-bed.png",
+      "method": "upstream iOS screenshot; SleepypodWatch DEBUG preview launch arguments on Apple Watch Series 11 (46mm) watchOS 26.2 simulator, no paired iPhone",
+      "sha256": "e457280b36db31622d88063c3974e5247f3b30588e57e93c6aa40cf4f2ead855",
+      "bytes": 29108,
+      "width": 416,
+      "height": 496
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b",
+      "source": "docs/images/watch-bed-recording.png",
+      "output": "ios-watch-bed-recording.png",
+      "method": "upstream iOS screenshot; SleepypodWatch DEBUG preview launch arguments on Apple Watch Series 11 (46mm) watchOS 26.2 simulator, no paired iPhone",
+      "sha256": "c27804a197ee09bbe827765e6e3b72d1d48cb677991f7937cc805f989ca67090",
+      "bytes": 29106,
+      "width": 416,
+      "height": 496
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b",
+      "source": "docs/images/watch-movement.png",
+      "output": "ios-watch-movement.png",
+      "method": "upstream iOS screenshot; SleepypodWatch DEBUG preview launch arguments on Apple Watch Series 11 (46mm) watchOS 26.2 simulator, no paired iPhone",
+      "sha256": "ce96f6b5276d25b22ae9f6e7fa83736535ae29c79509cf3f9a9f14ba256f7001",
+      "bytes": 24929,
+      "width": 416,
+      "height": 496
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b",
+      "source": "docs/images/watch-recording.png",
+      "output": "ios-watch-recording.png",
+      "method": "upstream iOS screenshot; SleepypodWatch DEBUG preview launch arguments on Apple Watch Series 11 (46mm) watchOS 26.2 simulator, no paired iPhone",
+      "sha256": "51b5c4963f11ca5f95cd705c46999507306a43941bb7e8f6b26f35845071270f",
+      "bytes": 33628,
+      "width": 416,
+      "height": 496
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b",
+      "source": "docs/images/watch-send.png",
+      "output": "ios-watch-send.png",
+      "method": "upstream iOS screenshot; SleepypodWatch DEBUG preview launch arguments on Apple Watch Series 11 (46mm) watchOS 26.2 simulator, no paired iPhone",
+      "sha256": "32dc23355a8555c82638e8c5c274e7e2bdef6ac327e3eb23abbd349e83752510",
+      "bytes": 25043,
+      "width": 416,
+      "height": 496
+    },
+    {
+      "repository": "sleepypod-ios",
+      "commit": "00c3ccef346b04d0c5fc5998d36d0bbb8ebd898b",
+      "source": "docs/images/watch-alarm.png",
+      "output": "ios-watch-alarm.png",
+      "method": "upstream iOS screenshot; SleepypodWatch DEBUG preview launch arguments on Apple Watch Series 11 (46mm) watchOS 26.2 simulator, no paired iPhone",
+      "sha256": "fd139e71328f23b5968a3f9cfd75c681438017b067c813e90a0ad2d25ab8ae4b",
+      "bytes": 25221,
+      "width": 416,
+      "height": 496
     }
   ]
 }

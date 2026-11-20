@@ -93,3 +93,45 @@ The Watch’s night no longer has to fit entirely inside the bed’s recorded wi
 </Demo>
 
 **Pinned source references:** [Health sync and rebuild](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Services/HealthSyncService.swift) · [Health settings and confirmation](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Views/Settings/HealthAccessView.swift) · [Watch matching and scoring](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Services/WatchComparison.swift) · [Comparison charts](https://github.com/sleepypod/ios/blob/ce1d455cb69b00413f8d84630052c1878d9a5f5b/Sleepypod/Views/Data/WatchComparisonView.swift)
+
+## Experimental overnight recordings
+
+These features are pinned to iOS development revision `7a9696b`; availability
+depends on your installed build. Existing screenshots show earlier revisions.
+
+### Watch movement
+
+On the Watch, open sleepypod, choose 1–12 hours, and tap **Record tonight**.
+Grant Motion & Fitness access when asked. The app uses `CMSensorRecorder` to
+request overnight wrist acceleration at 50 Hz. In the morning, tap **Send to iPhone**;
+WatchConnectivity queues the transfer to **Settings → Watch movement**, where you
+can share the file to a computer. Nothing is uploaded automatically.
+
+The summary uses **two-second bins**, not one-second bins. Missing bins mean no data,
+not stillness; raw readings are optional and off by default. Watch movement is a
+movement label, not a sleep-stage input. **Experimental:** real-device overnight
+background recording, battery use, and delivery remain unverified.
+
+**Pinned sources:** [Recording and file format](https://github.com/sleepypod/ios/blob/7a9696b9945945bae24409ff26768b47a0ecc24a/docs/watch-motion-format.md) · [Recorder](https://github.com/sleepypod/ios/blob/7a9696b9945945bae24409ff26768b47a0ecc24a/SleepypodWatch/MotionRecorder.swift) · [Summary bins](https://github.com/sleepypod/ios/blob/7a9696b9945945bae24409ff26768b47a0ecc24a/Shared/WatchMotion/WatchMotionFile.swift)
+
+### Snore detection (Beta)
+
+Open **Settings → Health → Snore detection** and choose **Start listening**.
+This is opt-in and requires microphone access. Put the iPhone on the nightstand,
+plugged in, with sleepypod open. Knock three times on the bed frame after starting
+and before stopping to provide timing markers for alignment with the pod.
+
+Apple's built-in sound classifier runs on the iPhone. Audio buffers are processed
+only in memory: raw audio, transcripts, and embeddings are never saved or sent.
+The saved JSON contains snore times and confidence, listening coverage,
+interruptions, knock times, and session/device/classifier metadata. Session files
+and their folder are excluded from iCloud and computer backups. Nothing is uploaded
+automatically; export a session manually through the share sheet.
+
+Calls and other audio interruptions leave gaps in coverage. No detection outside
+listening coverage means no recording, not no snoring. Confidence is the peak
+classifier score, not a calibrated probability, and audio alone cannot identify
+which sleeper snored. **Experimental:** real-bedroom detection quality, overnight
+background behavior, and battery use have not been measured. Snoring is not a diagnosis.
+
+**Pinned sources:** [Session format and limitations](https://github.com/sleepypod/ios/blob/7a9696b9945945bae24409ff26768b47a0ecc24a/docs/snore-capture.md) · [In-memory audio processing](https://github.com/sleepypod/ios/blob/7a9696b9945945bae24409ff26768b47a0ecc24a/Sleepypod/Services/Snore/SnoreAudioCapture.swift) · [Storage and backup exclusion](https://github.com/sleepypod/ios/blob/7a9696b9945945bae24409ff26768b47a0ecc24a/Sleepypod/Services/Snore/SnoreCaptureService.swift) · [Controls and manual sharing](https://github.com/sleepypod/ios/blob/7a9696b9945945bae24409ff26768b47a0ecc24a/Sleepypod/Views/Settings/SnoreCaptureView.swift)
