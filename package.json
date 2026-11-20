@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
   "name": "sleepypod-site",
   "version": "1.0.0",
   "private": true,

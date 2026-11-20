@@ -35,6 +35,16 @@ export function PhoneFrame({ src, alt, caption, priority = false }: MediaProps) 
     </figure>
   )
 }
+export function WatchFrame({ src, alt, caption }: MediaProps) {
+  return (
+    <figure className="watch-figure">
+      <div className="watch-frame">
+        <img src={src} alt={alt} width="416" height="496" loading="lazy" />
+      </div>
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  )
+}
 export function DialFrame({ src, alt, caption }: MediaProps) {
   return (
     <figure className="dial-figure">
