@@ -83,6 +83,28 @@ figure figcaption {
   width: 100%;
   height: auto;
 }
+.watch-figure {
+  margin: 0 auto;
+  max-width: 210px;
+}
+.watch-frame {
+  border: 6px solid #2b3439;
+  border-radius: 54px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 20px 50px #0004;
+}
+.watch-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.watch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 30px 0;
+}
 .dial-figure {
   margin: auto;
   max-width: 260px;
@@ -612,6 +634,9 @@ button:focus-visible {
   }
   .media-grid {
     grid-template-columns: 1fr;
+  }
+  .watch-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (prefers-reduced-motion: reduce) {
