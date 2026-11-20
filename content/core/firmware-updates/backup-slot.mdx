@@ -18,7 +18,7 @@ This procedure is strictly limited to boards running on the verified **Slot A** 
 **Weighing Slot B synchronization:**
 
 - **Leaving Slot B untouched:** If Slot B retains its original factory installation, a hardware factory reset boots that factory environment. If stock update services are active and the hub has internet access, it may then install newer firmware. The root-access procedure has not been verified against every resulting firmware version.
-- **Synchronizing Slot B:** Copying SSH keys, configurations, and subsystem binaries to Slot B is intended to preserve access and the verified subsystem combination after failover. It does not guarantee access: this script does not disable Slot B’s stock update services, and a later OTA may replace the copied files. Synchronizing Slot B also modifies the factory backup.
+- **Synchronizing Slot B:** Copying SSH keys, configurations, and subsystem binaries to Slot B is intended to preserve access and the verified subsystem combination after failover. It does not guarantee access: a later stock OTA rewrites Slot B wholesale and replaces the copied files. Synchronizing Slot B also modifies the factory backup. Run `sp-neutralize-slot-b` afterwards (below) so Slot B cannot take that OTA.
 
 Only synchronize Slot B if you are completely confident in your installation and want to prevent a firmware mismatch or loss of SSH access if the hardware ever fails over to Slot B.
 
@@ -153,5 +153,19 @@ ssh -p 8822 root@POD_IP "
   umount /mnt/slot_b
 "
 ```
+
+## Neutralize Slot B
+
+The script above leaves Slot B's stock update services alone. sleepypod's `sp-neutralize-slot-b` (installed with sleepypod from v3.6) closes that gap. It mounts the other slot, writes root SSH by key into the file that slot's sshd reads (`PermitRootLogin prohibit-password`, root added to `AllowUsers`, password login stays off), masks the stock updater, its socket and progress unit, the `defibrillator` watchdog and `eight-kernel`, installs the same dnsmasq blackhole the running slot uses so every `8slp.net` name is NXDOMAIN there too, and records a marker that `sp-status` reports as `other slot: neutralized`. It never changes the U-Boot environment and refuses to run when the bootloader is about to switch slots.
+
+```bash
+sudo sp-neutralize-slot-b status    # read-only
+sudo sp-neutralize-slot-b           # apply; idempotent
+sudo sp-neutralize-slot-b undo      # back to stock
+```
+
+Do not test it by switching `current_slot` to `b`: that is the one write that can leave the Pod on the other slot, and the only way back is another environment write from inside it.
+
+A later stock OTA rewrites Slot B wholesale and removes all of this, and the factory image on the `firmware` partition used by the reset button is deliberately left stock. The LAN-level block of `8slp.net` described in [Why turning updates off on the Pod is not enough](/core/firmware-updates/#why-turning-updates-off-on-the-pod-is-not-enough) is the only protection that survives both.
 
 [Source references and hardware verification scope](/core/firmware-updates/compatibility/#sources-and-verification-scope).
