@@ -7,7 +7,7 @@ import { Callout } from 'nextra/components'
 
 # Pod 5 stuck at 55°F
 
-Some Pod 5 hubs never heat or cool after a factory reset, or after being rooted before setup in the Eight Sleep app had finished. The cause is the hub's thermal controller firmware, not Core. These reports come from community users on newer Pod 5 hub revisions.
+Some Pod 5 hubs never heat or cool after being rooted from the factory image, or after a factory reset. The cause is the hub's thermal controller firmware, not Core. These reports come from community users on newer Pod 5 hub revisions.
 
 ## Symptoms
 
@@ -60,26 +60,21 @@ The first number is the length; the rest is the version. `3 1 4 19` means **v1.4
 
 ## Why it happens
 
-The factory image ships hub thermal firmware **v1.4.19**. On newer Pod 5 hub revisions the FDC1004 water-level sensor is not fitted, and v1.4.19 keeps retrying it instead of running the thermal loop. Newer firmware handles the missing sensor. When you set up a Pod 5 in the Eight Sleep app, its update installs newer firmware. A factory reset reinstalls the factory image and brings v1.4.19 back, along with this problem.
+The factory image ships hub thermal firmware **v1.4.19**. On newer Pod 5 hub revisions the FDC1004 water-level sensor is not fitted, and v1.4.19 keeps retrying it instead of running the thermal loop. Newer firmware handles the missing sensor. A factory reset reinstalls the factory image and brings v1.4.19 back, along with this problem.
 
 Community reports confirm that **v1.4.95** and **v1.4.235** both fix it.
 
-## Fix: before you root
+<Callout type="error">
 
-If you have not opened a root shell yet, avoid the problem altogether:
+**Do not fix this with the Eight Sleep app.** Setting the Pod up in the app does install newer hub firmware, but Eight Sleep's current updates also patch the bootloader, which closes the [serial root-access procedure](/core/root-access/). Once the Pod updates, you cannot root it or install Core. Older community advice to "set it up in the app first" predates that patch.
 
-1. Set up the Pod in the Eight Sleep app and go through **every** setup step. The firmware update runs at the end of setup; wait until the app says it has finished. Owners who stopped partway through setup still had the 55°F problem.
-2. Check that temperature control works from the Eight Sleep app.
-3. **Do not factory reset** afterward. That reinstalls v1.4.19.
-4. Follow [Open your Pod and get root access](/core/root-access/), then [install Core](/core/installation/).
+</Callout>
 
-After installing Core, confirm the hub is running the updated firmware with the check below.
+## Fix: replace the hub firmware
 
-## Fix: replace the hub firmware on a rooted Pod
+Root the Pod from its factory image and install Core as usual, then stage newer thermal controller firmware and let `frank` reflash the hub.
 
-If Core is already installed, stage newer thermal controller firmware and let `frank` reflash the hub.
-
-1. **Get a newer `firmware-frozen.bbin`.** Extract it from a full Pod 4/Pod 5 stock release, as in [acquire the update archive](/core/firmware-updates/manual-update/#step-2-acquire-the-update-archive) and [extract artifacts](/core/firmware-updates/manual-update/#step-3-extract-artifacts-on-your-computer). It is at `opt/eight/lib/subsystem_updates/firmware-frozen.bbin` in the extracted root filesystem. Another working Pod 5 that has finished its app updates has the same file. Check its version before copying, as shown above; it must be newer than v1.4.19.
+1. **Get a newer `firmware-frozen.bbin`.** Extract it from a full Pod 4/Pod 5 stock release, as in [acquire the update archive](/core/firmware-updates/manual-update/#step-2-acquire-the-update-archive) and [extract artifacts](/core/firmware-updates/manual-update/#step-3-extract-artifacts-on-your-computer). It is at `opt/eight/lib/subsystem_updates/firmware-frozen.bbin` in the extracted root filesystem. A working Pod 5 that already runs newer hub firmware has the same file. Check its version before copying, as shown above; it must be newer than v1.4.19.
 2. **Back up the current file** on the Pod:
 
    ```bash

@@ -9,11 +9,9 @@ import { Callout } from 'nextra/components'
 
 <Callout type="error">
 
-**Root access after OTA is not guaranteed.**
+**An official update ends root access.**
 
-Factory reset and pairing with the official app can install newer vendor firmware. The pinned root-access instructions describe particular hardware and firmware; they do not establish that the same serial/UART procedure works after every future update.
-
-Do not assume that you can regain root access or reinstall sleepypod afterward. This guide has no verified firmware-version evidence establishing a permanent UART lockout, so it does not claim that a particular update patches that method.
+Pairing with the official app installs Eight Sleep's current firmware, which patches the bootloader. The [serial root-access procedure](/core/root-access/) no longer works afterward, so you cannot regain root access or reinstall sleepypod.
 
 **Do not use this method if you plan to keep root access or run sleepypod.** Only follow these steps if you are returning the device permanently to stock operation and will only use the official Eight Sleep service.
 
