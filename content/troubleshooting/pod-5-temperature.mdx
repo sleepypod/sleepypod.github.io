@@ -64,6 +64,22 @@ The factory image ships hub thermal firmware **v1.4.19**. On newer Pod 5 hub rev
 
 Community reports confirm that **v1.4.95** and **v1.4.235** both fix it.
 
+### Known files
+
+sleepypod does not distribute Eight Sleep firmware. Use these hashes to check a file you got from another Pod or from a release before you flash it:
+
+| Version  | Size (bytes) | SHA-256                                                            | Notes                                       |
+| -------- | ------------ | ------------------------------------------------------------------ | ------------------------------------------- |
+| v1.4.19  | 70,636       | `e9d8de9903357ed1a0eec8e1155ceee723b953236a515cd4b1ebd9d11bd5f519` | Factory image. Causes this issue.           |
+| v1.4.235 | 72,756       | `fc53aab2b02d83c27618934d485e23434229e887b7cca76f155d6958354f803c` | Community-confirmed fix.                    |
+| v1.4.95  | 72,628       | Not recorded                                                       | Community-confirmed fix; hash not yet seen. |
+
+```bash
+sha256sum firmware-frozen.bbin
+```
+
+A different hash does not prove a file is bad, since other releases exist; read its version as shown above. Do not flash a file whose version you cannot read.
+
 <Callout type="error">
 
 **Do not fix this with the Eight Sleep app.** Setting the Pod up in the app does install newer hub firmware, but Eight Sleep's current updates also patch the bootloader, which closes the [serial root-access procedure](/core/root-access/). Once the Pod updates, you cannot root it or install Core. Older community advice to "set it up in the app first" predates that patch.
@@ -74,7 +90,7 @@ Community reports confirm that **v1.4.95** and **v1.4.235** both fix it.
 
 Root the Pod from its factory image and install Core as usual, then stage newer thermal controller firmware and let `frank` reflash the hub.
 
-1. **Get a newer `firmware-frozen.bbin`.** Extract it from a full Pod 4/Pod 5 stock release, as in [acquire the update archive](/core/firmware-updates/manual-update/#step-2-acquire-the-update-archive) and [extract artifacts](/core/firmware-updates/manual-update/#step-3-extract-artifacts-on-your-computer). It is at `opt/eight/lib/subsystem_updates/firmware-frozen.bbin` in the extracted root filesystem. A working Pod 5 that already runs newer hub firmware has the same file. Check its version before copying, as shown above; it must be newer than v1.4.19.
+1. **Get a newer `firmware-frozen.bbin`.** Extract it from a full Pod 4/Pod 5 stock release, as in [acquire the update archive](/core/firmware-updates/manual-update/#step-2-acquire-the-update-archive) and [extract artifacts](/core/firmware-updates/manual-update/#step-3-extract-artifacts-on-your-computer). It is at `opt/eight/lib/subsystem_updates/firmware-frozen.bbin` in the extracted root filesystem. A working Pod 5 that already runs newer hub firmware has the same file. Check its version before copying, as shown above; it must be newer than v1.4.19. Compare its hash with [known files](#known-files).
 2. **Back up the current file** on the Pod:
 
    ```bash
