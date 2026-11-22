@@ -1,0 +1,100 @@
+---
+title: 'Pod 5 stuck at 55°F'
+description: 'Fix a Pod 5 that reads 55°F on the bed and 32°F water and never heats or cools, caused by old hub thermal firmware on newer hub boards.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Pod 5 stuck at 55°F
+
+Some Pod 5 hubs never heat or cool after a factory reset, or after being rooted before they were ever set up in the Eight Sleep app. The cause is the hub's thermal controller firmware, not Core. These reports come from community users on newer Pod 5 hub revisions.
+
+## Symptoms
+
+- Both sides read **55°F** on the Temperature screen, whatever the target.
+- [System → Thermal](/core/system/thermal/) shows **Water** at **32°F** and the pump is not circulating.
+- Changing the target is accepted without an error, but nothing changes.
+
+55°F is the bottom of the temperature scale and 32°F is 0°C. The hub is reporting zeros, not real readings.
+
+## Confirm the cause
+
+On the Pod, search the firmware journal for the thermal controller's sensor errors:
+
+```bash
+journalctl -u frank -n 2000 --no-pager | grep -E 'fdc1004|i2c2|measurements not done|temps 0.00'
+```
+
+An affected Pod repeats lines like these:
+
+```text
+[frozen] -> FW: [i2c2] tx_rx failed tx
+[frozen] -> FW: [fdc1004] failed to read config
+[frozen] -> FW: [fdc1004] failed to write config
+[frozen] -> FW: [fdc1004] failed to write measurement config
+[frozen] -> FW: [capwater] measurements not done
+[frozen] -> FW: temps 0.00 0.00 0.00 0.00
+```
+
+Then check the version of the staged thermal controller firmware:
+
+```bash
+od -An -j 28 -N 4 -t u1 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+```
+
+The first number is the length; the rest is the version. `3 1 4 19` means **v1.4.19**, the version the factory image installs.
+
+<Callout type="info">
+
+**v1.4.19 alone is not a fault.** Pod 5 hubs that have the capacitive water-level sensor run v1.4.19 normally and log `[capwater] Raw: …` lines instead. Only replace the firmware if you see the `fdc1004 … failed` errors above.
+
+</Callout>
+
+## Why it happens
+
+The factory image ships hub thermal firmware **v1.4.19**. On newer Pod 5 hub revisions the FDC1004 water-level sensor is not fitted, and v1.4.19 keeps retrying it instead of running the thermal loop. Newer firmware handles the missing sensor. When you set up a Pod 5 in the Eight Sleep app, its update installs newer firmware. A factory reset reinstalls the factory image and brings v1.4.19 back, along with this problem.
+
+Community reports confirm that **v1.4.95** and **v1.4.235** both fix it.
+
+## Fix: before you root
+
+If you have not opened a root shell yet, avoid the problem altogether:
+
+1. Set up the Pod in the Eight Sleep app and let all updates finish. Check that temperature control works there.
+2. **Do not factory reset** afterward, and do not switch boot slots.
+3. Follow [Open your Pod and get root access](/core/root-access/), then [install Core](/core/installation/).
+
+The update may leave the Pod booting from slot B. The root-access guide covers only the slot-A boot path; if `printenv current_slot` reports B, stop at [step 6](/core/root-access/#6-boot-a-temporary-administrator-shell) as that guide describes.
+
+## Fix: replace the hub firmware on a rooted Pod
+
+If Core is already installed, stage newer thermal controller firmware and let `frank` reflash the hub.
+
+1. **Get a newer `firmware-frozen.bbin`.** Extract it from a full Pod 4/Pod 5 stock release, as in [acquire the update archive](/core/firmware-updates/manual-update/#step-2-acquire-the-update-archive) and [extract artifacts](/core/firmware-updates/manual-update/#step-3-extract-artifacts-on-your-computer). It is at `opt/eight/lib/subsystem_updates/firmware-frozen.bbin` in the extracted root filesystem. Another working Pod 5 that has finished its app updates has the same file. Check its version before copying, as shown above; it must be newer than v1.4.19.
+2. **Back up the current file** on the Pod:
+
+   ```bash
+   cp -a /opt/eight/lib/subsystem_updates/firmware-frozen.bbin /opt/eight/lib/subsystem_updates/firmware-frozen.bbin.bak
+   ```
+
+3. **Copy the new file** from your computer:
+
+   ```bash
+   scp -O -P 8822 firmware-frozen.bbin root@POD_IP:/opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+   ssh -p 8822 root@POD_IP "chmod 644 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin"
+   ```
+
+4. **Restart the firmware daemon** so it reflashes the hub controller, then restart Core:
+
+   ```bash
+   systemctl restart frank
+   systemctl restart sleepypod
+   ```
+
+5. **Verify.** Rerun the journal search above: the `fdc1004` errors should be gone. If they persist, reboot the Pod and check again. Set a target on one side and watch **Water** and **Pump rpm** move on [System → Thermal](/core/system/thermal/).
+
+Only use firmware from an Eight Sleep Pod 4/Pod 5 release or from another Pod 5. Do not flash a file whose version you cannot read. A future factory reset restores v1.4.19, so repeat this fix after any reset.
+
+## Still stuck
+
+If the errors are different, or the fix does not take, collect a [CLI support bundle](/core/system/logs/#collect-a-cli-support-bundle) and include the firmware version output above. See [report a useful issue](/troubleshooting/#report-a-useful-issue).
