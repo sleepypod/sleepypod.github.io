@@ -7,7 +7,7 @@ import { Callout } from 'nextra/components'
 
 # Pod 5 stuck at 55°F
 
-Some Pod 5 hubs never heat or cool after a factory reset, or after being rooted before they were ever set up in the Eight Sleep app. The cause is the hub's thermal controller firmware, not Core. These reports come from community users on newer Pod 5 hub revisions.
+Some Pod 5 hubs never heat or cool after a factory reset, or after being rooted before setup in the Eight Sleep app had finished. The cause is the hub's thermal controller firmware, not Core. These reports come from community users on newer Pod 5 hub revisions.
 
 ## Symptoms
 
@@ -60,11 +60,12 @@ Community reports confirm that **v1.4.95** and **v1.4.235** both fix it.
 
 If you have not opened a root shell yet, avoid the problem altogether:
 
-1. Set up the Pod in the Eight Sleep app and let all updates finish. Check that temperature control works there.
-2. **Do not factory reset** afterward, and do not switch boot slots.
-3. Follow [Open your Pod and get root access](/core/root-access/), then [install Core](/core/installation/).
+1. Set up the Pod in the Eight Sleep app and go through **every** setup step. The firmware update runs at the end of setup; wait until the app says it has finished. Owners who stopped partway through setup still had the 55°F problem.
+2. Check that temperature control works from the Eight Sleep app.
+3. **Do not factory reset** afterward. That reinstalls v1.4.19.
+4. Follow [Open your Pod and get root access](/core/root-access/), then [install Core](/core/installation/).
 
-The update may leave the Pod booting from slot B. The root-access guide covers only the slot-A boot path; if `printenv current_slot` reports B, stop at [step 6](/core/root-access/#6-boot-a-temporary-administrator-shell) as that guide describes.
+The update usually switches the Pod to slot B. Community owners report that Core works after rooting from either slot. This site's root-access commands, however, cover only slot A: if `printenv current_slot` reports b, [step 6](/core/root-access/#6-boot-a-temporary-administrator-shell) tells you to stop. If you end up running from slot A after the update, check the staged firmware version as shown above. A slot the update did not touch still has the factory v1.4.19 file.
 
 ## Fix: replace the hub firmware on a rooted Pod
 
