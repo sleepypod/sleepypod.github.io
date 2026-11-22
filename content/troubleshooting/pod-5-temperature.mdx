@@ -36,7 +36,15 @@ An affected Pod repeats lines like these:
 [frozen] -> FW: temps 0.00 0.00 0.00 0.00
 ```
 
-Then check the version of the staged thermal controller firmware:
+Then check which version the hub is running. `frank` logs it each time it starts, and logs `Update to FW` when it flashes the hub from the staged file:
+
+```bash
+journalctl -u frank --no-pager | grep -E 'current frozen FW version|Update to FW'
+```
+
+`current frozen FW version: 1.4.19` means the hub is running the factory firmware. If nothing prints, the startup lines have rotated out of the in-memory journal; run `systemctl restart frank` and search again.
+
+To see which version `frank` would flash, check the staged file:
 
 ```bash
 od -An -j 28 -N 4 -t u1 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin
@@ -65,7 +73,7 @@ If you have not opened a root shell yet, avoid the problem altogether:
 3. **Do not factory reset** afterward. That reinstalls v1.4.19.
 4. Follow [Open your Pod and get root access](/core/root-access/), then [install Core](/core/installation/).
 
-The update usually switches the Pod to slot B. Community owners report that Core works after rooting from either slot. This site's root-access commands, however, cover only slot A: if `printenv current_slot` reports b, [step 6](/core/root-access/#6-boot-a-temporary-administrator-shell) tells you to stop. If you end up running from slot A after the update, check the staged firmware version as shown above. A slot the update did not touch still has the factory v1.4.19 file.
+After installing Core, confirm the hub is running the updated firmware with the check below.
 
 ## Fix: replace the hub firmware on a rooted Pod
 
@@ -92,7 +100,7 @@ If Core is already installed, stage newer thermal controller firmware and let `f
    systemctl restart sleepypod
    ```
 
-5. **Verify.** Rerun the journal search above: the `fdc1004` errors should be gone. If they persist, reboot the Pod and check again. Set a target on one side and watch **Water** and **Pump rpm** move on [System → Thermal](/core/system/thermal/).
+5. **Verify.** The `frank` journal should show `Update to FW` with the new version, then `current frozen FW version` reporting it after the next start. The `fdc1004` errors should be gone. If they persist, reboot the Pod and check again. Set a target on one side and watch **Water** and **Pump rpm** move on [System → Thermal](/core/system/thermal/).
 
 Only use firmware from an Eight Sleep Pod 4/Pod 5 release or from another Pod 5. Do not flash a file whose version you cannot read. A future factory reset restores v1.4.19, so repeat this fix after any reset.
 
