@@ -78,7 +78,7 @@ sleepypod does not distribute Eight Sleep firmware. Use these hashes to check a 
 sha256sum firmware-frozen.bbin
 ```
 
-A different hash does not prove a file is bad, since other releases exist; read its version as shown above. Do not flash a file whose version you cannot read.
+A different hash does not prove a file is bad, but it does mean nobody has reported that file working on a Pod 5. Read its version as shown above, and do not flash a file whose version you cannot read.
 
 <Callout type="error">
 
@@ -90,30 +90,40 @@ A different hash does not prove a file is bad, since other releases exist; read 
 
 Root the Pod from its factory image and install Core as usual, then stage newer thermal controller firmware and let `frank` reflash the hub.
 
-1. **Get a newer `firmware-frozen.bbin`.** Extract it from a full Pod 4/Pod 5 stock release, as in [acquire the update archive](/core/firmware-updates/manual-update/#step-2-acquire-the-update-archive) and [extract artifacts](/core/firmware-updates/manual-update/#step-3-extract-artifacts-on-your-computer). It is at `opt/eight/lib/subsystem_updates/firmware-frozen.bbin` in the extracted root filesystem. A working Pod 5 that already runs newer hub firmware has the same file. Check its version before copying, as shown above; it must be newer than v1.4.19. Compare its hash with [known files](#known-files).
+1. **Get a Pod 5 `firmware-frozen.bbin`.** Copy it from `/opt/eight/lib/subsystem_updates/` on a working Pod 5 that already runs newer hub firmware. Check its version as shown above and compare its hash with [known files](#known-files). Only v1.4.95 and v1.4.235 have been reported to work on affected Pod 5 hubs.
+
+   Hub firmware from a stock release, such as v1.5.156 or v1.6.114 in the [Pod 3 hub update guide](/core/firmware-updates/manual-update/), has been verified only on Pod 3 hubs. It is **not verified on Pod 5 hubs**; do not flash it on a Pod 5 on the strength of its version number alone.
+
 2. **Back up the current file** on the Pod:
 
    ```bash
    cp -a /opt/eight/lib/subsystem_updates/firmware-frozen.bbin /opt/eight/lib/subsystem_updates/firmware-frozen.bbin.bak
    ```
 
-3. **Copy the new file** from your computer:
+3. **Copy the new file** from your computer. Replace `PATH/TO/firmware-frozen.bbin` with where the file is on your computer:
 
    ```bash
-   scp -O -P 8822 firmware-frozen.bbin root@POD_IP:/opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+   scp -O -P 8822 PATH/TO/firmware-frozen.bbin root@POD_IP:/opt/eight/lib/subsystem_updates/firmware-frozen.bbin
    ssh -p 8822 root@POD_IP "chmod 644 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin"
    ```
 
-4. **Restart the firmware daemon** so it reflashes the hub controller, then restart Core:
+4. **Restart the firmware daemon** so it reflashes the hub controller, then restart Core. Note the time first so you can check only new log entries:
 
    ```bash
+   date '+%Y-%m-%d %H:%M:%S'
    systemctl restart frank
    systemctl restart sleepypod
    ```
 
-5. **Verify.** The `frank` journal should show `Update to FW` with the new version, then `current frozen FW version` reporting it after the next start. The `fdc1004` errors should be gone. If they persist, reboot the Pod and check again. Set a target on one side and watch **Water** and **Pump rpm** move on [System → Thermal](/core/system/thermal/).
+5. **Verify.** Search only the entries written since the restart, replacing `TIME` with the time you noted:
 
-Only use firmware from an Eight Sleep Pod 4/Pod 5 release or from another Pod 5. Do not flash a file whose version you cannot read. A future factory reset restores v1.4.19, so repeat this fix after any reset.
+   ```bash
+   journalctl -u frank --since 'TIME' --no-pager | grep -E 'current frozen FW version|Update to FW|fdc1004'
+   ```
+
+   You should see `Update to FW` with the new version, then `current frozen FW version` reporting it, and no `fdc1004` errors. If the errors continue, reboot the Pod and check again. Set a target on one side and watch **Water** and **Pump rpm** move on [System → Thermal](/core/system/thermal/).
+
+Only use hub firmware taken from a Pod 5 whose version you can read. Do not flash a file whose version you cannot read. A future factory reset restores v1.4.19, so repeat this fix after any reset.
 
 ## Still stuck
 
