@@ -16,7 +16,7 @@ While sleepypod Core updates itself with `sp-update`, the underlying stock firmw
 
 ## Stock updates are off
 
-sleepypod turns off Eight Sleep's automatic firmware updater (`swupdate`) and its connectivity watchdog (`defibrillator`, `eight-kernel`) on every install and update, unless you've chosen to allow firmware updates (below). A stock over-the-air update replaces the whole operating system. Newer Eight Sleep firmware may also remove root access, which would remove sleepypod and leave no way to reinstall it. The watchdog can repeatedly reboot a Pod that can't reach the internet, which is the normal state once internet access is blocked.
+sleepypod turns off Eight Sleep's automatic firmware updater (`swupdate`) and its connectivity watchdog (`defibrillator`, `eight-kernel`) on every install and update, unless you've chosen to allow firmware updates (below). A stock over-the-air update replaces the whole operating system. Eight Sleep's current firmware also patches the bootloader, which closes the serial root-access path: an update removes sleepypod and leaves no way to reinstall it. The watchdog can repeatedly reboot a Pod that can't reach the internet, which is the normal state once internet access is blocked.
 
 Firmware updates are a deliberate choice, never something that happens in the background. Check or change the setting over [SSH](/core/root-access/):
 
@@ -28,7 +28,7 @@ sudo /home/dac/sleepypod-core/scripts/internet-control firmware-updates block   
 
 **allow** also starts the watchdog (`defibrillator`). If internet access is blocked, it reboots the Pod about every five minutes, so allow internet access first, or run **block** once the update finishes. `eight-kernel` stays off either way.
 
-sleepypod remembers an explicit **allow** and doesn't turn the updater off again on later updates. Before allowing it, read [Return to stock with official OTA](/core/firmware-updates/factory-reset/): root access after an official update is not guaranteed.
+sleepypod remembers an explicit **allow** and doesn't turn the updater off again on later updates. Before allowing it, read [Return to stock with official OTA](/core/firmware-updates/factory-reset/): an official update patches the bootloader and ends root access.
 
 ### Why turning updates off on the Pod is not enough
 

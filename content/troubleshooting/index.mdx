@@ -6,15 +6,16 @@ title: 'Troubleshooting'
 
 Start with the smallest check that separates a client problem from a Pod problem.
 
-| Symptom                             | First check                                             | Guide                                               |
-| ----------------------------------- | ------------------------------------------------------- | --------------------------------------------------- |
-| Nothing can connect                 | Open `http://POD_IP:3000` on the same LAN               | [Connection](/troubleshooting/connection/)          |
-| Browser works, iOS or Dial does not | Use manual IP; check discovery and permissions          | [Connection](/troubleshooting/connection/)          |
-| Core does not start                 | Read `sp-status` and `sp-logs`                          | [Core](/troubleshooting/core/)                      |
-| Temperature does not move           | Check the side, target, water level, and thermal status | [Core](/troubleshooting/core/)                      |
-| No biometrics                       | Check side/date, sensor activity, and module services   | [Core](/troubleshooting/core/#biometrics-are-empty) |
-| Schedule fires at the wrong time    | Verify device clock and timezone                        | [Schedules](/core/schedules/)                       |
-| Dial is red or very dim             | Check night mode and wake it                            | [Dial controls](/dial/controls/)                    |
+| Symptom                             | First check                                             | Guide                                                      |
+| ----------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
+| Nothing can connect                 | Open `http://POD_IP:3000` on the same LAN               | [Connection](/troubleshooting/connection/)                 |
+| Browser works, iOS or Dial does not | Use manual IP; check discovery and permissions          | [Connection](/troubleshooting/connection/)                 |
+| Core does not start                 | Read `sp-status` and `sp-logs`                          | [Core](/troubleshooting/core/)                             |
+| Temperature does not move           | Check the side, target, water level, and thermal status | [Core](/troubleshooting/core/)                             |
+| Pod 5 stuck at 55°F, water at 32°F  | Search the firmware journal for `fdc1004` errors        | [Pod 5 stuck at 55°F](/troubleshooting/pod-5-temperature/) |
+| No biometrics                       | Check side/date, sensor activity, and module services   | [Core](/troubleshooting/core/#biometrics-are-empty)        |
+| Schedule fires at the wrong time    | Verify device clock and timezone                        | [Schedules](/core/schedules/)                              |
+| Dial is red or very dim             | Check night mode and wake it                            | [Dial controls](/dial/controls/)                           |
 
 For Pod 3 “Piezo and Capacitance stalled” or “Scheduler stalled” incidents, follow the [Pod 3 troubleshooting guide](/troubleshooting/pod-3/). For a support handoff, collect a [CLI log bundle](/core/system/logs/#collect-a-cli-support-bundle) before rebooting.
 

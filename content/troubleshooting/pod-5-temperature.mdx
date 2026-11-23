@@ -1,0 +1,131 @@
+---
+title: 'Pod 5 stuck at 55°F'
+description: 'Fix a Pod 5 that reads 55°F on the bed and 32°F water and never heats or cools, caused by old hub thermal firmware on newer hub boards.'
+---
+
+import { Callout } from 'nextra/components'
+
+# Pod 5 stuck at 55°F
+
+Some Pod 5 hubs never heat or cool after being rooted from the factory image, or after a factory reset. The cause is the hub's thermal controller firmware, not Core. These reports come from community users on newer Pod 5 hub revisions.
+
+## Symptoms
+
+- Both sides read **55°F** on the Temperature screen, whatever the target.
+- [System → Thermal](/core/system/thermal/) shows **Water** at **32°F** and the pump is not circulating.
+- Changing the target is accepted without an error, but nothing changes.
+
+55°F is the bottom of the temperature scale and 32°F is 0°C. The hub is reporting zeros, not real readings.
+
+## Confirm the cause
+
+On the Pod, search the firmware journal for the thermal controller's sensor errors:
+
+```bash
+journalctl -u frank -n 2000 --no-pager | grep -E 'fdc1004|i2c2|measurements not done|temps 0.00'
+```
+
+An affected Pod repeats lines like these:
+
+```text
+[frozen] -> FW: [i2c2] tx_rx failed tx
+[frozen] -> FW: [fdc1004] failed to read config
+[frozen] -> FW: [fdc1004] failed to write config
+[frozen] -> FW: [fdc1004] failed to write measurement config
+[frozen] -> FW: [capwater] measurements not done
+[frozen] -> FW: temps 0.00 0.00 0.00 0.00
+```
+
+Then check the staged file, which is the version `frank` flashes to the hub when it starts:
+
+```bash
+od -An -j 28 -N 4 -t u1 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+sha256sum /opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+```
+
+The first `od` number is the length; the rest is the version. `3 1 4 19` means **v1.4.19**, the version the factory image installs. Compare the hash with [known files](#known-files).
+
+Finally, check which version the hub is running. `frank` logs it each time it starts, and logs `Update to FW` when it flashes the hub from the staged file:
+
+```bash
+journalctl -u frank --no-pager | grep -E 'current frozen FW version|Update to FW'
+```
+
+`current frozen FW version: 1.4.19` means the hub is running the factory firmware. If nothing prints, the startup lines have rotated out of the in-memory journal. Restarting `frank` logs them again, but it also flashes whatever is staged, so restart it only if the staged file matches a [known file](#known-files): `systemctl restart frank`.
+
+<Callout type="info">
+
+**v1.4.19 alone is not a fault.** Pod 5 hubs that have the capacitive water-level sensor run v1.4.19 normally and log `[capwater] Raw: …` lines instead. Only replace the firmware if you see the `fdc1004 … failed` errors above.
+
+</Callout>
+
+## Why it happens
+
+The factory image ships hub thermal firmware **v1.4.19**. On newer Pod 5 hub revisions the FDC1004 water-level sensor is not fitted, and v1.4.19 keeps retrying it instead of running the thermal loop. Newer firmware handles the missing sensor. A factory reset reinstalls the factory image and brings v1.4.19 back, along with this problem.
+
+Community reports confirm that **v1.4.95** and **v1.4.235** both fix it.
+
+### Known files
+
+sleepypod does not distribute Eight Sleep firmware. Use these hashes to check a file you got from another Pod or from a release before you flash it:
+
+| Version  | Size (bytes) | SHA-256                                                            | Notes                                       |
+| -------- | ------------ | ------------------------------------------------------------------ | ------------------------------------------- |
+| v1.4.19  | 70,636       | `e9d8de9903357ed1a0eec8e1155ceee723b953236a515cd4b1ebd9d11bd5f519` | Factory image. Causes this issue.           |
+| v1.4.235 | 72,756       | `fc53aab2b02d83c27618934d485e23434229e887b7cca76f155d6958354f803c` | Community-confirmed fix.                    |
+| v1.4.95  | 72,628       | Not recorded                                                       | Community-confirmed fix; hash not yet seen. |
+
+```bash
+sha256sum firmware-frozen.bbin
+```
+
+A different hash does not prove a file is bad, but it does mean nobody has reported that file working on a Pod 5. Read its version as shown above, and do not flash a file whose version you cannot read.
+
+<Callout type="error">
+
+**Do not fix this with the Eight Sleep app.** Setting the Pod up in the app does install newer hub firmware, but Eight Sleep's current updates also patch the bootloader, which closes the [serial root-access procedure](/core/root-access/). Once the Pod updates, you cannot root it or install Core. Older community advice to "set it up in the app first" predates that patch.
+
+</Callout>
+
+## Fix: replace the hub firmware
+
+Root the Pod from its factory image and install Core as usual, then stage newer thermal controller firmware and let `frank` reflash the hub.
+
+1. **Get a Pod 5 `firmware-frozen.bbin`.** Copy it from `/opt/eight/lib/subsystem_updates/` on a working Pod 5 that already runs newer hub firmware. Check its version as shown above and compare its hash with [known files](#known-files). Only v1.4.95 and v1.4.235 have been reported to work on affected Pod 5 hubs.
+
+   Hub firmware from a stock release, such as v1.5.156 or v1.6.114 in the [Pod 3 hub update guide](/core/firmware-updates/manual-update/), has been verified only on Pod 3 hubs. It is **not verified on Pod 5 hubs**; do not flash it on a Pod 5 on the strength of its version number alone.
+
+2. **Back up the current file** on the Pod:
+
+   ```bash
+   cp -a /opt/eight/lib/subsystem_updates/firmware-frozen.bbin /opt/eight/lib/subsystem_updates/firmware-frozen.bbin.bak
+   ```
+
+3. **Copy the new file** from your computer. Replace `PATH/TO/firmware-frozen.bbin` with where the file is on your computer:
+
+   ```bash
+   scp -O -P 8822 PATH/TO/firmware-frozen.bbin root@POD_IP:/opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+   ssh -p 8822 root@POD_IP "chmod 644 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin"
+   ```
+
+4. **Restart the firmware daemon** so it reflashes the hub controller, then restart Core. Note the time first so you can check only new log entries:
+
+   ```bash
+   date '+%Y-%m-%d %H:%M:%S'
+   systemctl restart frank
+   systemctl restart sleepypod
+   ```
+
+5. **Verify.** Search only the entries written since the restart, replacing `TIME` with the time you noted:
+
+   ```bash
+   journalctl -u frank --since 'TIME' --no-pager | grep -E 'current frozen FW version|Update to FW|fdc1004'
+   ```
+
+   You should see `Update to FW` with the new version, then `current frozen FW version` reporting it, and no `fdc1004` errors. If the errors continue, reboot the Pod and check again. Set a target on one side and watch **Water** and **Pump rpm** move on [System → Thermal](/core/system/thermal/).
+
+Only use hub firmware taken from a Pod 5 whose version you can read. Do not flash a file whose version you cannot read. A future factory reset restores v1.4.19, so repeat this fix after any reset.
+
+## Still stuck
+
+If the errors are different, or the fix does not take, collect a [CLI support bundle](/core/system/logs/#collect-a-cli-support-bundle) and include the firmware version output above. See [report a useful issue](/troubleshooting/#report-a-useful-issue).

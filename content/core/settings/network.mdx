@@ -68,7 +68,7 @@ This layer keeps the stock firmware from uploading data while internet access is
 Installs and updates turn off the stock services that sleepypod doesn't need:
 
 - Eight Sleep's log shipper (`vector`) and metrics agent (`telegraf`). Without this, `vector` would keep sending the Pod's system logs to Eight Sleep's servers and store up to 256 MB of unsent logs on the Pod's flash storage.
-- The stock firmware updater (`swupdate`) and connectivity watchdog (`defibrillator`, `eight-kernel`). A stock update can remove root access and sleepypod, and the watchdog can repeatedly reboot a Pod that can't reach the internet. They stay off unless you allow firmware updates; see [Firmware updates](/core/firmware-updates/#stock-updates-are-off).
+- The stock firmware updater (`swupdate`) and connectivity watchdog (`defibrillator`, `eight-kernel`). A stock update removes sleepypod and patches the bootloader so the Pod can't be rooted again, and the watchdog can repeatedly reboot a Pod that can't reach the internet. They stay off unless you allow firmware updates; see [Firmware updates](/core/firmware-updates/#stock-updates-are-off).
 
 The sensor firmware that sleepypod relies on stays running.
 

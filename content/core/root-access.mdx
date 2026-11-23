@@ -2,7 +2,7 @@
 title: 'Open your Pod and get root access'
 ---
 
-import { ImageZoom } from 'nextra/components'
+import { Callout, ImageZoom } from 'nextra/components'
 
 # Open your Pod and get root access
 
@@ -12,13 +12,19 @@ This procedure builds on [free-sleep's installation guide](https://github.com/th
 
 ## 1. Identify your hardware
 
-| Hardware                     | Start here                                                                                                                                                                                  |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pod 3 **with an SD card**    | Use the separate [SD-card root-access procedure](https://blopker.com/writing/04-zerosleep-1/). Back up the card before modifying it. The UART boot commands below are not an SD-card guide. |
-| Pod 3 **without an SD card** | Follow the serial procedure below, using the [Pod 3 opening photos](https://github.com/throwaway31265/free-sleep/tree/e615820a347db068fedc3d8cf6e684884fb96c8a/docs/pod_3_teardown).        |
-| Pod 4                        | Follow the serial procedure with the Pod 4 opening notes below.                                                                                                                             |
-| Pod 5                        | Complete initial setup in the Eight Sleep app first, as required by the current free-sleep guide, then follow the serial procedure.                                                         |
-| Pod 1 or 2                   | Not covered by this guide.                                                                                                                                                                  |
+| Hardware                     | Start here                                                                                                                                                                                                                                                      |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pod 3 **with an SD card**    | Use the separate [SD-card root-access procedure](https://blopker.com/writing/04-zerosleep-1/). Back up the card before modifying it. The UART boot commands below are not an SD-card guide.                                                                     |
+| Pod 3 **without an SD card** | Follow the serial procedure below, using the [Pod 3 opening photos](https://github.com/throwaway31265/free-sleep/tree/e615820a347db068fedc3d8cf6e684884fb96c8a/docs/pod_3_teardown).                                                                            |
+| Pod 4                        | Follow the serial procedure with the Pod 4 opening notes below.                                                                                                                                                                                                 |
+| Pod 5                        | Follow the serial procedure below. **Do not set the Pod up in the Eight Sleep app first**, despite older advice to do so: the app's update patches the bootloader. Newer Pod 5 hubs then need the [55°F hub firmware fix](/troubleshooting/pod-5-temperature/). |
+| Pod 1 or 2                   | Not covered by this guide.                                                                                                                                                                                                                                      |
+
+<Callout type="warning">
+
+**Keep the Pod off the Eight Sleep app until it is rooted.** Eight Sleep's current firmware updates patch the bootloader, so this serial procedure no longer works on a Pod that has been set up in the app and updated. Root the Pod on the firmware it has now, and join Wi-Fi from the root shell in [step 8](#8-join-wi-fi-and-install-sleepypod). A factory reset is not known to undo the bootloader patch on a Pod that has already updated.
+
+</Callout>
 
 Board revisions and firmware differ. Match the board markings and connector location to the photos; stop if yours differs. The commands below cover the documented **slot A** boot path, not an arbitrary partition layout.
 
