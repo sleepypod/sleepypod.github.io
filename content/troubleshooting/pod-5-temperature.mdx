@@ -36,21 +36,22 @@ An affected Pod repeats lines like these:
 [frozen] -> FW: temps 0.00 0.00 0.00 0.00
 ```
 
-Then check which version the hub is running. `frank` logs it each time it starts, and logs `Update to FW` when it flashes the hub from the staged file:
+Then check the staged file, which is the version `frank` flashes to the hub when it starts:
+
+```bash
+od -An -j 28 -N 4 -t u1 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+sha256sum /opt/eight/lib/subsystem_updates/firmware-frozen.bbin
+```
+
+The first `od` number is the length; the rest is the version. `3 1 4 19` means **v1.4.19**, the version the factory image installs. Compare the hash with [known files](#known-files).
+
+Finally, check which version the hub is running. `frank` logs it each time it starts, and logs `Update to FW` when it flashes the hub from the staged file:
 
 ```bash
 journalctl -u frank --no-pager | grep -E 'current frozen FW version|Update to FW'
 ```
 
-`current frozen FW version: 1.4.19` means the hub is running the factory firmware. If nothing prints, the startup lines have rotated out of the in-memory journal; run `systemctl restart frank` and search again.
-
-To see which version `frank` would flash, check the staged file:
-
-```bash
-od -An -j 28 -N 4 -t u1 /opt/eight/lib/subsystem_updates/firmware-frozen.bbin
-```
-
-The first number is the length; the rest is the version. `3 1 4 19` means **v1.4.19**, the version the factory image installs.
+`current frozen FW version: 1.4.19` means the hub is running the factory firmware. If nothing prints, the startup lines have rotated out of the in-memory journal. Restarting `frank` logs them again, but it also flashes whatever is staged, so restart it only if the staged file matches a [known file](#known-files): `systemctl restart frank`.
 
 <Callout type="info">
 
